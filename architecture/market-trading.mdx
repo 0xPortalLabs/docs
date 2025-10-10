@@ -1,0 +1,380 @@
+---
+title: "Market Trading"
+description: "Collateral-based trading system for points before TGE"
+---
+
+# Market Trading
+
+The Market contract enables trading of tokenized points before TGE (Token Generation Event) using a collateral-based system. Users can create offers to sell their points or fill offers to buy points, with all trades backed by collateral tokens.
+
+## Trading Architecture
+
+<Mermaid>
+sequenceDiagram
+    participant Seller
+    participant Buyer
+    participant Market
+    participant Deposit
+    participant Escrow
+    participant USDC
+    
+    Seller->>Market: createOffer(pointsId, amount, price, collateral)
+    Market->>Deposit: increaseHold(seller, amount)
+    Market->>Market: pull collateral from seller
+    Market->>Market: emit OfferCreated
+    
+    Buyer->>Market: fillOffer(offerId)
+    Market->>USDC: pull USDC from buyer
+    Market->>Escrow: mint tokens to buyer
+    Market->>Market: emit OfferFilled
+</Mermaid>
+
+## Offer Types
+
+### 1. Sell Offers
+Users create offers to sell their points for USDC.
+
+**Parameters:**
+- `pointsId`: Points program identifier
+- `pointsAmount`: Amount of points to sell
+- `price`: Price in USDC (6 decimals)
+- `collateralToken`: Token used as collateral
+- `collateralAmount`: Amount of collateral required
+
+**Process:**
+1. User's points are held (cannot be used elsewhere)
+2. Collateral is locked in the contract
+3. Offer becomes available for filling
+
+### 2. Buy Intents
+Users create buy intents to purchase points.
+
+**Parameters:**
+- `pointsId`: Points program identifier
+- `pointsAmount`: Amount of points to buy
+- `bidAmount`: Total bid amount in USDC
+- `pricePerPoint`: Price per point
+- `collateralTokens`: Accepted collateral tokens
+- `collateralPerPoints`: Required collateral per point
+- `deadline`: Intent expiration time
+
+## Trading Flow
+
+### Creating an Offer
+
+```solidity
+function createOffer(
+    uint256 pointsId,
+    uint256 pointsAmount,
+    uint256 price,
+    address collateralToken,
+    uint256 collateralAmount
+) external returns (uint256 offerId)
+```
+
+**Steps:**
+1. **Validation**: Check points program is active and not in settlement
+2. **Balance Check**: Verify user has sufficient points
+3. **Hold Points**: Increase held amount to prevent double-spending
+4. **Pull Collateral**: Transfer collateral from user to contract
+5. **Create Offer**: Store offer data and emit event
+
+### Filling an Offer
+
+```solidity
+function fillOffer(uint256 offerId) external
+```
+
+**Steps:**
+1. **Validation**: Check offer is active and user is not the maker
+2. **Pull USDC**: Transfer USDC from buyer to contract
+3. **Mint Tokens**: Mint escrow tokens to buyer
+4. **Update Status**: Mark offer as filled
+5. **Emit Event**: Notify of successful fill
+
+### Partial Fills
+
+```solidity
+function fillOfferPartial(uint256 offerId, uint256 amount) external
+```
+
+**Features:**
+- **Proportional Distribution**: Points distributed proportionally to payment
+- **Multiple Fillers**: Multiple users can fill the same offer
+- **Status Management**: Offer status updates based on fill amount
+
+## Collateral System
+
+### Supported Collateral
+The market supports multiple collateral tokens:
+
+```solidity
+struct Config {
+    address feeRecipient;
+    EnumerableSet.AddressSet collateralTokens;
+    uint256 settlementFee;      // bps
+    uint256 cancellationFee;    // bps
+    uint256 overdueFee;         // bps
+}
+```
+
+### Collateral Requirements
+- **Locked During Offer**: Collateral is locked when offer is created
+- **Returned on Settlement**: Collateral is returned when offer settles
+- **Forfeited on Cancellation**: Partial collateral is forfeited on cancellation
+
+## Order Management
+
+### Offer Statuses
+```solidity
+enum OfferStatus {
+    OFFER_CREATED,           // Offer created, waiting for fills
+    OFFER_FILLED,            // Fully filled
+    OFFER_FILLED_PARTIAL,    // Partially filled
+    OFFER_SETTLED,           // Settled after TGE
+    OFFER_SETTLED_WITH_VESTING, // Settled with vesting
+    OFFER_CANCELLED,         // Cancelled by maker
+    OFFER_OVERDUE_SETTLED    // Settled due to deadline
+}
+```
+
+### Order Lifecycle
+1. **Created**: Offer is created and points are held
+2. **Filled**: Buyers fill the offer with USDC
+3. **Settled**: After TGE, tokens are distributed
+4. **Completed**: All parties receive their tokens
+
+## Settlement Process
+
+### Pre-TGE Settlement
+Before TGE, offers can be settled in two ways:
+
+#### 1. Points Change Settlement
+When a user's points decrease, they can settle their filled offers:
+
+```solidity
+function settlePointsChange(uint256 offerId) external
+```
+
+**Process:**
+1. Check if user's points have decreased
+2. Burn escrow tokens from buyer
+3. Return USDC to buyer
+4. Remove buyer from fillers list
+
+#### 2. Offer Settlement
+When TGE occurs, sellers can settle their offers:
+
+```solidity
+function settleOffer(uint256 offerId) external
+```
+
+**Process:**
+1. Check settlement deadline
+2. Calculate settlement fee
+3. Send USDC to seller (minus fee)
+4. Send tokens to settlement contract
+5. Return collateral to seller
+
+### Cross-Chain Settlement
+For cross-chain settlements, offers can be settled via oracle:
+
+```solidity
+function settleOfferViaOracle(
+    uint256 offerId,
+    uint256 chainId,
+    bytes calldata txhash,
+    bytes calldata signature
+) external
+```
+
+## Fee Structure
+
+### Settlement Fees
+- **Settlement Fee**: Percentage of filled amount (in bps)
+- **Cancellation Fee**: Percentage of collateral amount (in bps)
+- **Overdue Fee**: Percentage of collateral amount (in bps)
+
+### Fee Calculation
+```solidity
+function _calculateBps(uint256 price, uint256 bps) internal pure returns (uint256) {
+    return Math.mulDiv({ 
+        x: price, 
+        y: bps, 
+        denominator: 10_000, 
+        rounding: Math.Rounding.Ceil 
+    });
+}
+```
+
+## Vesting Support
+
+### Vesting Integration
+The market supports vesting schedules for token distributions:
+
+```solidity
+function setTokenAmounts(
+    uint256[] calldata offerIds,
+    uint256[] calldata tokenAmounts,
+    bool[] calldata hasVestings
+) external onlyRole(SETTLEMENT_ROLE)
+```
+
+### Vesting Settlement
+Offers with vesting can be settled in two phases:
+
+1. **Initial Settlement**: Tokens are sent to settlement contract
+2. **Vesting Completion**: Collateral is returned when vesting ends
+
+## Overdue Settlement
+
+### Deadline Management
+Offers have settlement deadlines:
+
+```solidity
+function setSettlementDeadline(uint256 pointsId, uint256 deadline)
+    external
+    onlyRole(SETTLEMENT_ROLE)
+```
+
+### Overdue Process
+When offers exceed their settlement deadline:
+
+1. **Buyer Refund**: Buyers get their USDC back
+2. **Collateral Distribution**: Seller's collateral goes to settlement
+3. **Fee Collection**: Overdue fee is collected
+
+## Buy Intent System
+
+### Creating Buy Intents
+Users can create buy intents to purchase points:
+
+```solidity
+function createBuyIntent(
+    uint256 pointsId,
+    uint256 pointsAmount,
+    uint256 bidAmount,
+    uint256 pricePerPoint,
+    address[] calldata collateralTokens,
+    uint256[] calldata collateralPerPoints,
+    uint256 deadline
+) external returns (uint256 offerId)
+```
+
+### Filling Buy Intents
+Other users can fill buy intents by providing points:
+
+```solidity
+function fillBuyIntentPartial(
+    uint256 buyIntentId,
+    uint256 pointsAmount,
+    address collateralToken,
+    uint256 collateralAmount
+) external
+```
+
+## Integration with Other Contracts
+
+### Deposit Contract Integration
+```solidity
+IDepositReceipt depositToken = IDepositReceipt(pointsInfo.depositToken);
+depositToken.increaseHold({ user: msg.sender, amount: pointsAmount });
+```
+
+### Settlement Contract Integration
+```solidity
+getSettlement().depositToken({ offerId: offerId, amount: tokenAmount });
+```
+
+### Oracle Integration
+```solidity
+bool isValidClaim = getOracle().verifySettlementClaim({
+    offerId: offerId,
+    user: offer.maker,
+    chainId: chainId,
+    txhash: txhash,
+    expiry: settlementDeadline,
+    signature: signature
+});
+```
+
+## Security Features
+
+### Reentrancy Protection
+All external functions are protected against reentrancy:
+
+```solidity
+modifier nonReentrant() {
+    // ReentrancyGuard implementation
+}
+```
+
+### Access Control
+Role-based access control for different operations:
+
+- **DEFAULT_ADMIN_ROLE**: Can configure market parameters
+- **SETTLEMENT_ROLE**: Can set settlement deadlines and token amounts
+
+### Validation
+Comprehensive validation for all operations:
+
+```solidity
+if (msg.sender == offer.maker) revert Errors.CannotFillOffer();
+if (offer.status != OfferStatus.OFFER_CREATED) revert Errors.CannotFillOffer();
+```
+
+## Gas Optimization
+
+### Batch Operations
+Support for batch operations:
+
+```solidity
+function getOffersBatch(uint256[] calldata offerIds) 
+    external 
+    view 
+    returns (Offer[] memory)
+```
+
+### Storage Optimization
+Efficient storage layout using diamond storage pattern:
+
+```solidity
+bytes32 private constant MARKET_STORAGE_LOCATION =
+    0x8585c2a21df0293deed74c3e830f4d6eaa2e7495be9ca9db86c1f5526b678b00;
+```
+
+## Error Handling
+
+Comprehensive error handling with specific error types:
+
+```solidity
+error InvalidCollateralAmount();
+error InvalidPrice();
+error InvalidPointsId(uint256 pointsId);
+error SettlementIsActive();
+error CannotFillOffer();
+error InvalidAmount();
+error CannotSettlePointsChange();
+error CannotSettleOffer();
+error CannotCancelOffer();
+```
+
+## Best Practices
+
+### For Traders
+1. **Collateral Management**: Ensure sufficient collateral for offers
+2. **Deadline Awareness**: Monitor settlement deadlines
+3. **Gas Estimation**: Account for trading gas costs
+4. **Partial Fills**: Consider partial fill strategies
+
+### For Developers
+1. **Event Monitoring**: Listen for trading events
+2. **Status Tracking**: Monitor offer statuses
+3. **Error Handling**: Implement comprehensive error handling
+4. **Gas Optimization**: Use batch operations when possible
+
+### For Integrators
+1. **Order Management**: Implement proper order lifecycle management
+2. **Fee Handling**: Account for all fee types
+3. **Settlement Integration**: Integrate with settlement system
+4. **Cross-Chain Support**: Handle cross-chain settlements

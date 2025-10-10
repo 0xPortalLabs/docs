@@ -1,0 +1,311 @@
+---
+title: "Points Tokenization"
+description: "How off-chain points are converted into tradeable on-chain assets"
+---
+
+# Points Tokenization
+
+The points tokenization system converts off-chain points into tradeable on-chain assets through a two-token model: soulbound NFTs for tracking and ERC20 tokens for trading.
+
+## Tokenization Flow
+
+<Mermaid>
+sequenceDiagram
+    participant User
+    participant Deposit
+    participant Oracle
+    participant Registry
+    participant NFT[Deposit Receipt NFT]
+    participant Token[Escrow Token]
+    
+    User->>Deposit: deposit(pointsId, amount, expiry, signature)
+    Deposit->>Oracle: verifyDepositClaim(...)
+    Oracle->>Deposit: return verification result
+    Deposit->>Registry: getPointsInfo(pointsId)
+    Registry->>Deposit: return points info
+    Deposit->>NFT: deposit(user, amount)
+    NFT->>NFT: mint soulbound NFT
+    Deposit->>Token: mint escrow tokens
+    Deposit->>User: emit PointsDeposited event
+</Mermaid>
+
+## Two-Token Model
+
+### 1. Deposit Receipt NFT (Soulbound)
+A non-transferable ERC721 NFT that tracks a user's deposited points.
+
+**Key Features:**
+- **Soulbound**: Cannot be transferred (only minted/burned)
+- **User-Specific**: One NFT per user per points program
+- **Historical Tracking**: Maintains checkpoint history of point changes
+- **Metadata**: Contains point balance and historical data
+
+**Token ID Generation:**
+```solidity
+function _tokenId(address user) internal pure returns (uint256) {
+    return uint256(uint160(user));
+}
+```
+
+### 2. Escrow Token (ERC20)
+A transferable ERC20 token representing points before TGE.
+
+**Key Features:**
+- **Transferable**: Can be traded in the market
+- **LayerZero Compatible**: Supports cross-chain operations
+- **Market Integration**: Used for trading and settlement
+- **Burnable**: Can be burned during settlement
+
+## Deposit Process
+
+### 1. Signature Verification
+The deposit contract verifies the oracle signature:
+
+```solidity
+bool isValidClaim = getOracle().verifyDepositClaim({
+    pointsId: pointsId,
+    user: msg.sender,
+    amount: amount,
+    expiry: expiry,
+    signature: signature
+});
+```
+
+### 2. Points Program Validation
+Checks that the points program is active and deposits are not paused:
+
+```solidity
+IRegistry.PointsInfo memory points = _getRegistryInfo(pointsId);
+if (points.depositPaused || points.depositToken == address(0)) {
+    revert Errors.DepositsPaused();
+}
+```
+
+### 3. NFT Minting
+Mints a soulbound NFT to track the user's points:
+
+```solidity
+IDepositReceipt(points.depositToken).deposit({
+    onBehalfOf: msg.sender,
+    amount: amount
+});
+```
+
+### 4. Statistics Update
+Updates global and user-specific deposit statistics:
+
+```solidity
+_setUserDepositedPoints({ pointsId: pointsId, user: msg.sender, amount: amount });
+_increaseGlobalDepositedPoints({ pointsId: pointsId, amount: amount });
+```
+
+## NFT Data Structure
+
+The Deposit Receipt NFT stores comprehensive user data:
+
+```solidity
+struct Data {
+    uint256 depositedAmount;           // Current point balance
+    uint256 heldAmount;               // Amount held in market orders
+    Checkpoints.Trace256 depositedDelta; // Historical point changes
+}
+```
+
+### Historical Tracking
+The NFT maintains a checkpoint history of all point changes:
+
+```solidity
+int256 delta = SafeCast.toInt256(newAmount) - SafeCast.toInt256(oldAmount);
+userData.depositedDelta.push(claimTime, uint256(delta));
+```
+
+**Benefits:**
+- **Audit Trail**: Complete history of point changes
+- **Settlement**: Enables accurate settlement calculations
+- **Transparency**: Users can verify their point history
+
+## Dynamic Point Updates
+
+### Points Change Process
+Users can update their point balance when they earn more points:
+
+```solidity
+function changePoints(
+    address user,
+    uint128 oldAmount,
+    uint128 newAmount,
+    uint256 claimTime,
+    uint256 expiry,
+    bytes calldata signature
+) external
+```
+
+### Verification Requirements
+1. **Oracle Signature**: Must be signed by the oracle
+2. **Amount Validation**: Old amount must match current balance
+3. **Time Validation**: Claim time must be valid
+4. **Nonce Management**: Uses separate nonce for points changes
+
+### Historical Recording
+Point changes are recorded in the NFT's checkpoint system:
+
+```solidity
+int256 delta = SafeCast.toInt256(newAmount) - SafeCast.toInt256(oldAmount);
+userData.depositedDelta.push(claimTime, uint256(delta));
+userData.depositedAmount = newAmount;
+```
+
+## Market Integration
+
+### Hold Management
+When users create market orders, their points are "held" to prevent double-spending:
+
+```solidity
+function increaseHold(address user, uint256 amount) external onlyRole(MARKET_ROLE) {
+    uint256 newHeldAmount = data[tokenId].heldAmount + amount;
+    data[tokenId].heldAmount = newHeldAmount;
+}
+```
+
+### Available Balance Calculation
+The available balance for trading is calculated as:
+
+```solidity
+uint256 allowed = depositedAmount - heldAmount;
+```
+
+## Metadata and Token URI
+
+### Base URI Structure
+NFTs use a structured base URI for metadata:
+
+```solidity
+function _baseURI() internal view override returns (string memory) {
+    return string.concat(
+        "https://nft.checkpoint.exchange/",
+        Strings.toString(block.chainid),
+        "/",
+        Strings.toString(POINTS_ID),
+        ".json"
+    );
+}
+```
+
+### Token ID Format
+- **Format**: `uint256(uint160(user))`
+- **Uniqueness**: One NFT per user per points program
+- **Deterministic**: Same user always gets same token ID
+
+## Security Features
+
+### Transfer Restrictions
+NFTs are soulbound and cannot be transferred:
+
+```solidity
+function _update(address to, uint256 tokenId, address auth)
+    internal
+    override(ERC721, ERC721Pausable)
+    whenNotPaused
+    returns (address)
+{
+    // Only allow burning and minting
+    if (to != address(0) && auth != address(0)) revert Errors.CannotTransfer();
+    return super._update(to, tokenId, auth);
+}
+```
+
+### Access Control
+Role-based access control for different operations:
+
+- **DEPOSITOR_ROLE**: Can mint NFTs and update balances
+- **MARKET_ROLE**: Can manage hold amounts
+- **DEFAULT_ADMIN_ROLE**: Can pause/unpause and manage roles
+
+### Pausability
+The system can be paused in emergency situations:
+
+```solidity
+function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    _pause();
+}
+```
+
+## Integration with Registry
+
+### Points Program Configuration
+The Registry contract manages points program configurations:
+
+```solidity
+struct PointsInfo {
+    string name;              // Program name
+    address token;            // Public token (post-TGE)
+    uint32 lzEid;            // LayerZero endpoint ID
+    address escrowToken;      // Escrow token (pre-TGE)
+    address depositToken;     // Deposit receipt NFT
+    bool depositPaused;       // Deposit status
+    bool settlementActive;    // Settlement status
+}
+```
+
+### Token Address Resolution
+The deposit contract resolves token addresses through the registry:
+
+```solidity
+IRegistry.PointsInfo memory points = _getRegistryInfo(pointsId);
+IDepositReceipt(points.depositToken).deposit({ onBehalfOf: msg.sender, amount: amount });
+```
+
+## Gas Optimization
+
+### Storage Layout
+Uses diamond storage pattern for gas efficiency:
+
+```solidity
+bytes32 private constant DEPOSIT_STORAGE_LOCATION =
+    0x8b64d79d4e972f115001dfe8b5a6a837c1ed7675fdc7397859d87cfc858b1b00;
+```
+
+### Batch Operations
+Supports batch operations for efficiency:
+
+```solidity
+function getOffersBatch(uint256[] calldata offerIds) 
+    external 
+    view 
+    returns (Offer[] memory)
+```
+
+## Error Handling
+
+Comprehensive error handling with specific error types:
+
+```solidity
+error InvalidOwner();
+error InvalidOracle(address oracle);
+error InvalidRegistry(address registry);
+error DepositsPaused();
+error InvalidSignature();
+error AlreadyDeposited(uint256 tokenId);
+error NotDeposited(uint256 tokenId);
+error CannotTransfer();
+```
+
+## Best Practices
+
+### For Users
+1. **Fresh Signatures**: Use recent signatures to avoid expiry
+2. **Correct Amounts**: Ensure point amounts are accurate
+3. **Gas Estimation**: Account for verification and minting costs
+4. **Balance Tracking**: Monitor held vs available balances
+
+### For Developers
+1. **Signature Validation**: Always verify signatures before processing
+2. **Error Handling**: Implement comprehensive error handling
+3. **Gas Optimization**: Use batch operations when possible
+4. **Access Control**: Implement proper role-based permissions
+
+### For Integrators
+1. **Event Monitoring**: Listen for `PointsDeposited` events
+2. **Balance Queries**: Use `getUserData` for balance information
+3. **Historical Data**: Access checkpoint history for audits
+4. **Pause Handling**: Handle pause states gracefully

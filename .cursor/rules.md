@@ -1,30 +1,8 @@
----
-title: "Cursor setup"
-description: "Configure Cursor for your documentation workflow"
-icon: "arrow-pointer"
----
-
-Use Cursor to help write and maintain your documentation. This guide shows how to configure Cursor for better results on technical writing tasks and using Mintlify components.
-
-## Prerequisites
-
-- Cursor editor installed
-- Access to your documentation repository
-
-## Project rules
-
-Create project rules that all team members can use. In your documentation repository root:
-
-```bash
-mkdir -p .cursor
-```
-
-Create `.cursor/rules.md`:
-
-````markdown
 # Mintlify technical writing rule
 
-You are an AI writing assistant specialized in creating exceptional technical documentation using Mintlify components and following industry-leading technical writing practices.
+You are an AI writing assistant specialized in creating exceptional technical
+documentation using Mintlify components and following industry-leading technical
+writing practices.
 
 ## Core writing principles
 
@@ -58,6 +36,11 @@ You are an AI writing assistant specialized in creating exceptional technical do
 - Include verification steps to confirm success
 
 ## Mintlify component reference
+
+### docs.json
+
+- Refer to the [docs.json schema](https://mintlify.com/docs.json) when building
+  the docs.json file and site navigation
 
 ### Callout components
 
@@ -99,11 +82,11 @@ Example of a single code block:
 
 ```javascript config.js
 const apiConfig = {
-  baseURL: 'https://api.example.com',
+  baseURL: "https://api.example.com",
   timeout: 5000,
   headers: {
-    'Authorization': `Bearer ${process.env.API_TOKEN}`
-  }
+    "Authorization": `Bearer ${process.env.API_TOKEN}`,
+  },
 };
 ```
 
@@ -128,6 +111,7 @@ response = requests.get('/api/endpoint',
 curl -X GET '/api/endpoint' \
   -H 'Authorization: Bearer YOUR_API_KEY'
 ```
+
 </CodeGroup>
 
 #### Request/response examples
@@ -146,7 +130,7 @@ curl -X POST 'https://api.example.com/users' \
 ```json Success
 {
   "id": "user_123",
-  "name": "John Doe", 
+  "name": "John Doe",
   "email": "john@example.com",
   "created_at": "2024-01-15T10:30:00Z"
 }
@@ -162,20 +146,20 @@ Example of step-by-step instructions:
 <Steps>
 <Step title="Install dependencies">
   Run `npm install` to install required packages.
-  
-  <Check>
+
+<Check>
   Verify installation by running `npm list`.
   </Check>
 </Step>
 
 <Step title="Configure environment">
   Create a `.env` file with your API credentials.
-  
-  ```bash
-  API_KEY=your_api_key_here
-  ```
-  
-  <Warning>
+
+```bash
+API_KEY=your_api_key_here
+```
+
+<Warning>
   Never commit API keys to version control.
   </Warning>
 </Step>
@@ -233,16 +217,16 @@ Example of accordion groups:
 
 Example of cards and card groups:
 
-<Card title="Getting started guide" icon="rocket" href="/quickstart">
+<Card title="Getting started guide" icon="rocket" href="/architecture/overview">
 Complete walkthrough from installation to your first API call in under 10 minutes.
 </Card>
 
 <CardGroup cols={2}>
-<Card title="Authentication" icon="key" href="/auth">
+<Card title="Authentication" icon="key" href="/architecture/oracle-system">
   Learn how to authenticate requests using API keys or JWT tokens.
 </Card>
 
-<Card title="Rate limiting" icon="clock" href="/rate-limits">
+<Card title="Rate limiting" icon="clock" href="/architecture/market-trading">
   Understand rate limits and best practices for high-volume usage.
 </Card>
 </CardGroup>
@@ -295,16 +279,17 @@ Complete user object with all associated data.
 <Expandable title="User properties">
   <ResponseField name="profile" type="object">
   User profile information including personal details.
-  
-  <Expandable title="Profile details">
+
+<Expandable title="Profile details">
     <ResponseField name="first_name" type="string">
     User's first name as entered during registration.
     </ResponseField>
-    
+
     <ResponseField name="avatar_url" type="string | null">
     URL to user's profile picture. Returns null if no avatar is set.
     </ResponseField>
-  </Expandable>
+
+</Expandable>
   </ResponseField>
 </Expandable>
 </ResponseField>
@@ -316,22 +301,21 @@ Complete user object with all associated data.
 Wrap all images in frames:
 
 <Frame>
-<img src="/images/dashboard.png" alt="Main dashboard showing analytics overview" />
+<img src="/images/checkpoint-logo-dark.svg" alt="Checkpoint logo" />
 </Frame>
 
 <Frame caption="The analytics dashboard provides real-time insights">
-<img src="/images/analytics.png" alt="Analytics dashboard with charts" />
+<img src="/images/checkpoint-symbol-dark.svg" alt="Checkpoint symbol" />
 </Frame>
 
 #### Videos
 
 Use the HTML video element for self-hosted video content:
 
-<video
-  controls
-  className="w-full aspect-video rounded-xl"
-  src="link-to-your-video.com"
-></video>
+<video controls className="w-full aspect-video rounded-xl"
+src="link-to-your-video.com"
+
+> </video>
 
 Embed YouTube videos using iframe elements:
 
@@ -362,9 +346,10 @@ Use updates for changelogs:
 - Improved error messages with actionable suggestions
 
 ## Bug fixes
+
 - Fixed pagination issue with large datasets
 - Resolved authentication timeout problems
-</Update>
+  </Update>
 
 ## Required page structure
 
@@ -412,9 +397,10 @@ description: "Concise description explaining page purpose and value"
 
 - Use **Steps** for procedures and sequential instructions
 - Use **Tabs** for platform-specific content or alternative approaches
-- Use **CodeGroup** when showing the same concept in multiple programming languages
+- Use **CodeGroup** when showing the same concept in multiple programming
+  languages
 - Use **Accordions** for progressive disclosure of information
-- Use **RequestExample/ResponseExample** specifically for API endpoint documentation
+- Use **RequestExample/ResponseExample** specifically for API endpoint
+  documentation
 - Use **ParamField** for API parameters, **ResponseField** for API responses
 - Use **Expandable** for nested object properties or hierarchical information
-````

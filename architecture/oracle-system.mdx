@@ -1,0 +1,79 @@
+---
+title: "Oracle System"
+description: "Cryptographic signature verification system for off-chain point claims and settlements"
+---
+
+# Oracle System
+
+The Oracle system is the security backbone of Checkpoint v2, providing cryptographic verification for all off-chain point claims and settlements. It uses ECDSA signatures to ensure the integrity and authenticity of point data without requiring trust in centralized oracles.
+
+## Architecture Overview
+
+<Mermaid>
+sequenceDiagram
+    participant User
+    participant Oracle
+    participant Deposit
+    participant Market
+    participant Settlement
+
+    User->>Oracle: Request point claim signature
+    Oracle->>Oracle: Generate ECDSA signature
+    Oracle->>User: Return signature + expiry
+    User->>Deposit: Deposit points with signature
+    Deposit->>Oracle: Verify signature
+    Oracle->>Deposit: Return verification result
+    Deposit->>Deposit: Mint NFT + tokens if valid
+</Mermaid>
+
+## Verification Methods
+
+The Oracle system provides cryptographic verification for point claims through ECDSA signature verification methods. It runs adapters from [points-adapters](https://github.com/0xPortalLabs/points-adapters) and returns attestations for user points.
+
+## Claim Types
+
+### Deposit Claims
+Verify that a user owns a specific amount of off-chain points.
+
+**Use Case:** Converting off-chain points to on-chain tokens
+
+### Points Change Claims
+Verify updates to a user's point balance.
+
+**Use Case:** Dynamic point updates (e.g., earning more points)
+
+### Settlement Claims
+Verify cross-chain settlement transactions.
+
+**Use Case:** Cross-chain settlement verification
+
+## Security Features
+
+### Nonce Management
+Prevents replay attacks and ensures claim uniqueness.
+
+### Expiry Validation
+Prevents stale signature usage and improves security posture.
+
+### Chain ID Protection
+Prevents cross-chain replay attacks.
+
+## Vesting Management
+
+The Oracle system also manages vesting schedules for token distributions and provides functions to check vesting status and claimable amounts.
+
+## Role-Based Access Control
+
+### Admin Role
+- Change oracle signer
+- Modify claim signature delay
+- Upgrade contract implementation
+
+### Vesting Manager Role
+- Set vesting information for offers
+- Manage vesting schedules
+- Update vesting parameters
+
+## Integration with Other Contracts
+
+The Oracle contract integrates with other Checkpoint contracts to provide verification services for deposit and settlement operations.

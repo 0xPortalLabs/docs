@@ -1,0 +1,339 @@
+---
+title: "Cross-Chain Settlement"
+description: "LayerZero-powered settlement system for multi-chain token distributions"
+---
+
+# Cross-Chain Settlement
+
+The Settlement contract handles the distribution of tokens after TGE (Token Generation Event) using LayerZero for cross-chain operations. It supports both same-chain and cross-chain settlements with automatic token distribution to escrow token holders.
+
+## Settlement Architecture
+
+<Mermaid>
+sequenceDiagram
+    participant Market
+    participant Settlement
+    participant LayerZero
+    participant Escrow
+    participant Public
+    participant Remote
+    
+    Market->>Settlement: depositToken(offerId, amount)
+    Settlement->>Settlement: store token amount
+    
+    Note over Settlement: TGE occurs
+    
+    Settlement->>Settlement: settleDistribution(pointsId, remoteAmount, remoteSettlement)
+    Settlement->>Escrow: get total supply
+    Settlement->>Settlement: calculate token ratio
+    
+    alt Same Chain
+        Settlement->>Public: get balance
+    else Cross Chain
+        Settlement->>LayerZero: send collateral tokens
+        Settlement->>LayerZero: send settlement message
+        Remote->>Remote: process settlement
+    end
+    
+    Settlement->>Escrow: burn escrow tokens
+    Settlement->>Public: send public tokens
+    Settlement->>Settlement: send collateral
+</Mermaid>
+
+## Settlement Types
+
+### 1. Same-Chain Settlement
+When the public token is on the same chain as the escrow token.
+
+**Process:**
+1. **Token Collection**: Collect public tokens from market settlements
+2. **Ratio Calculation**: Calculate token distribution ratio
+3. **Direct Distribution**: Distribute tokens directly to escrow holders
+
+### 2. Cross-Chain Settlement
+When the public token is on a different chain than the escrow token.
+
+**Process:**
+1. **Collateral Transfer**: Send collateral tokens to remote chain
+2. **Settlement Message**: Send settlement data via LayerZero
+3. **Remote Processing**: Remote chain processes settlement
+4. **Token Distribution**: Distribute tokens on remote chain
+
+## Settlement Flow
+
+### Phase 1: Token Collection
+Market contracts deposit tokens for settlement:
+
+```solidity
+function depositToken(uint256 offerId, uint256 amount) external onlyMarket {
+    IMarket.Offer memory offer = getMarket().getOffer(offerId);
+    // Validation and token collection
+    _pullToken({ token: pointsInfo.token, amount: amount });
+}
+```
+
+### Phase 2: Distribution Calculation
+After TGE, settlement distribution is calculated:
+
+```solidity
+function settleDistribution(
+    uint256 pointsId,
+    uint256 remoteTotalTokenAmount,
+    bytes32 remoteSettlement
+) external onlyAfterDeadline(pointsId)
+```
+
+**Calculation Process:**
+1. **Supply Check**: Get total escrow token supply
+2. **Token Amount**: Determine total token amount (local or remote)
+3. **Ratio Calculation**: Calculate distribution ratio
+4. **Collateral Collection**: Collect collateral amounts
+
+### Phase 3: Token Distribution
+Users can claim their token distribution:
+
+```solidity
+function claimDistribution(uint256 pointsId) external onlyAfterDeadline(pointsId)
+```
+
+**Distribution Process:**
+1. **Balance Check**: Verify user's escrow token balance
+2. **Token Share**: Calculate user's share of public tokens
+3. **Collateral Share**: Calculate user's share of collateral
+4. **Token Transfer**: Send tokens to user
+
+## Cross-Chain Operations
+
+### Collateral Token Transfer
+Send collateral tokens to remote chain:
+
+```solidity
+function sendCollateralTokens(uint256 pointsId) external payable onlyAfterDeadline(pointsId)
+```
+
+**Process:**
+1. **Token Iteration**: Iterate through all collateral tokens
+2. **Slippage Check**: Verify 5% slippage tolerance
+3. **LayerZero Transfer**: Send tokens via LayerZero OFT
+4. **Fee Refund**: Refund excess fees to sender
+
+### Settlement Message
+Send settlement data to remote chain:
+
+```solidity
+function sendSettlementMessage(uint256 pointsId) external payable
+```
+
+**Message Content:**
+```solidity
+bytes memory message = abi.encode(
+    pointsId,                    // Points program ID
+    remoteEscrowToken,          // Remote escrow token address
+    dist.totalEscrowSupply,     // Total escrow supply
+    remoteCollateralTokens,     // Remote collateral token addresses
+    dist.tokenRatio,            // Token distribution ratio
+    info.token,                 // Public token address
+    dist.timestamp              // Settlement timestamp
+);
+```
+
+## LayerZero Integration
+
+### OFT (Omnichain Fungible Token) Support
+The system uses LayerZero's OFT standard for cross-chain token transfers:
+
+```solidity
+SendParam memory sendParam = _createSendParam(pointsInfo.lzEid, amount);
+MessagingFee memory fee = OFT(collateral).quoteSend({
+    _sendParam: sendParam,
+    _payInLzToken: false
+});
+OFT(collateral).send{ value: fee.nativeFee }({
+    _sendParam: sendParam,
+    _fee: fee,
+    _refundAddress: msg.sender
+});
+```
+
+### Endpoint Configuration
+Each points program has a configured LayerZero endpoint:
+
+```solidity
+struct PointsInfo {
+    string name;
+    address token;           // Public token address
+    uint32 lzEid;          // LayerZero endpoint ID
+    address escrowToken;    // Escrow token address
+    address depositToken;   // Deposit receipt NFT
+    bool depositPaused;
+    bool settlementActive;
+}
+```
+
+## Distribution Mathematics
+
+### Token Ratio Calculation
+The distribution ratio is calculated as:
+
+```solidity
+// floor(totalTokenAmount * RATIO_PRECISION / totalEscrowSupply)
+info.tokenRatio = Math.mulDiv({
+    x: totalTokenAmount,
+    y: RATIO_PRECISION,      // 1e18
+    denominator: totalEscrowSupply
+});
+```
+
+### User Share Calculation
+Each user's share is calculated as:
+
+```solidity
+// floor(bal * tokenRatio / RATIO_PRECISION)
+uint256 share = Math.mulDiv({ 
+    x: bal, 
+    y: info.tokenRatio, 
+    denominator: RATIO_PRECISION 
+});
+```
+
+### Collateral Share Calculation
+Collateral is distributed proportionally:
+
+```solidity
+// floor(amount * bal / totalEscrowSupply)
+uint256 collateralShare = Math.mulDiv({
+    x: amount,
+    y: bal,
+    denominator: info.totalEscrowSupply
+});
+```
+
+## Vesting Integration
+
+### Vesting Support
+The system supports vesting schedules for token distributions:
+
+```solidity
+uint256 tokenAmount = offer.hasVesting
+    ? getOracle().getVestingClaimableNow({ offerId: offerId })
+    : offer.tokenAmount;
+```
+
+### Vesting Completion
+Vesting can be completed after the vesting period:
+
+```solidity
+function completeVestingSettlement(uint256 offerId) external nonReentrant {
+    if (!getOracle().isVestingActive(offerId)) revert Errors.CannotSettleOffer();
+    // Return collateral to seller
+}
+```
+
+## Security Features
+
+### Deadline Protection
+Settlements can only occur after the deadline:
+
+```solidity
+modifier onlyAfterDeadline(uint256 pointsId) {
+    uint256 deadline = getMarket().getSettlementDeadline(pointsId);
+    if (deadline == type(uint256).max) revert Errors.CannotSettleOffer();
+    if (block.timestamp < deadline + TIME_TILL_DISTRIBUTION) revert Errors.CannotSettleOffer();
+    _;
+}
+```
+
+### Slippage Protection
+Cross-chain transfers include slippage protection:
+
+```solidity
+if (sendParam.minAmountLD < amount * 95 / 100) {
+    revert Errors.SlippageExceeded({
+        token: collateral,
+        amount: amount,
+        minAmount: sendParam.minAmountLD
+    });
+}
+```
+
+### Access Control
+Role-based access control for settlement operations:
+
+- **DEFAULT_ADMIN_ROLE**: Can upgrade contract and manage configuration
+- **SETTLEMENT_ROLE**: Can set settlement deadlines and token amounts
+
+## Error Handling
+
+Comprehensive error handling for settlement operations:
+
+```solidity
+error SettlementNotActive();
+error SettlementNotOnThisChain();
+error SettlementIsOnThisChain();
+error CollateralNotSent();
+error SlippageExceeded(address token, uint256 amount, uint256 minAmount);
+error ExceededClaimableAmount();
+error CannotSettleOffer();
+```
+
+## Gas Optimization
+
+### Batch Operations
+Support for batch operations where possible:
+
+```solidity
+function setTokenAmounts(
+    uint256[] calldata offerIds,
+    uint256[] calldata tokenAmounts,
+    bool[] calldata hasVestings
+) external onlyRole(SETTLEMENT_ROLE)
+```
+
+### Storage Optimization
+Efficient storage layout using diamond storage pattern:
+
+```solidity
+bytes32 private constant SETTLEMENT_STORAGE_LOCATION =
+    0xce8faf880dd4068ffcdef6a1ef539d22b45af4078a2ab44fea260c875c5b3800;
+```
+
+## Integration Points
+
+### Market Contract Integration
+```solidity
+function depositToken(uint256 offerId, uint256 amount) external onlyMarket {
+    // Only market contract can deposit tokens
+}
+```
+
+### Registry Integration
+```solidity
+IRegistry.PointsInfo memory pointsInfo = getRegistry().getPointsInfo(offer.pointsId);
+```
+
+### Oracle Integration
+```solidity
+uint256 tokenAmount = offer.hasVesting
+    ? getOracle().getVestingClaimableNow({ offerId: offerId })
+    : offer.tokenAmount;
+```
+
+## Best Practices
+
+### For Users
+1. **Claim Timing**: Claim distributions after the deadline
+2. **Gas Management**: Account for cross-chain gas costs
+3. **Slippage Tolerance**: Understand slippage implications
+4. **Vesting Awareness**: Monitor vesting schedules
+
+### For Developers
+1. **Event Monitoring**: Listen for settlement events
+2. **Error Handling**: Implement comprehensive error handling
+3. **Gas Estimation**: Account for LayerZero fees
+4. **Slippage Management**: Implement proper slippage protection
+
+### For Integrators
+1. **Cross-Chain Support**: Handle both same-chain and cross-chain settlements
+2. **LayerZero Integration**: Properly integrate with LayerZero infrastructure
+3. **Token Management**: Handle multiple token types and distributions
+4. **Vesting Support**: Implement vesting schedule management

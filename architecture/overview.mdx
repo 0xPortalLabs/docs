@@ -1,0 +1,159 @@
+---
+title: "Architecture Overview"
+description: "High-level overview of Checkpoint v2's decentralized points tokenization system"
+---
+
+# Architecture Overview
+
+Checkpoint v2 is built as a modular, upgradeable system that enables the tokenization and trading of off-chain points programs. The architecture consists of five core smart contracts working together to provide a complete solution for points tokenization, trading, and settlement.
+
+## System Architecture
+
+<Mermaid>
+graph TB
+    subgraph "Off-Chain Components"
+        PS[Points Service]
+        OS[Oracle Service]
+    end
+    
+    subgraph "Core Smart Contracts"
+        R[Registry]
+        D[Deposit]
+        O[Oracle]
+        M[Market]
+        S[Settlement]
+    end
+    
+    subgraph "Token Contracts"
+        DR[Deposit Receipt NFT]
+        ET[Escrow Token]
+        PT[Public Token]
+    end
+    
+    subgraph "External Systems"
+        LZ[LayerZero]
+        USDC[USDC]
+        CT[Collateral Tokens]
+    end
+    
+    PS -->|Point Claims| OS
+    OS -->|Signatures| O
+    O -->|Verification| D
+    D -->|Mint| DR
+    D -->|Mint| ET
+    M -->|Trade| ET
+    M -->|Settle| S
+    S -->|Distribute| PT
+    S -->|Cross-Chain| LZ
+    M -->|Collateral| CT
+    M -->|Payment| USDC
+    R -->|Config| D
+    R -->|Config| M
+    R -->|Config| S
+</Mermaid>
+
+## Core Components
+
+### 1. Registry Contract
+The central registry that manages all points programs and their configurations.
+
+**Key Functions:**
+- Register new points programs
+- Configure escrow and deposit tokens
+- Enable/disable deposits and settlements
+- Set LayerZero endpoint IDs for cross-chain operations
+
+### 2. Deposit Contract
+Handles the tokenization of off-chain points into on-chain assets.
+
+**Key Functions:**
+- Verify oracle signatures for point claims
+- Mint soulbound NFTs (Deposit Receipts) to users
+- Track global and user-specific deposit statistics
+- Manage deposit fees
+
+### 3. Oracle Contract
+Provides cryptographic verification of off-chain point claims and settlements.
+
+**Key Functions:**
+- Verify deposit claims with ECDSA signatures
+- Verify points change claims for dynamic point updates
+- Verify settlement claims for cross-chain operations
+- Manage vesting information and schedules
+- Handle nonce management to prevent replay attacks
+
+### 4. Market Contract
+Enables trading of tokenized points before TGE (Token Generation Event).
+
+**Key Functions:**
+- Create and fill offers for points trading
+- Manage collateral-based trading system
+- Handle partial fills and order management
+- Process settlement of completed trades
+- Support both same-chain and cross-chain settlements
+
+### 5. Settlement Contract
+Manages the distribution of tokens after TGE and handles cross-chain operations.
+
+**Key Functions:**
+- Distribute public tokens to escrow token holders
+- Handle cross-chain token transfers via LayerZero
+- Manage collateral distribution
+- Support both same-chain and cross-chain settlements
+
+## Token Flow
+
+### Pre-TGE (Token Generation Event)
+
+1. **Points Deposit**: Users deposit off-chain points, receiving a soulbound NFT and escrow tokens
+2. **Trading**: Users can trade escrow tokens in the market using collateral
+3. **Order Management**: Market contract manages buy/sell orders with collateral requirements
+
+### Post-TGE (Token Generation Event)
+
+1. **Settlement Activation**: Registry enables settlement for the points program
+2. **Token Distribution**: Settlement contract distributes public tokens to escrow holders
+3. **Cross-Chain Support**: LayerZero enables distribution across multiple chains
+
+## Security Features
+
+### Upgradeability
+All core contracts use OpenZeppelin's UUPS (Universal Upgradeable Proxy Standard) for secure upgrades.
+
+### Access Control
+Role-based access control using OpenZeppelin's AccessControl for different permission levels.
+
+### Reentrancy Protection
+All external functions are protected against reentrancy attacks using ReentrancyGuard.
+
+### Signature Verification
+Cryptographic signature verification using ECDSA for all off-chain claims.
+
+### Nonce Management
+User-specific nonces prevent replay attacks on signature-based operations.
+
+## Integration Points
+
+### LayerZero Integration
+- Cross-chain token transfers for settlement
+- Multi-chain escrow token support
+- Cross-chain settlement verification
+
+### Oracle Integration
+- Off-chain point verification
+- Signature-based claim validation
+- Vesting schedule management
+
+### Market Integration
+- Collateral-based trading system
+- USDC payment processing
+- Order management and settlement
+
+## Upgrade Path
+
+The system is designed for seamless upgrades:
+
+1. **Proxy Pattern**: All contracts use upgradeable proxies
+2. **Storage Layout**: Diamond storage pattern prevents storage collisions
+3. **Interface Stability**: Well-defined interfaces ensure compatibility
+4. **Gradual Migration**: Individual contracts can be upgraded independently
