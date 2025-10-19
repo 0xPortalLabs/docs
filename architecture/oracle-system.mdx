@@ -127,39 +127,8 @@ When your points balance changes, the oracle records this on-chain via `changePo
 
 <Info> This usually happens every 24 hours but there is no strong guarantee. </Info>
 
-All data is queryable on-chain via the Soulbound NFT (DepositReceipt.sol) and is tracked internally
-using
-[OpenZeppelin's Checkpoints](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/Checkpoints.sol).
-
-<CodeGroup>
-
-```solidity getUserData
-function getUserData(address user)
-    external
-    view
-    returns (
-        uint256 depositedAmount,
-        uint256 heldAmount,
-        uint256 latestPointsAmount,
-        uint256 latestClaimTime
-    );
-```
-
-```solidity getUserCumulativeDelta
-function getUserCumulativeDelta(address user, uint256 start, uint256 end)
-    external
-    view
-    returns (uint256 upper, uint256 lower);
-```
-
-```solidity getUserHistoricalPoints
-function getUserHistoricalPoints(address user)
-    external
-    view
-    returns (Checkpoints.Checkpoint256[] memory res);
-```
-
-</CodeGroup>
+Learn how to query the data
+[here](/architecture/points-tokenization#1-soulbound-nft-chxxx-r-tokens).
 
 ## API Reference
 
