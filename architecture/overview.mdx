@@ -1,0 +1,180 @@
+---
+title: "System Architecture"
+description: "How Checkpoint V2 converts off-chain points into tradeable on-chain assets"
+---
+
+# System Architecture
+
+Checkpoint V2 is a decentralized protocol that bridges off-chain loyalty points programs with on-chain liquidity. It enables users to tokenize their points, trade them before a Token Generation Event (TGE), and ultimately redeem them for tokens with guaranteed settlement.
+
+## The Core Flow
+
+<Mermaid>
+  sequenceDiagram actor User participant Deposit participant Market participant
+  Settlement User->>Deposit: Deposit off-chain points
+  <br />
+  (with oracle signature) Deposit->>User: Receive NFT + escrow tokens
+  User->>Market: Create/fill trading offers
+  <br />
+  (buy or sell escrow tokens) Market->>User: Execute trades with collateral Note
+  over User,Settlement: Time passes until TGE User->>Settlement: Redeem escrow
+  tokens Settlement->>User: Receive actual tokens (1:1)
+</Mermaid>
+
+## Five Core Contracts
+
+Checkpoint consists of five interconnected smart contracts, each with a specific role:
+
+<CardGroup cols={2}>
+  <Card title="Registry" icon="book">
+    Central configuration hub for all points programs. Manages which programs
+    are active, what tokens they use, and their settlement rules.
+  </Card>
+
+  <Card title="Deposit" icon="inbox">
+    Handles the initial tokenization. Users submit their off-chain points (with
+    a cryptographic signature from the oracle), and Deposit mints them a
+    soulbound NFT and escrow tokens representing their points on-chain.
+  </Card>
+
+  <Card title="Oracle" icon="certificate">
+    Cryptographic verification layer. Confirms that off-chain point claims are
+    valid by checking digital signatures. Prevents fraud and keeps the system
+    trustless.
+  </Card>
+
+  <Card title="Market" icon="chart-line">
+    Decentralized order book for pre-TGE trading. Users can create offers to
+    sell points or fill offers to buy points. All trades are collateral-backed
+    for safety.
+  </Card>
+
+  <Card title="Settlement" icon="handshake">
+    Post-TGE token distribution. Once the actual tokens are live, Settlement
+    distributes them to escrow token holders at a 1:1 ratio. Supports
+    cross-chain transfers via LayerZero.
+  </Card>
+</CardGroup>
+
+## Two-Phase Token Model
+
+Checkpoint uses two different token representations to elegantly separate concerns:
+
+### Phase 1: Pre-TGE (Before Token Launch)
+
+When you deposit points, you receive:
+
+1. **Soulbound NFT** (non-transferable) - A receipt that proves you deposited points and tracks your history
+2. **Escrow Token** (ERC20, transferable) - Represents your points as a tradeable asset
+
+This dual-token design lets you trade your points on the market while keeping an immutable record of your original deposit.
+
+### Phase 2: Post-TGE (After Token Launch)
+
+Once the actual token is deployed, you can:
+
+1. Hold your escrow tokens until settlement is activated
+2. Exchange your escrow tokens for the real tokens at a 1:1 ratio
+3. Optionally claim vested tokens if vesting conditions apply
+
+## User Journey
+
+### Step 1: Deposit Points
+
+```
+User → Signs off-chain data with oracle →
+Sends deposit transaction → Receives NFT + escrow tokens
+```
+
+The oracle verifies your claim off-chain, then you send a transaction with the signature. The Deposit contract verifies it matches and creates your tokens.
+
+### Step 2: Trade Points (Optional)
+
+```
+User → Creates/fills offers in Market →
+Trades escrow tokens with other users →
+Collateral secures both sides
+```
+
+Before TGE, you can trade your escrow tokens with other users. The Market enforces that both buyer and seller post collateral to back the trade.
+
+### Step 3: Settle for Real Tokens
+
+```
+TGE happens → Settlement activated →
+User redeems escrow tokens → Receives actual tokens 1:1
+```
+
+After the token launches and settlement is enabled, you simply redeem your escrow tokens for the real thing.
+
+## Key Concepts
+
+### Soulbound NFTs
+
+Your deposit receipt NFT is non-transferable—it stays with you and tracks your complete point history. This creates an immutable audit trail of all your activity.
+
+### Escrow Tokens
+
+The tradeable representation of your points. These ERC20 tokens exist only before TGE and represent your claim on future tokens.
+
+### Collateral System
+
+All trades require collateral from both parties. If a buyer or seller walks away, the other party keeps the collateral as compensation.
+
+### Oracle Verification
+
+The Oracle contract uses cryptographic signatures to verify that points claimed on-chain actually exist off-chain. This keeps the system secure without needing a centralized points database.
+
+### Settlement
+
+A formal process that converts escrow tokens → real tokens at TGE. This is a 1:1 swap with optional vesting schedules.
+
+## System Safety
+
+Checkpoint is designed to be battle-tested:
+
+- **Upgradeable but Safe**: All contracts use OpenZeppelin's UUPS standard for secure upgrades
+- **Access Control**: Role-based permissions ensure only authorized actions can happen
+- **Reentrancy Protected**: Guards against recursive attack patterns
+- **Signature Verification**: Cryptographic signatures prevent unauthorized claims
+- **Nonce Management**: Each user action has a nonce to prevent replay attacks
+
+## Information Flow
+
+<Mermaid>
+  graph LR A["Off-Chain Points
+  <br />
+  (User has points
+  <br />
+  in system XYZ)"] B["Oracle Service
+  <br />
+  (Verifies claims
+  <br />
+  off-chain)"] C["Blockchain
+  <br />
+  (Deposit, Market,
+  <br />
+  Settlement)"] D["User Wallet
+  <br />
+  (Receives NFT
+  <br />& tokens)"] A -->|User claims points| B B -->|Signs claim| C C -->|Mints
+  tokens| D D -->|Can trade| C C -->|Settlement| D
+</Mermaid>
+
+## Pre-TGE vs Post-TGE
+
+| Aspect                 | Pre-TGE                            | Post-TGE                    |
+| ---------------------- | ---------------------------------- | --------------------------- |
+| **Your Tokens**        | Escrow tokens (1:1 representation) | Actual project tokens       |
+| **Can Trade?**         | Yes, via Market contract           | No, you own the real tokens |
+| **Collateral Needed?** | Yes, trades require backing        | No, direct ownership        |
+| **Where?**             | Checkpoint Market                  | Any DEX/exchange            |
+| **Settlement**         | Coming soon                        | Completed                   |
+
+## Cross-Chain Support
+
+For projects launching on multiple chains, LayerZero integration enables:
+
+- Escrow tokens on multiple chains before TGE
+- Cross-chain settlement after token launch
+- Consistent 1:1 ratios across all chains

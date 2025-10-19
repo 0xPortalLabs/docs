@@ -1,0 +1,265 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Checkpoint Oracle API",
+    "description": "Cryptographic verification of off-chain claims",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Checkpoint Support",
+      "url": "https://discord.gg/fJ5dJbxxTT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://oracle.checkpoint.exchange",
+      "description": "Production Oracle API"
+    }
+  ],
+  "paths": {
+    "/claim/deposit": {
+      "post": {
+        "summary": "Get Deposit Claim",
+        "description": "Verify a user's current points and get a signature for a deposit transaction",
+        "operationId": "getDepositClaim",
+        "tags": ["Claims"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositClaimRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful claim verification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositClaimResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/claim/settlement": {
+      "post": {
+        "summary": "Get Settlement Claim",
+        "description": "Verify that an offer was properly settled on-chain and get a signature for a cross-chain settlement transaction",
+        "operationId": "getSettlementClaim",
+        "tags": ["Claims"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementClaimRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful settlement verification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettlementClaimResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DepositClaimRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "The user's wallet address",
+            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
+          },
+          "pointsId": {
+            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "description": "The points protocol ID as a string or integer",
+            "example": 1
+          }
+        },
+        "required": ["address", "pointsId"]
+      },
+      "DepositClaim": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
+          },
+          "protocol": {
+            "type": "string",
+            "example": "Jumper Exchange"
+          },
+          "amount": {
+            "type": "string",
+            "example": "1000"
+          },
+          "expiry": {
+            "type": "string",
+            "example": "1697654400"
+          },
+          "nonce": {
+            "type": "string",
+            "example": "5"
+          }
+        }
+      },
+      "DepositClaimResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "claim": {
+            "$ref": "#/components/schemas/DepositClaim"
+          },
+          "signature": {
+            "type": "string",
+            "example": "0xabc123def456..."
+          }
+        }
+      },
+      "SettlementClaimRequest": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "The user's wallet address",
+            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
+          },
+          "chainId": {
+            "type": "integer",
+            "description": "The chain ID where transaction occurred",
+            "example": 1
+          },
+          "evm_tx": {
+            "type": "string",
+            "description": "The transaction hash of the settlement transaction",
+            "example": "0xabc123def456..."
+          },
+          "offerId": {
+            "type": "string",
+            "description": "The offer ID as a string",
+            "example": "123"
+          }
+        },
+        "required": ["address", "chainId", "evm_tx", "offerId"]
+      },
+      "SettlementClaim": {
+        "type": "object",
+        "properties": {
+          "nonce": {
+            "type": "integer",
+            "example": 1
+          },
+          "expiry": {
+            "type": "integer",
+            "example": 1697654400
+          },
+          "chainId": {
+            "type": "integer",
+            "example": 1
+          },
+          "settlementChainId": {
+            "type": "integer",
+            "example": 42161
+          },
+          "user": {
+            "type": "string",
+            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
+          },
+          "offerId": {
+            "type": "integer",
+            "example": 123
+          },
+          "txhash": {
+            "type": "string",
+            "example": "0xabc123def456..."
+          }
+        }
+      },
+      "SettlementClaimResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "claim": {
+            "$ref": "#/components/schemas/SettlementClaim"
+          },
+          "signature": {
+            "type": "string",
+            "example": "0xefgh5678ijkl..."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "example": "Invalid request"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Claims",
+      "description": "Endpoints for verifying claims and getting cryptographic signatures"
+    }
+  ]
+}

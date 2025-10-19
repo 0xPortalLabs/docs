@@ -1,122 +1,116 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "theme": "willow",
+  "name": "Checkpoint",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#32cd32",
+    "light": "#32cd32",
+    "dark": "#32cd32"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/images/checkpoint-symbol-dark.svg",
+  "modeToggle": {
+    "default": "dark",
+    "isHidden": false
+  },
+  "layout": "sidenav",
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
+        "group": "Overview",
+        "pages": ["index"]
+      },
+      {
+        "group": "Architecture",
+        "pages": [
+          "architecture/overview",
+          "architecture/oracle-system",
+          "architecture/points-tokenization",
+          "architecture/market-trading",
+          "architecture/cross-chain-settlement"
         ]
       },
       {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
-        ]
+        "group": "Integration Guides",
+        "pages": ["technical-reference/how-to-deposit", "technical-reference/interact-with-market"]
+      },
+      {
+        "group": "API Reference",
+        "openapi": "spec/oracle.json",
+        "pages": ["api/oracle-api"]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
+    ]
+  },
+  "api": {
+    "playground": {
+      "display": "interactive",
+      "proxy": true
+    },
+    "examples": {
+      "languages": ["curl", "typescript", "python"],
+      "defaults": "required",
+      "prefill": true
     }
   },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+  "topbarLinks": [
+    {
+      "name": "Community",
+      "url": "https://discord.gg/fJ5dJbxxTT"
+    }
+  ],
+  "topbarCtaButton": {
+    "type": "github",
+    "url": "https://github.com/0xPortalLabs/checkpoint-v2-contracts"
   },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+  "anchors": [
+    {
+      "name": "Portal Dashboard",
+      "icon": "rocket",
+      "url": "https://0xportal.io",
+      "color": "#32cd32"
+    },
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/0xPortalLabs/checkpoint-v2-contracts",
+      "color": "#777777"
+    },
+    {
+      "name": "Discord",
+      "icon": "discord",
+      "url": "https://discord.gg/fJ5dJbxxTT",
+      "color": "#32cd32"
+    }
+  ],
+  "logo": {
+    "light": "/images/checkpoint-logo-light.svg",
+    "dark": "/images/checkpoint-logo-dark.svg",
+    "href": "https://0xportal.io"
+  },
+  "search": {
+    "prompt": "Search documentation..."
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "seo": {
+    "indexHiddenPages": false
+  },
+  "analytics": {
+    "plausible": {
+      "domain": "docs.checkpoint.exchange"
     }
   },
   "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    "options": ["copy", "view", "chatgpt", "claude", "perplexity", "cursor"]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/0xportallabs",
+      "github": "https://github.com/0xPortalLabs",
+      "discord": "https://discord.gg/fJ5dJbxxTT"
     }
-  }
+  },
+  "backgroundImage": "/images/checkpoint-logo-dark.svg"
 }

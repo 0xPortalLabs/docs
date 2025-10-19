@@ -1,0 +1,246 @@
+---
+title: "Points Tokenization"
+description: "How off-chain points become on-chain assets you can trade"
+---
+
+# Points Tokenization
+
+The points tokenization system transforms your off-chain loyalty points into real, tradeable on-chain assets. It's a three-step process: verification, minting, and tracking.
+
+## The Deposit Process
+
+<Mermaid>
+  sequenceDiagram actor User participant Oracle as Oracle Service
+  <br />
+  (Off-Chain) participant Chain as Blockchain participant Deposit as Deposit
+  Contract participant NFT as Soulbound NFT participant Escrow as Escrow Tokens
+  User->>Oracle: "I have 1,000 points in LoyaltyProgram XYZ" Oracle->>Oracle:
+  Verifies claim off-chain Oracle->>User: Returns cryptographic signature
+  User->>Deposit: Submits signature + amount Deposit->>Chain: Validates
+  signature Deposit->>NFT: Mint receipt NFT Deposit->>Escrow: Mint 1,000 tokens
+  NFT->>User: You own the NFT Escrow->>User: You own 1,000 escrow tokens
+</Mermaid>
+
+## Two-Token Model
+
+When you deposit points, you receive **two different tokens**. This design is intentional:
+
+### 1. Soulbound NFT (Your Proof of Deposit)
+
+**What it is**: A non-transferable receipt that proves you deposited points
+
+**Key properties**:
+
+- **Locked to you**: Cannot be sold or transferred—it stays in your wallet forever
+- **Immutable record**: Tracks your complete point history with timestamps
+- **Proof of participation**: Serves as evidence of your original point claim
+- **No market value**: Exists purely for tracking and auditability
+
+**Why it matters**: Creates an unbreakable audit trail. If disputes ever arise, the NFT proves exactly when and how much you deposited.
+
+### 2. Escrow Token (Your Tradeable Asset)
+
+**What it is**: An ERC20 token representing your points on-chain
+
+**Key properties**:
+
+- **Tradeable**: You can sell it, trade it, or use it in the market
+- **1:1 with your points**: 1 escrow token = 1 original point
+- **Pre-TGE only**: Exists only before the actual token launches
+- **Temporary**: Gets converted to real tokens at settlement
+
+**Why it matters**: Lets you speculate on your points value. If you think your points will become valuable tokens, you can hold. If you need liquidity now, you can trade them.
+
+## The Complete Deposit Flow
+
+### 1. Request Oracle Signature
+
+You start by telling the Oracle service: "I have X points in program Y". The Oracle checks your claim off-chain (by querying the points program's database) and creates a cryptographic signature proving this is true.
+
+This signature is unique and includes:
+
+- Your wallet address
+- The points amount
+- The points program ID
+- An expiry timestamp (usually a few minutes in the future)
+
+### 2. Submit Deposit Transaction
+
+You then submit a blockchain transaction that includes:
+
+- The signature from step 1
+- Your points amount
+- Your wallet address
+- A small ETH fee
+
+### 3. Contract Verification
+
+The Deposit contract verifies:
+
+- The signature is valid (came from the real oracle)
+- The signature hasn't expired
+- You haven't deposited to this program before
+- The program is active (deposits aren't paused)
+
+### 4. Receive Both Tokens
+
+If all checks pass:
+
+- A soulbound NFT is created and sent to you
+- Escrow tokens are minted and sent to you
+
+Both represent your deposited points, but serve different purposes.
+
+## Dynamic Point Updates (changePoints)
+
+Your points balance can change over time. Maybe you earned more points, or maybe there was a correction. Checkpoint supports this with the `changePoints` mechanism.
+
+<Mermaid>
+  graph LR A["User has 1,000 points
+  <br />
+  (already deposited)"] B["Earns 500 more points
+  <br />
+  (in original program)"] C["Requests Oracle Signature
+  <br />
+  for changePoints"] D["Submits changePoints
+  <br />
+  transaction"] E["Balance updated to 1,500
+  <br />
+  on-chain"] A --> B --> C --> D --> E
+</Mermaid>
+
+### How It Works
+
+1. **You earn more points** in the original loyalty program
+2. **You request a new signature** from the Oracle for the updated amount
+3. **You call changePoints** with your old balance, new balance, and the signature
+4. **Your NFT and escrow tokens update** to reflect the new balance
+
+### Historical Tracking
+
+Every time you call `changePoints`, the system records:
+
+- The timestamp of the update
+- The old point amount
+- The new point amount
+- The delta (change)
+
+This creates a complete historical record you can query. Your NFT becomes a full audit trail of how your point balance evolved.
+
+## Hold System (Points in Transit)
+
+When you create an offer to sell points in the Market, your points are "held" temporarily. This means:
+
+- **Held points**: Reserved for your pending trade
+- **Available points**: Free to use or trade elsewhere
+- **Total points**: Held + Available = Your complete balance
+
+Example:
+
+```
+You have 1,000 points total
+You create a sell offer for 300 points
+Now: 300 held, 700 available
+You can still trade your 700 available points
+If your offer is filled or cancelled, 300 returns to available
+```
+
+This prevents the same points from being sold twice.
+
+## What Happens During Trading
+
+<Mermaid>
+  sequenceDiagram actor Seller actor Buyer participant Market participant NFT
+  participant Escrow Seller->>Market: Create offer (sell 100 points)
+  Market->>NFT: Hold 100 points for this offer Buyer->>Market: Fill the offer
+  Market->>Escrow: Transfer escrow tokens to buyer Market->>Buyer: Transfer USDC
+  from buyer to seller Note over Seller,Escrow: Offer is now complete Note over
+  Seller: Can create new offers with remaining points
+</Mermaid>
+
+## Tracking Your History
+
+Your soulbound NFT is a living record. You can always query:
+
+- **Current balance**: How many points you have now
+- **Historical snapshots**: Point balance at any past timestamp
+- **All changes**: Complete log of deposits and changePoints calls
+- **Audit trail**: Who made what changes, when
+
+This transparency is valuable for:
+
+- Verifying your claims if disputes arise
+- Understanding how your points evolved
+- Confirming trades and settlements
+- Proving your participation in the program
+
+## Examples
+
+### Example 1: Simple Deposit
+
+```
+1. You deposit 1,000 loyalty points via signature
+2. Receive:
+   - 1 soulbound NFT (locked in your wallet)
+   - 1,000 escrow tokens (tradeable)
+3. You can now trade those 1,000 escrow tokens in the market
+4. Or hold them until TGE
+```
+
+### Example 2: Point Update
+
+```
+1. You already have 1,000 points deposited
+2. You earn 250 more points (in the loyalty program)
+3. You request changePoints with the new amount (1,250)
+4. Your NFT and escrow tokens update
+5. Soulbound NFT now shows:
+   - Current balance: 1,250
+   - History: Deposited 1,000, then +250
+```
+
+### Example 3: Hold and Trade
+
+```
+1. You have 500 escrow tokens
+2. You create an offer to sell 200 tokens
+3. Status: 200 held, 300 available
+4. Someone fills your offer
+5. The 200 held tokens go to the buyer
+6. You now have 300 tokens available to trade or hold
+```
+
+## Security & Verification
+
+### Why Both Tokens?
+
+Many systems use just one token, but Checkpoint's dual-token approach adds security and transparency:
+
+- **NFT** proves your original claim exists on-chain permanently
+- **Escrow token** is what you actually trade
+- If anything goes wrong with the escrow token, your NFT proves your deposit was real
+
+### Signature Verification
+
+Each operation requires a valid signature from the Oracle:
+
+- Proves the claim came from an authorized source
+- Can't be forged (uses public key cryptography)
+- Has an expiry (signatures are time-limited)
+
+### Replay Prevention
+
+Each deposit or changePoints action has a unique identifier (nonce):
+
+- Prevents the same signature from being used twice
+- Blocks attackers from "replaying" old transactions
+- Makes the system cryptographically sound
+
+## Key Takeaways
+
+- **Deposits** convert off-chain points into tradeable on-chain tokens
+- **Two tokens**: Soulbound NFT (proof) + Escrow token (tradeable)
+- **changePoints** lets you update your balance as you earn more points
+- **History tracking** creates a complete audit trail
+- **Holds** prevent double-spending when you trade
+- **Signatures** keep everything secure and trustless

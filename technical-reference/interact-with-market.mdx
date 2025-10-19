@@ -1,0 +1,742 @@
+---
+title: "Interact with the Market"
+description: "Create, fill, cancel, and settle offers on the Checkpoint market"
+---
+
+# Interact with the Market
+
+This guide shows you how to interact with the Market contract to create trading offers, fill existing offers, manage your trades, and settle after TGE.
+
+## Prerequisites
+
+- Completed a successful deposit (have escrow tokens)
+- Wallet with some ETH for gas
+- Market contract address
+- USDC token contract address (for collateral)
+- Web3 library (ethers.js, web3.js, or similar)
+
+## Overview of Market Operations
+
+The Market contract supports these main operations:
+
+| Operation        | Who?         | What Happens                   | Requires             |
+| ---------------- | ------------ | ------------------------------ | -------------------- |
+| **Create Offer** | Seller       | Place your points up for trade | Points + Collateral  |
+| **Fill Offer**   | Buyer        | Buy someone's points           | USDC                 |
+| **Cancel Offer** | Seller       | Remove an unfilled offer       | Ownership of offer   |
+| **Settle Offer** | Seller/Buyer | Finalize after TGE             | Tokens (for sellers) |
+
+## Step 1: Create a Sell Offer
+
+Creating an offer puts your escrow tokens up for sale.
+
+### API Call Structure
+
+```solidity
+function createOffer(
+    uint256 pointsId,
+    uint256 pointsAmount,
+    uint256 price,
+    address collateralToken,
+    uint256 collateralAmount
+) external returns (uint256 offerId)
+```
+
+**Parameters:**
+
+- `pointsId`: The points program ID
+- `pointsAmount`: How many points you're selling (from your escrow tokens)
+- `price`: Total price in USDC (6 decimals, so 10 USDC = 10000000)
+- `collateralToken`: Usually USDC address
+- `collateralAmount`: Collateral to lock (usually same as price)
+
+### Prerequisites
+
+Before creating an offer, you need:
+
+1. **Approve USDC spending** - Market contract needs to pull your collateral
+2. **Have escrow tokens** - Must have the amount you want to sell
+3. **Have USDC** - For collateral
+
+### Code Example (Creating an Offer)
+
+<CodeGroup>
+```typescript TypeScript with ethers.js
+import { ethers } from 'ethers';
+
+async function createOffer(
+wallet,
+marketAddress,
+pointsId,
+pointsAmount,
+priceUSDC,
+usdcAddress,
+collateralAmount
+) {
+// Step 1: Approve USDC for collateral
+const usdcABI = ['function approve(address spender, uint256 amount) external returns (bool)'];
+const usdc = new ethers.Contract(usdcAddress, usdcABI, wallet);
+
+console.log('Approving USDC for collateral...');
+const approveTx = await usdc.approve(marketAddress, collateralAmount);
+await approveTx.wait();
+console.log('✓ USDC approved');
+
+// Step 2: Create offer
+const marketABI = [
+`function createOffer(
+uint256 pointsId,
+uint256 pointsAmount,
+uint256 price,
+address collateralToken,
+uint256 collateralAmount
+) external returns (uint256)`
+];
+
+const market = new ethers.Contract(marketAddress, marketABI, wallet);
+
+console.log('Creating offer...');
+const createTx = await market.createOffer(
+pointsId,
+pointsAmount,
+priceUSDC,
+usdcAddress,
+collateralAmount
+);
+
+const receipt = await createTx.wait();
+
+// Extract offer ID from transaction logs
+const offerIdFromEvent = parseOfferIdFromReceipt(receipt);
+console.log(`✓ Offer created with ID: ${offerIdFromEvent}`);
+
+return offerIdFromEvent;
+}
+
+function parseOfferIdFromReceipt(receipt) {
+// Parse OfferCreated event to get offer ID
+for (const log of receipt.logs) {
+try {
+if (log.topics[0] === ethers.id('OfferCreated(uint256,uint256,address,address,uint256,uint256,uint256)')) {
+return ethers.AbiCoder.defaultAbiCoder().decode(['uint256'], log.topics[1])[0];
+}
+} catch {}
+}
+}
+
+// Usage
+const offerId = await createOffer(
+wallet,
+'0xMarketAddress',
+1, // pointsId
+ethers.parseUnits('500', 18), // 500 points
+ethers.parseUnits('50', 6), // 50 USDC
+'0xUSDCAddress',
+ethers.parseUnits('50', 6) // 50 USDC collateral
+);
+
+````
+
+```javascript JavaScript
+// Using ethers.js
+async function createOffer(wallet, marketAddr, pointsId, amount, price, usdcAddr, collateral) {
+  // Approve USDC
+  const usdc = new ethers.Contract(usdcAddr, [
+    'function approve(address,uint256) returns (bool)'
+  ], wallet);
+
+  await (await usdc.approve(marketAddr, collateral)).wait();
+
+  // Create offer
+  const market = new ethers.Contract(marketAddr, [
+    'function createOffer(uint256,uint256,uint256,address,uint256) returns (uint256)'
+  ], wallet);
+
+  const tx = await market.createOffer(pointsId, amount, price, usdcAddr, collateral);
+  const receipt = await tx.wait();
+
+  return receipt.transactionHash;
+}
+````
+
+```python Python
+from web3 import Web3
+from eth_account import Account
+
+def create_offer(w3, wallet_address, private_key, market_addr, usdc_addr, params):
+    """Create a sell offer on the market"""
+
+    account = Account.from_key(private_key)
+
+    # Step 1: Approve USDC
+    usdc_abi = [{"name": "approve", "type": "function", "inputs": [
+        {"name": "spender", "type": "address"},
+        {"name": "amount", "type": "uint256"}
+    ]}]
+
+    usdc = w3.eth.contract(address=usdc_addr, abi=usdc_abi)
+    approve_tx = usdc.functions.approve(market_addr, params['collateral']).build_transaction({
+        'from': account.address,
+        'nonce': w3.eth.get_transaction_count(account.address),
+        'gas': 100000,
+        'gasPrice': w3.eth.gas_price
+    })
+
+    signed_approve = account.sign_transaction(approve_tx)
+    w3.eth.send_raw_transaction(signed_approve.rawTransaction)
+
+    # Step 2: Create offer
+    market_abi = [{"name": "createOffer", "type": "function", "inputs": [
+        {"name": "pointsId", "type": "uint256"},
+        {"name": "pointsAmount", "type": "uint256"},
+        {"name": "price", "type": "uint256"},
+        {"name": "collateralToken", "type": "address"},
+        {"name": "collateralAmount", "type": "uint256"}
+    ], "outputs": [{"name": "", "type": "uint256"}]}]
+
+    market = w3.eth.contract(address=market_addr, abi=market_abi)
+    create_tx = market.functions.createOffer(
+        params['pointsId'],
+        params['amount'],
+        params['price'],
+        usdc_addr,
+        params['collateral']
+    ).build_transaction({
+        'from': account.address,
+        'nonce': w3.eth.get_transaction_count(account.address),
+        'gas': 300000,
+        'gasPrice': w3.eth.gas_price
+    })
+
+    signed_tx = account.sign_transaction(create_tx)
+    receipt = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+    return receipt.hex()
+```
+
+</CodeGroup>
+
+## Step 2: Fill an Existing Offer
+
+Fill an offer created by another user to buy their points.
+
+### Before Filling
+
+1. **Approve USDC** - Market needs to pull the offer price from your wallet
+2. **Have USDC** - Must have enough to pay the offer price
+
+### API Call Structure
+
+```solidity
+function fillOffer(uint256 offerId) external
+```
+
+**Parameters:**
+
+- `offerId`: The ID of the offer you want to fill
+
+### Code Example (Filling an Offer)
+
+<CodeGroup>
+```typescript TypeScript
+async function fillOffer(
+  wallet,
+  marketAddress,
+  offerId,
+  priceUSDC,
+  usdcAddress
+) {
+  // Step 1: Approve USDC for the offer price
+  const usdcABI = ['function approve(address spender, uint256 amount) external returns (bool)'];
+  const usdc = new ethers.Contract(usdcAddress, usdcABI, wallet);
+  
+  console.log('Approving USDC for offer price...');
+  const approveTx = await usdc.approve(marketAddress, priceUSDC);
+  await approveTx.wait();
+  console.log('✓ USDC approved');
+
+// Step 2: Fill the offer
+const marketABI = [
+'function fillOffer(uint256 offerId) external'
+];
+
+const market = new ethers.Contract(marketAddress, marketABI, wallet);
+
+console.log(`Filling offer ${offerId}...`);
+const fillTx = await market.fillOffer(offerId);
+const receipt = await fillTx.wait();
+
+console.log(`✓ Offer filled. TX: ${receipt.transactionHash}`);
+return receipt;
+}
+
+// Usage
+const receipt = await fillOffer(
+wallet,
+'0xMarketAddress',
+123, // offerId
+ethers.parseUnits('50', 6), // 50 USDC
+'0xUSDCAddress'
+);
+
+````
+
+```javascript JavaScript
+async function fillOffer(wallet, marketAddr, offerId, price, usdcAddr) {
+  // Approve USDC
+  const usdc = new ethers.Contract(usdcAddr, [
+    'function approve(address,uint256) returns (bool)'
+  ], wallet);
+
+  await (await usdc.approve(marketAddr, price)).wait();
+
+  // Fill offer
+  const market = new ethers.Contract(marketAddr, [
+    'function fillOffer(uint256) external'
+  ], wallet);
+
+  const tx = await market.fillOffer(offerId);
+  return await tx.wait();
+}
+````
+
+```python Python
+def fill_offer(w3, wallet_address, private_key, market_addr, usdc_addr, offer_id, price):
+    """Fill an existing offer"""
+
+    account = Account.from_key(private_key)
+
+    # Approve USDC
+    usdc = w3.eth.contract(address=usdc_addr, abi=[...])
+    approve_tx = usdc.functions.approve(market_addr, price).build_transaction({...})
+
+    signed = account.sign_transaction(approve_tx)
+    w3.eth.send_raw_transaction(signed.rawTransaction)
+
+    # Fill offer
+    market = w3.eth.contract(address=market_addr, abi=[...])
+    fill_tx = market.functions.fillOffer(offer_id).build_transaction({...})
+
+    signed = account.sign_transaction(fill_tx)
+    return w3.eth.send_raw_transaction(signed.rawTransaction)
+```
+
+</CodeGroup>
+
+## Step 3: Query Offers
+
+Before filling or managing offers, query to see their details.
+
+### Get Single Offer
+
+```solidity
+function getOffer(uint256 offerId) external view returns (Offer memory)
+```
+
+### Code Example (Query Offer)
+
+```typescript
+async function getOfferDetails(provider, marketAddress, offerId) {
+  const marketABI = [
+    `function getOffer(uint256 offerId) external view returns (
+      (uint256, address, address[], uint256, uint8, uint256, uint256, uint256, uint256, address, bool, uint256)
+    )`,
+  ];
+
+  const market = new ethers.Contract(marketAddress, marketABI, provider);
+
+  const offer = await market.getOffer(offerId);
+
+  console.log({
+    pointsId: offer[0],
+    maker: offer[1],
+    fillers: offer[2],
+    filledAmount: offer[3],
+    status: offer[4], // 0=CREATED, 1=FILLED, etc
+    pointsAmount: offer[5],
+    price: offer[6],
+    collateralAmount: offer[7],
+    collateralToken: offer[8],
+  });
+
+  return offer;
+}
+```
+
+## Step 4: Cancel an Offer
+
+Cancel an unfilled offer to get your points and collateral back.
+
+### API Call Structure
+
+```solidity
+function cancelOffer(uint256 offerId) external
+```
+
+**Restrictions:**
+
+- Only the offer creator (maker) can cancel
+- Can't cancel if offer has been filled
+- Partial fills may have cancellation restrictions
+
+### Code Example (Cancel Offer)
+
+```typescript
+async function cancelOffer(wallet, marketAddress, offerId) {
+  const marketABI = ["function cancelOffer(uint256 offerId) external"];
+  const market = new ethers.Contract(marketAddress, marketABI, wallet);
+
+  console.log(`Cancelling offer ${offerId}...`);
+  const tx = await market.cancelOffer(offerId);
+  const receipt = await tx.wait();
+
+  console.log(`✓ Offer cancelled. TX: ${receipt.transactionHash}`);
+  return receipt;
+}
+```
+
+## Step 5: Settle an Offer (Post-TGE)
+
+After TGE and settlement is activated, settle your filled offers.
+
+### For Sellers (Makers)
+
+You must provide the actual tokens to settle:
+
+```typescript
+async function settleOfferAsSeller(
+  wallet,
+  marketAddress,
+  settlementAddress,
+  tokenAddress,
+  offerId,
+  tokenAmount
+) {
+  // Step 1: Approve tokens to settlement contract
+  const tokenABI = ["function approve(address,uint256) returns (bool)"];
+  const token = new ethers.Contract(tokenAddress, tokenABI, wallet);
+
+  console.log("Approving tokens for settlement...");
+  const approveTx = await token.approve(settlementAddress, tokenAmount);
+  await approveTx.wait();
+
+  // Step 2: Settle the offer
+  const marketABI = ["function settleOffer(uint256 offerId) external"];
+
+  const market = new ethers.Contract(marketAddress, marketABI, wallet);
+
+  console.log(`Settling offer ${offerId}...`);
+  const tx = await market.settleOffer(offerId);
+  const receipt = await tx.wait();
+
+  console.log(`✓ Offer settled. TX: ${receipt.transactionHash}`);
+  return receipt;
+}
+```
+
+### For Buyers (Fillers)
+
+You receive tokens when the maker settles:
+
+```typescript
+async function redeemSettledTokens(
+  wallet,
+  settlementAddress,
+  tokenAddress,
+  pointsId
+) {
+  // Query how many tokens you can claim
+  const settlementABI = [
+    "function getClaimableAmount(address user, uint256 pointsId) external view returns (uint256)",
+  ];
+
+  const settlement = new ethers.Contract(
+    settlementAddress,
+    settlementABI,
+    wallet.provider
+  );
+
+  const claimable = await settlement.getClaimableAmount(
+    wallet.address,
+    pointsId
+  );
+  console.log(`You can claim: ${claimable} tokens`);
+
+  // Claim your tokens
+  const claimABI = ["function claimDistribution(uint256 pointsId) external"];
+
+  const claimContract = new ethers.Contract(
+    settlementAddress,
+    claimABI,
+    wallet
+  );
+
+  const tx = await claimContract.claimDistribution(pointsId);
+  const receipt = await tx.wait();
+
+  console.log(`✓ Tokens claimed. TX: ${receipt.transactionHash}`);
+  return receipt;
+}
+```
+
+## Complete Market Workflow Example
+
+Here's a full example of the trading workflow:
+
+<Tabs>
+<Tab title="Seller Workflow">
+```typescript
+import { ethers } from 'ethers';
+
+// Configuration
+const CONFIG = {
+RPC_URL: 'https://eth-rpc.example.com',
+MARKET_ADDRESS: '0x...',
+USDC_ADDRESS: '0x...',
+POINTS_ID: 1,
+PRIVATE_KEY: process.env.PRIVATE_KEY
+};
+
+async function sellerWorkflow() {
+const provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL);
+const wallet = new ethers.Wallet(CONFIG.PRIVATE_KEY, provider);
+
+console.log(`=== Seller Workflow ===`);
+console.log(`Address: ${wallet.address}`);
+
+// 1. Create offer: Sell 500 points for 50 USDC
+console.log('\n1. Creating offer...');
+const offerId = await createOffer(
+wallet,
+CONFIG.MARKET_ADDRESS,
+CONFIG.POINTS_ID,
+ethers.parseUnits('500', 18), // 500 points
+ethers.parseUnits('50', 6), // 50 USDC
+CONFIG.USDC_ADDRESS,
+ethers.parseUnits('50', 6) // 50 USDC collateral
+);
+console.log(`Offer created: ID ${offerId}`);
+
+// 2. Wait for buyer to fill
+console.log('\n2. Waiting for buyer...');
+// (In real scenario, another user would fill this)
+
+// 3. After TGE, settle the offer
+console.log('\n3. Settling offer (post-TGE)...');
+await settleOfferAsSeller(
+wallet,
+CONFIG.MARKET_ADDRESS,
+'0xSettlementAddress',
+'0xTokenAddress',
+offerId,
+ethers.parseUnits('500', 18) // Provide 500 tokens
+);
+console.log(`✓ Offer settled!`);
+}
+
+sellerWorkflow().catch(console.error);
+
+````
+</Tab>
+
+<Tab title="Buyer Workflow">
+```typescript
+import { ethers } from 'ethers';
+
+async function buyerWorkflow() {
+  const provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL);
+  const wallet = new ethers.Wallet(CONFIG.PRIVATE_KEY, provider);
+
+  console.log(`=== Buyer Workflow ===`);
+  console.log(`Address: ${wallet.address}`);
+
+  // 1. Find an offer you want
+  console.log('\n1. Finding offer...');
+  const offerId = 1; // Example offer ID
+  const offer = await getOfferDetails(provider, CONFIG.MARKET_ADDRESS, offerId);
+  console.log(`Found offer: ${offer.pointsAmount} points for ${offer.price} USDC`);
+
+  // 2. Fill the offer
+  console.log('\n2. Filling offer...');
+  await fillOffer(
+    wallet,
+    CONFIG.MARKET_ADDRESS,
+    offerId,
+    ethers.parseUnits('50', 6),  // 50 USDC
+    CONFIG.USDC_ADDRESS
+  );
+  console.log(`✓ Offer filled! You now have escrow tokens`);
+
+  // 3. After TGE, claim your tokens
+  console.log('\n3. Claiming tokens (post-TGE)...');
+  await redeemSettledTokens(
+    wallet,
+    '0xSettlementAddress',
+    '0xTokenAddress',
+    CONFIG.POINTS_ID
+  );
+  console.log(`✓ Tokens claimed!`);
+}
+
+buyerWorkflow().catch(console.error);
+````
+
+</Tab>
+</Tabs>
+
+## Market Events
+
+The Market contract emits events you can listen to:
+
+```typescript
+// Listen for new offers
+provider.on(
+  {
+    address: MARKET_ADDRESS,
+    topics: [
+      ethers.id(
+        "OfferCreated(uint256,uint256,address,address,uint256,uint256,uint256)"
+      ),
+    ],
+  },
+  (log) => {
+    console.log("New offer created:", log);
+  }
+);
+
+// Listen for filled offers
+provider.on(
+  {
+    address: MARKET_ADDRESS,
+    topics: [ethers.id("OfferFilled(uint256,address)")],
+  },
+  (log) => {
+    console.log("Offer filled:", log);
+  }
+);
+```
+
+## Common Scenarios
+
+### Scenario 1: Sell All Your Points at Once
+
+```typescript
+async function sellAllPoints(
+  wallet,
+  marketAddr,
+  usdcAddr,
+  pointsId,
+  pricePerPoint
+) {
+  // Get your escrow token balance
+  const escrowABI = ["function balanceOf(address) returns (uint256)"];
+  const escrow = new ethers.Contract(ESCROW_ADDRESS, escrowABI, wallet);
+  const balance = await escrow.balanceOf(wallet.address);
+
+  // Create single offer for all
+  const totalPrice = balance.mul(pricePerPoint).div(ethers.parseUnits("1", 18));
+
+  await createOffer(
+    wallet,
+    marketAddr,
+    pointsId,
+    balance,
+    totalPrice,
+    usdcAddr,
+    totalPrice
+  );
+}
+```
+
+### Scenario 2: Buy Multiple Offers
+
+```typescript
+async function buyMultipleOffers(wallet, marketAddr, usdcAddr, offerIds) {
+  let totalSpent = 0n;
+
+  for (const offerId of offerIds) {
+    const offer = await getOfferDetails(wallet.provider, marketAddr, offerId);
+    await fillOffer(wallet, marketAddr, offerId, offer.price, usdcAddr);
+    totalSpent += offer.price;
+  }
+
+  console.log(`Spent total: ${ethers.formatUnits(totalSpent, 6)} USDC`);
+}
+```
+
+## Common Errors & Solutions
+
+| Error                     | Cause                              | Solution                                              |
+| ------------------------- | ---------------------------------- | ----------------------------------------------------- |
+| **Insufficient balance**  | Not enough points to sell          | Check your escrow token balance                       |
+| **Insufficient USDC**     | Don't have enough USDC             | Acquire more USDC or reduce offer price               |
+| **Not approved**          | Market contract can't pull tokens  | Call `approve()` on the token first                   |
+| **Offer already filled**  | Can't fill an already-filled offer | Find another offer to fill                            |
+| **Only maker can cancel** | Non-creator trying to cancel       | Must be the original offer creator                    |
+| **Settlement not active** | Can't settle pre-TGE               | Wait until token launches and settlement is activated |
+
+## Additional Resources
+
+<CardGroup>
+  <Card
+    title="How to Deposit"
+    icon="inbox"
+    href="/technical-reference/how-to-deposit"
+  >
+    Start by depositing your points
+  </Card>
+
+  <Card
+    title="Market Trading Architecture"
+    icon="chart-line"
+    href="/architecture/market-trading"
+  >
+    Understand how the market works
+  </Card>
+
+  <Card
+    title="Settlement"
+    icon="handshake"
+    href="/architecture/cross-chain-settlement"
+  >
+    Learn about post-TGE settlement
+  </Card>
+</CardGroup>
+
+## API Reference
+
+### Market Contract ABI
+
+```json
+[
+  {
+    "name": "createOffer",
+    "type": "function",
+    "inputs": [
+      { "name": "pointsId", "type": "uint256" },
+      { "name": "pointsAmount", "type": "uint256" },
+      { "name": "price", "type": "uint256" },
+      { "name": "collateralToken", "type": "address" },
+      { "name": "collateralAmount", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "uint256" }]
+  },
+  {
+    "name": "fillOffer",
+    "type": "function",
+    "inputs": [{ "name": "offerId", "type": "uint256" }]
+  },
+  {
+    "name": "cancelOffer",
+    "type": "function",
+    "inputs": [{ "name": "offerId", "type": "uint256" }]
+  },
+  {
+    "name": "getOffer",
+    "type": "function",
+    "inputs": [{ "name": "offerId", "type": "uint256" }],
+    "outputs": [{ "name": "", "type": "tuple" }],
+    "stateMutability": "view"
+  }
+]
+```

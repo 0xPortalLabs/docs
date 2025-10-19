@@ -1,0 +1,348 @@
+---
+title: "Market Trading"
+description: "How to trade points before the token launch"
+---
+
+# Market Trading
+
+The Market contract is a decentralized order book where you can buy and sell escrow tokens (your tokenized points) before TGE. It's collateral-backed, meaning both buyer and seller must post guarantees to trade safely.
+
+## The Trading System
+
+<Mermaid>
+  sequenceDiagram actor Seller actor Buyer participant Market participant USDC
+  participant Escrow Seller->>Market: Creates offer
+  <br />
+  (sell 100 points for 10 USDC) Market->>Seller: Takes 10 USDC collateral
+  Market->>Seller: Holds 100 points Buyer->>Market: Fills the offer
+  Market->>Buyer: Takes 10 USDC (price) Market->>Buyer: Sends 100 escrow tokens
+  Market->>Seller: Sends 10 USDC Market->>Seller: Returns collateral Note over
+  Seller,Buyer: Offer complete!
+</Mermaid>
+
+## How Offers Work
+
+### What is an Offer?
+
+An offer is a binding commitment to trade points at a specific price with collateral backing.
+
+**Example**: "I'll sell you 500 of my points for 50 USDC, and I'm putting up 50 USDC as collateral to guarantee this deal."
+
+### Creating a Sell Offer
+
+When you create an offer to sell your points:
+
+<Mermaid>
+  graph LR A["Step 1: You have
+  <br />
+  500 escrow tokens"] B["Step 2: You create
+  <br />
+  sell offer"] C["Step 3: Your points
+  <br />
+  are held"] D["Step 4: You post
+  <br />
+  collateral"] E["Offer is live
+  <br />
+  waiting for buyer"] A --> B --> C --> D --> E
+</Mermaid>
+
+**What you specify:**
+
+- Points ID (which points program)
+- Amount of points to sell (e.g., 500)
+- Price in USDC (e.g., 50 USDC)
+- Collateral token (usually USDC)
+- Collateral amount (usually equals the price)
+
+**What happens:**
+
+1. Your points are "held" (reserved for this offer)
+2. Your collateral is locked in the contract
+3. The offer goes live on the market
+4. Any other user can now fill your offer
+
+**Example:**
+
+```
+You have 1,000 escrow tokens
+You create offer to sell 500 at 50 USDC
+Result:
+- 500 tokens: Held (reserved for this offer)
+- 500 tokens: Available (free to use elsewhere)
+- 50 USDC: Locked as collateral
+```
+
+### Filling an Offer
+
+When you see an offer you want to accept, you fill it as a buyer:
+
+<Mermaid>
+  graph LR A["Step 1: You see
+  <br />
+  seller's offer"] B["Step 2: You have
+  <br />
+  50 USDC"] C["Step 3: You fill
+  <br />
+  the offer"] D["Step 4: You send
+  <br />
+  USDC to contract"] E["Step 5: You receive
+  <br />
+  tokens + collateral"] A --> B --> C --> D --> E
+</Mermaid>
+
+**What you need:**
+
+- USDC equal to the offer price (e.g., 50 USDC)
+
+**What happens:**
+
+1. You send the USDC to the Market contract
+2. The seller receives the USDC
+3. You receive the escrow tokens
+4. The seller's collateral is returned
+
+**Result:**
+
+```
+Before: You have 50 USDC, no points
+After:  You have 500 escrow tokens, 0 USDC
+```
+
+## Partial Fills
+
+Offers can be filled multiple times if there's enough supply:
+
+**Example:**
+
+```
+Seller creates offer: 1,000 points at 100 USDC total
+Buyer 1 fills 400 points at 40 USDC
+  - 600 points remaining
+  - Offer status: PARTIALLY FILLED
+
+Buyer 2 fills 300 points at 30 USDC
+  - 300 points remaining
+
+Buyer 3 fills 300 points at 30 USDC
+  - 0 points remaining
+  - Offer status: FILLED
+```
+
+This allows the seller to reach multiple buyers without creating separate offers.
+
+## Cancelling Offers
+
+You can cancel an offer if no one has filled it yet:
+
+<Mermaid>
+  graph LR A["Offer is live"] B["You cancel it"] C["Points unheld"]
+  D["Collateral returned"] E["Offer cancelled"] A --> B --> C --> D --> E
+</Mermaid>
+
+**What happens when you cancel:**
+
+1. Your held points return to available
+2. Your collateral is returned
+3. The offer becomes inactive
+
+**When can you cancel?**
+
+- Only if the offer hasn't been filled at all
+- Once someone fills even part of it, you can't cancel
+- Partial fills might have cancellation fees
+
+## Collateral System
+
+Why collateral? It protects both parties.
+
+### For the Seller
+
+The buyer puts up collateral (usually USDC) equal to the offer price. This guarantees they're serious about buying. If something goes wrong, you keep the collateral.
+
+### For the Buyer
+
+The seller puts up collateral equal to the offer price. This guarantees they actually own the points. If the contract fails to deliver, you keep the collateral.
+
+### Collateral is Returned
+
+- If both parties complete the trade, collateral is returned to both
+- If someone defaults, the other party gets to keep it
+- This makes the system fair and trustless
+
+## Offer Lifecycle
+
+Every offer follows a predictable journey:
+
+```
+CREATED
+  ↓
+(Someone might fill it)
+  ↓
+FILLED (if completely filled)
+  -OR-
+FILLED_PARTIAL (if partially filled, more can be added)
+  -OR-
+CANCELLED (if maker cancels)
+  ↓
+SETTLED (when settlement contract processes it)
+```
+
+## After TGE: Settlement
+
+Once the actual token launches and settlement is activated, your filled offers can be settled:
+
+<Mermaid>
+  sequenceDiagram Note over Seller,Buyer: TGE Happens Seller->>Settlement: I
+  want to settle offer #123 Settlement->>Settlement: Verify collateral was
+  locked Settlement->>Seller: You must provide X tokens Seller->>Settlement:
+  Deposits X tokens Settlement->>Buyer: Buyer receives X tokens
+  Settlement->>Seller: Seller keeps USDC + collateral Note over Seller,Buyer:
+  Offer fully settled
+</Mermaid>
+
+### Settlement Process
+
+1. **TGE happens** - Real tokens are deployed
+2. **Settlement activated** - Registry enables settlement for this points program
+3. **Makers settle** - Original sellers (makers) provide tokens to the contract
+4. **Fillers redeem** - Buyers (fillers) receive the tokens they bought
+
+**Example:**
+
+```
+Seller's offer: Sell 100 points for 10 USDC (collateral: 10 USDC)
+
+After TGE:
+Seller: Must provide 100 real tokens to settle
+  In exchange for: 10 USDC + 10 USDC collateral = 20 USDC return
+
+Buyer: Gets 100 real tokens
+  Already paid: 10 USDC
+```
+
+## Price Discovery
+
+The Market enables natural price discovery:
+
+- **Too expensive?** Buyers won't fill (price drops)
+- **Too cheap?** Sellers sell out quickly (price goes up)
+- **Fair price?** Trades happen regularly at that level
+
+This creates a market-driven price for your points before TGE.
+
+## Examples
+
+### Example 1: Simple Sell
+
+```
+You have 500 points
+You believe they'll be worth $1 each
+You create offer: Sell 500 points for 500 USDC
+Someone agrees and fills it immediately
+Result: You have 500 USDC, they have 500 points
+```
+
+### Example 2: Partial Fill
+
+```
+You create offer: Sell 1,000 points for 100 USDC
+
+Day 1: Someone buys 300 points for 30 USDC (30% filled)
+Day 2: Someone buys 400 points for 40 USDC (70% filled)
+Day 3: Someone buys 300 points for 30 USDC (100% filled)
+
+Result: You received 100 USDC total from 3 different buyers
+```
+
+### Example 3: Cancel Then Retry
+
+```
+You create offer: 500 points at 60 USDC
+Nobody fills it for a week
+You cancel it and get your 500 points back
+You create new offer: 500 points at 50 USDC (lower price)
+This time it fills immediately
+```
+
+### Example 4: Post-Settlement
+
+```
+Pre-TGE: You sell 100 points for 10 USDC (collateral: 10 USDC)
+You get: 10 USDC immediately + 10 USDC collateral
+
+TGE Happens: Actual token launches
+
+Settlement: You provide 100 tokens to settle
+You keep: The 20 USDC you already got
+
+Buyer: Gets 100 real tokens (what they paid for)
+```
+
+## Trading Strategies
+
+### Strategy 1: Quick Liquidity
+
+Create low-priced offers to sell quickly. Best if you need cash now rather than waiting for TGE.
+
+### Strategy 2: Speculative Hold
+
+Hold your points and don't trade. Bet they'll be worth more at TGE.
+
+### Strategy 3: Time the Market
+
+Create offers at times when prices are high. Check the market regularly for good selling windows.
+
+### Strategy 4: Partial Offers
+
+Create very large offers to attract multiple buyers and get exposure to more traders.
+
+## Key Concepts
+
+### Available vs. Held Points
+
+- **Available**: Points not in any offer, free to trade
+- **Held**: Points in an active offer, reserved for that specific trade
+
+### Collateral
+
+- Both sides put up guarantees
+- Protects against dishonest behavior
+- Returned when trades complete
+- Forfeited if someone defaults
+
+### Offer Status
+
+- **CREATED**: New offer, waiting for buyers
+- **FILLED_PARTIAL**: Partially sold, more to go
+- **FILLED**: Completely sold, awaiting settlement
+- **SETTLED**: All done, tokens distributed
+- **CANCELLED**: Maker cancelled it
+
+## Safety
+
+### Your Points Are Protected
+
+- Escrow tokens only transfer when price is paid
+- Collateral guarantees both sides
+- Contracts verify everything before executing
+
+### Fair Pricing
+
+- No price manipulation (collateral prevents it)
+- Market sets prices naturally
+- Everyone can see all offers
+
+### Settlement Guarantee
+
+- Makers must provide tokens to settle
+- If they don't, collateral compensates fillers
+- Oracle can verify settlement on-chain
+
+## Key Takeaways
+
+- **Offers** let you buy/sell escrow tokens at a price you set
+- **Collateral** from both sides makes trades trustworthy
+- **Partial fills** let one seller reach multiple buyers
+- **Cancellation** returns your points if it hasn't filled yet
+- **Settlement** converts your offer into final tokens after TGE
+- **No intermediary** - everything is code and collateral
