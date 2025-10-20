@@ -1,0 +1,214 @@
+---
+title: "Quickstart"
+description: "Learn the essentials of Checkpoint and explore its core capabilities"
+---
+
+# Quickstart
+
+## Transform Off-Chain Points into Tradeable Assets
+
+Checkpoint is a decentralized protocol that bridges off-chain loyalty points and rewards programs with on-chain liquidity. Enable seamless tokenization, trading, and settlement of points before Token Generation Events (TGE).
+
+## About Checkpoint
+
+### What does Checkpoint do
+
+Checkpoint provides two main services that work together to create a complete points ecosystem:
+
+<CardGroup cols={2}>
+  <Card title="Checkpoint Exchange" icon="exchange-alt" color="#32cd32">
+    Trade points before they become tokens. Buy and sell points with collateral-backed security.
+  </Card>
+  <Card title="Checkpoint Aggregator" icon="layer-group" color="#32cd32">
+    View all your points from different projects in one place. Track your portfolio across platforms.
+  </Card>
+</CardGroup>
+
+## Using Checkpoint
+
+### Your benefits
+
+<CardGroup cols={2}>
+  <Card title="Add address - Check your points" icon="search" color="#32cd32">
+    Connect your wallet and instantly see all your points from supported projects
+  </Card>
+  <Card title="Connect Wallet, mint and trade points" icon="wallet" color="#32cd32">
+    Tokenize your points and trade them before the official token launch
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Launch in Minutes" icon="bolt" color="#32cd32">
+    Quick integration with existing points programs
+  </Card>
+  <Card title="Secure & Verified" icon="shield-check" color="#32cd32">
+    Oracle-based verification with cryptographic signatures
+  </Card>
+  <Card title="Cross-Chain Ready" icon="network-wired" color="#32cd32">
+    LayerZero-powered multi-chain settlement
+  </Card>
+  <Card title="DeFi Native" icon="coins" color="#32cd32">
+    Collateral-based trading with USDC
+  </Card>
+</CardGroup>
+
+## How Checkpoint Works
+
+Checkpoint creates a complete ecosystem for points trading with five core components:
+
+<Steps>
+  <Step title="Register Your Program">
+    Configure your points program in the Registry contract with custom parameters
+  </Step>
+  <Step title="Tokenize Points">
+    Users deposit off-chain points and receive ERC20 tokens + soulbound NFTs
+  </Step>
+  <Step title="Trade Pre-TGE">
+    Enable market trading with collateral-based offers before token launch
+  </Step>
+  <Step title="Settle Cross-Chain">
+    Distribute tokens across multiple chains using LayerZero infrastructure
+  </Step>
+</Steps>
+
+## Explore the Architecture
+
+<CardGroup cols={2}>
+  <Card
+    title="System Overview"
+    icon="sitemap"
+    href="/architecture/overview"
+    color="#32cd32"
+  >
+    Learn how all components work together in the Checkpoint ecosystem
+  </Card>
+  <Card
+    title="Oracle System"
+    icon="shield-halved"
+    href="/architecture/oracle-system"
+    color="#32cd32"
+  >
+    Cryptographic signature verification for off-chain point claims
+  </Card>
+  <Card
+    title="Points Tokenization"
+    icon="coins"
+    href="/architecture/points-tokenization"
+    color="#32cd32"
+  >
+    Convert off-chain points into tradeable ERC20 tokens and NFTs
+  </Card>
+  <Card
+    title="Market Trading"
+    icon="chart-line"
+    href="/architecture/market-trading"
+    color="#32cd32"
+  >
+    Collateral-based order book for pre-TGE points trading
+  </Card>
+  <Card
+    title="Cross-Chain Settlement"
+    icon="globe"
+    href="/architecture/cross-chain-settlement"
+    color="#32cd32"
+  >
+    LayerZero-powered multi-chain token distribution
+  </Card>
+  <Card
+    title="Smart Contracts"
+    icon="code"
+    href="/technical-reference/smart-contracts"
+    color="#32cd32"
+  >
+    Complete technical reference for all contracts and interfaces
+  </Card>
+</CardGroup>
+
+## Core Smart Contracts
+
+Checkpoint consists of five interconnected smart contracts that work together seamlessly:
+
+<AccordionGroup>
+  <Accordion title="Registry Contract" icon="book" defaultOpen>
+    Central registry for all points programs with configurable parameters:
+    - Program registration and management
+    - Oracle signer configuration
+    - Custom vesting schedules
+    - Access control and permissions
+  </Accordion>
+
+  <Accordion title="Deposit Contract" icon="inbox">
+    Handles tokenization of off-chain points into on-chain assets:
+    - Oracle-verified point deposits
+    - Soulbound NFT minting for tracking
+    - ERC20 escrow token creation
+    - Point holding for market orders
+  </Accordion>
+
+  <Accordion title="Oracle Contract" icon="certificate">
+    Cryptographic verification system for off-chain claims:
+    - ECDSA signature verification
+    - Nonce-based replay protection
+    - Time-based expiry validation
+    - Vesting schedule management
+  </Accordion>
+
+  <Accordion title="Market Contract" icon="store">
+    Decentralized order book for pre-TGE trading:
+    - Collateral-based offer creation
+    - USDC payment processing
+    - Escrow token distribution
+    - Order matching and settlement
+  </Accordion>
+
+  <Accordion title="Settlement Contract" icon="handshake">
+    Cross-chain token distribution after TGE:
+    - LayerZero message passing
+    - Multi-chain token transfers
+    - Proportional distribution logic
+    - Vesting unlock handling
+  </Accordion>
+</AccordionGroup>
+
+## Why Checkpoint?
+
+<CardGroup cols={3}>
+  <Card icon="lock" color="#32cd32">
+    **Battle-Tested Security**
+    
+    Upgradeable contracts with role-based access control and reentrancy protection
+  </Card>
+  <Card icon="bolt" color="#32cd32">
+    **Lightning Fast**
+    
+    Optimized gas usage and efficient data structures for high-volume trading
+  </Card>
+  <Card icon="puzzle-piece" color="#32cd32">
+    **Composable**
+    
+    Modular architecture that integrates seamlessly with existing DeFi protocols
+  </Card>
+</CardGroup>
+
+## Get Started
+
+<CardGroup cols={2}>
+  <Card
+    title="Read the Architecture"
+    icon="book-open"
+    href="/architecture/overview"
+  >
+    Dive deep into how Checkpoint works under the hood
+  </Card>
+  <Card
+    title="Browse Smart Contracts"
+    icon="code"
+    href="/technical-reference/smart-contracts"
+  >
+    Explore the complete technical reference
+  </Card>
+</CardGroup>
+
+<Note>
+  **Need Help?** Join our [Discord community](https://discord.gg/fJ5dJbxxTT) for technical support and discussions.
+</Note>

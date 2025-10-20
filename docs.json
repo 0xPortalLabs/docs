@@ -16,8 +16,18 @@
   "navigation": {
     "groups": [
       {
-        "group": "Overview",
-        "pages": ["index"]
+        "group": "Introduction",
+        "pages": ["index", "quickstart"]
+      },
+      {
+        "group": "Core Products",
+        "pages": [
+          "core-products/point-exchange",
+          "core-products/point-aggregator",
+          "core-products/point-api",
+          "core-products/point-tracking",
+          "core-products/checkpoint-point-nfts"
+        ]
       },
       {
         "group": "Architecture",

@@ -1,0 +1,43 @@
+<svg width="700" height="500" viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="archGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#32cd32;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#32cd32;stop-opacity:0.05" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="700" height="500" fill="#f8f9fa" stroke="#e9ecef" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- Placeholder architecture area -->
+  <rect x="50" y="50" width="600" height="400" fill="url(#archGrad)" stroke="#32cd32" stroke-width="2" stroke-opacity="0.3" rx="15"/>
+  
+  <!-- Placeholder components -->
+  <rect x="100" y="150" width="120" height="80" fill="#32cd32" fill-opacity="0.2" stroke="#32cd32" stroke-width="2" rx="5"/>
+  <rect x="290" y="150" width="120" height="80" fill="#32cd32" fill-opacity="0.2" stroke="#32cd32" stroke-width="2" rx="5"/>
+  <rect x="480" y="150" width="120" height="80" fill="#32cd32" fill-opacity="0.2" stroke="#32cd32" stroke-width="2" rx="5"/>
+  
+  <!-- Placeholder connections -->
+  <line x1="220" y1="190" x2="290" y2="190" stroke="#32cd32" stroke-width="2" stroke-opacity="0.4" marker-end="url(#arrowhead)"/>
+  <line x1="410" y1="190" x2="480" y2="190" stroke="#32cd32" stroke-width="2" stroke-opacity="0.4" marker-end="url(#arrowhead)"/>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#32cd32" fill-opacity="0.4"/>
+    </marker>
+  </defs>
+  
+  <!-- Placeholder labels -->
+  <text x="160" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#32cd32" fill-opacity="0.6">Component A</text>
+  <text x="350" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#32cd32" fill-opacity="0.6">Component B</text>
+  <text x="540" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#32cd32" fill-opacity="0.6">Component C</text>
+  
+  <!-- Main placeholder text -->
+  <text x="350" y="350" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#dc3545" fill-opacity="0.8">
+    PLACEHOLDER
+  </text>
+  <text x="350" y="375" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#6c757d">
+    Architecture Diagram - Replace with actual system architecture
+  </text>
+</svg>

@@ -1,0 +1,145 @@
+---
+title: "Checkpoint Point NFTs"
+description: "Soulbound NFTs that represent and track your points deposits"
+---
+
+# Checkpoint Point NFTs
+
+Checkpoint Point NFTs are soulbound (non-transferable) NFTs that serve as immutable receipts for your points deposits. They provide a permanent, on-chain record of your points history and are essential for participating in the Checkpoint ecosystem.
+
+## What are Soulbound NFTs?
+
+Soulbound NFTs are a special type of NFT that cannot be transferred to other addresses. They are permanently bound to the wallet that created them, ensuring:
+
+- **Authentic Ownership**: Proves you are the original depositor of the points
+- **Immutable History**: Creates a permanent record of your points activity
+- **Fraud Prevention**: Prevents transfer of points receipts to other users
+- **Audit Trail**: Provides complete transparency of your points journey
+
+## How Point NFTs Work
+
+### Creation Process
+
+When you deposit points into Checkpoint:
+
+1. **Points Verification**: Oracle verifies your off-chain points
+2. **NFT Minting**: A unique soulbound NFT is minted to your address
+3. **Metadata Recording**: Points amount, project, and timestamp are recorded
+4. **Permanent Storage**: NFT becomes a permanent part of your wallet
+
+### NFT Properties
+
+Each Point NFT contains:
+
+- **Points Amount**: The exact amount of points deposited
+- **Project ID**: Which project the points belong to
+- **Deposit Timestamp**: When the points were deposited
+- **Unique Token ID**: A unique identifier for this specific deposit
+- **Metadata URI**: Link to additional metadata and artwork
+
+## NFT Metadata and Artwork
+
+### Visual Design
+
+Each Point NFT features:
+
+- **Project Branding**: Custom artwork representing the source project
+- **Points Visualization**: Visual representation of the points amount
+- **Dynamic Elements**: Artwork that may change based on points amount
+- **Rarity Indicators**: Special visual elements for significant deposits
+
+### Metadata Structure
+
+```json
+{
+  "name": "Checkpoint Points - [Project Name]",
+  "description": "Soulbound NFT representing [amount] points from [project]",
+  "image": "https://api.checkpoint.exchange/nft/[tokenId].png",
+  "attributes": [
+    {
+      "trait_type": "Points Amount",
+      "value": "1000"
+    },
+    {
+      "trait_type": "Project",
+      "value": "Project Name"
+    },
+    {
+      "trait_type": "Deposit Date",
+      "value": "2024-01-15"
+    }
+  ]
+}
+```
+
+## Use Cases
+
+### Trading Requirements
+
+Point NFTs are required for:
+
+- **Creating Sell Orders**: Must own the NFT to create offers to sell points
+- **Proving Ownership**: Demonstrates you have the right to trade specific points
+- **Market Access**: Required for participating in the points trading market
+
+### Portfolio Tracking
+
+Use NFTs for:
+
+- **Historical Records**: Complete history of all your points deposits
+- **Portfolio Management**: Track your points across different projects
+- **Tax Reporting**: Detailed records for tax and accounting purposes
+- **Achievement Display**: Show off your points achievements
+
+### Integration Benefits
+
+- **Wallet Compatibility**: Works with all major NFT wallets
+- **Marketplace Support**: Display on NFT marketplaces (though non-transferable)
+- **API Access**: Query NFT data programmatically
+- **Social Sharing**: Share your points achievements on social media
+
+## Technical Details
+
+### Smart Contract
+
+Point NFTs are implemented as:
+
+- **ERC-721 Compliant**: Standard NFT interface for maximum compatibility
+- **Soulbound Extension**: Custom logic preventing transfers
+- **Upgradeable**: Can be upgraded to add new features
+- **Gas Optimized**: Efficient storage and operations
+
+### Storage and Retrieval
+
+- **On-Chain Metadata**: Core data stored directly on-chain
+- **IPFS Integration**: Additional metadata stored on IPFS for decentralization
+- **Query Optimization**: Efficient indexing for fast lookups
+- **Historical Preservation**: All historical data is permanently preserved
+
+## Privacy and Security
+
+### Data Protection
+
+- **Public Information**: NFT data is public on-chain (by design)
+- **No Private Keys**: NFTs don't contain or require private key access
+- **Immutable Records**: Once created, NFT data cannot be modified
+- **Transparent History**: Complete transparency of all points activity
+
+### Security Features
+
+- **Transfer Prevention**: Technical safeguards prevent unauthorized transfers
+- **Ownership Verification**: Cryptographic proof of ownership
+- **Fraud Detection**: Built-in mechanisms to detect and prevent fraud
+- **Audit Trail**: Complete audit trail of all NFT operations
+
+## Getting Started
+
+1. **Deposit Points**: Start by depositing points from a supported project
+2. **Receive NFT**: Automatically receive your soulbound Point NFT
+3. **View in Wallet**: See your NFT in any compatible wallet
+4. **Use for Trading**: Use the NFT to create trading offers
+5. **Track History**: Use NFTs to track your complete points history
+
+<Note>
+  **Important**: Point NFTs are soulbound and cannot be transferred. They serve as permanent records of your points deposits and are required for trading activities.
+</Note>

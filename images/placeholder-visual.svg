@@ -1,0 +1,26 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="placeholderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#32cd32;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#32cd32;stop-opacity:0.05" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f8f9fa" stroke="#e9ecef" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- Placeholder content area -->
+  <rect x="50" y="50" width="300" height="200" fill="url(#placeholderGrad)" stroke="#32cd32" stroke-width="2" stroke-opacity="0.3" rx="10"/>
+  
+  <!-- Placeholder icon -->
+  <circle cx="200" cy="120" r="30" fill="#32cd32" fill-opacity="0.2" stroke="#32cd32" stroke-width="2"/>
+  <polygon points="200,100 190,130 210,130" fill="#32cd32" fill-opacity="0.4"/>
+  
+  <!-- Placeholder text -->
+  <text x="200" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#dc3545" fill-opacity="0.8">
+    PLACEHOLDER
+  </text>
+  <text x="200" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6c757d">
+    Visual Content - Replace with actual content
+  </text>
+</svg>
