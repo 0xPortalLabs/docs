@@ -1,0 +1,193 @@
+---
+title: "Point Oracle"
+description: "Cryptographic verification system for off-chain point claims and settlement"
+---
+
+# Point Oracle
+
+The Point Oracle is Checkpoint's cryptographic verification system that bridges off-chain points data with on-chain trading. It ensures the integrity and authenticity of point claims through cryptographic signatures and provides real-time verification for the trading ecosystem.
+
+## How It Works
+
+The Point Oracle operates as a decentralized verification layer that:
+
+<CardGroup cols={2}>
+  <Card title="Signature Verification" icon="certificate" color="#32cd32">
+    Validates cryptographic signatures from point-issuing protocols to authenticate point claims
+  </Card>
+  <Card title="Real-time Updates" icon="clock" color="#32cd32">
+    Continuously monitors and updates point balances across supported protocols
+  </Card>
+  <Card title="Settlement Triggers" icon="handshake" color="#32cd32">
+    Automatically initiates settlement processes when TGE events are detected
+  </Card>
+  <Card title="Cross-chain Support" icon="network-wired" color="#32cd32">
+    Enables verification and settlement across multiple blockchain networks
+  </Card>
+</CardGroup>
+
+## Oracle Architecture
+
+The Point Oracle consists of three core components:
+
+### 1. Signature Verification
+
+<Steps>
+  <Step title="Point Claim Submission">
+    Users submit point claims with cryptographic signatures from the issuing protocol
+  </Step>
+  <Step title="Signature Validation">
+    Oracle verifies the signature against the protocol's public key
+  </Step>
+  <Step title="Balance Confirmation">
+    Confirmed balances are recorded on-chain for trading eligibility
+  </Step>
+</Steps>
+
+### 2. Real-time Monitoring
+
+The Oracle continuously monitors:
+- Point balance changes across protocols
+- Token Generation Events (TGE) announcements
+- Protocol updates and parameter changes
+- Cross-chain settlement requirements
+
+### 3. Settlement Automation
+
+<AccordionGroup>
+  <Accordion title="TGE Detection" icon="bell" defaultOpen>
+    Automatically detects when protocols announce their Token Generation Events and triggers settlement processes
+  </Accordion>
+
+  <Accordion title="Balance Reconciliation" icon="calculator">
+    Reconciles final token distributions with traded point amounts to ensure accurate settlement
+  </Accordion>
+
+  <Accordion title="Cross-chain Distribution" icon="globe">
+    Coordinates token distribution across multiple chains using LayerZero infrastructure
+  </Accordion>
+</AccordionGroup>
+
+## Security Features
+
+### Cryptographic Security
+
+<CardGroup cols={2}>
+  <Card title="ECDSA Signatures" icon="shield-check" color="#32cd32">
+    Uses industry-standard ECDSA signatures for point claim verification
+  </Card>
+  <Card title="Nonce Protection" icon="lock" color="#32cd32">
+    Implements nonce-based replay protection to prevent duplicate claims
+  </Card>
+  <Card title="Time-based Expiry" icon="hourglass-half" color="#32cd32">
+    Enforces time-based expiry on signatures to prevent stale data usage
+  </Card>
+  <Card title="Multi-signature Support" icon="users" color="#32cd32">
+    Supports multi-signature verification for enhanced security protocols
+  </Card>
+</CardGroup>
+
+### Verification Process
+
+The Oracle follows a rigorous verification process:
+
+1. **Signature Validation**: Verifies cryptographic signatures against protocol public keys
+2. **Balance Verification**: Cross-references claimed balances with protocol data
+3. **Temporal Validation**: Ensures signatures are within valid time windows
+4. **Replay Protection**: Prevents reuse of previously verified signatures
+
+## Supported Protocols
+
+The Point Oracle currently supports verification for:
+
+<CardGroup cols={3}>
+  <Card title="EigenLayer" icon="layer-group" color="#32cd32">
+    EigenLayer points and restaking rewards verification
+  </Card>
+  <Card title="EigenDA" icon="database" color="#32cd32">
+    EigenDA data availability points and operator rewards
+  </Card>
+  <Card title="EigenLabs" icon="flask" color="#32cd32">
+    EigenLabs protocol points and validator rewards
+  </Card>
+</CardGroup>
+
+## API Integration
+
+Developers can integrate with the Point Oracle through our comprehensive API:
+
+<CodeGroup>
+```bash curl
+curl -X GET "https://api.checkpoint.exchange/oracle/verify" \
+  -H "Content-Type: application/json" \
+  -d '{"address": "0x...", "protocol": "eigenlayer", "signature": "0x..."}'
+```
+```javascript JavaScript
+const response = await fetch('https://api.checkpoint.exchange/oracle/verify', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    address: '0x...',
+    protocol: 'eigenlayer',
+    signature: '0x...'
+  })
+});
+const verification = await response.json();
+```
+```python Python
+import requests
+
+response = requests.post('https://api.checkpoint.exchange/oracle/verify', 
+  json={
+    'address': '0x...',
+    'protocol': 'eigenlayer', 
+    'signature': '0x...'
+  }
+)
+verification = response.json()
+```
+</CodeGroup>
+
+## Oracle Economics
+
+### Fee Structure
+
+The Oracle operates on a fee-based model:
+
+- **Verification Fees**: Small fees for signature verification requests
+- **Settlement Fees**: Percentage-based fees on successful settlements
+- **Cross-chain Fees**: Additional fees for cross-chain operations
+
+### Incentive Mechanisms
+
+<CardGroup cols={2}>
+  <Card title="Validator Rewards" icon="coins" color="#32cd32">
+    Validators earn rewards for accurate verification and settlement
+  </Card>
+  <Card title="Stake Requirements" icon="lock" color="#32cd32">
+    Validators must stake tokens to participate in the oracle network
+  </Card>
+</CardGroup>
+
+## Getting Started
+
+To integrate with the Point Oracle:
+
+<Steps>
+  <Step title="Register Protocol">
+    Register your protocol with the Oracle to enable point verification
+  </Step>
+  <Step title="Configure Signatures">
+    Set up cryptographic signature requirements for your point claims
+  </Step>
+  <Step title="Test Integration">
+    Use our testnet environment to verify your integration works correctly
+  </Step>
+  <Step title="Go Live">
+    Deploy to mainnet and start processing point verifications
+  </Step>
+</Steps>
+
+<Note>
+**Need Help?** Check out our [API documentation](/api/oracle-api) for detailed integration guides and examples.
+</Note>

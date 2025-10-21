@@ -16,23 +16,25 @@
   "navigation": {
     "groups": [
       {
-        "group": "Introduction",
-        "pages": ["index", "quickstart"]
+        "group": "Get Started",
+        "pages": ["index", "get-started/quickstart", "get-started/about-checkpoint"]
       },
       {
         "group": "Core Products",
         "pages": [
+          "core-products/index",
           "core-products/point-exchange",
           "core-products/point-aggregator",
           "core-products/point-api",
           "core-products/point-tracking",
+          "core-products/point-oracle",
           "core-products/checkpoint-point-nfts"
         ]
       },
       {
         "group": "Architecture",
         "pages": [
-          "architecture/overview",
+          "architecture/index",
           "architecture/oracle-system",
           "architecture/points-tokenization",
           "architecture/market-trading",
@@ -94,7 +96,7 @@
   "logo": {
     "light": "/images/checkpoint-logo-light.svg",
     "dark": "/images/checkpoint-logo-dark.svg",
-    "href": "https://0xportal.io"
+    "href": "https://checkpoint.exchange"
   },
   "search": {
     "prompt": "Search documentation..."

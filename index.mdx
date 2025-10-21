@@ -1,83 +1,52 @@
 ---
-title: "Checkpoint Documentation"
-description: "Creating the decentralized layer for the world’s points, where every reward can move freely, be verified, and find real value."
+title: "Introduction"
+description: "Creating the decentralized layer for the world's points, where every reward can move freely, be verified, and find real value."
+mode: "custom"
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/checkpoint-logo-light.svg"
-  alt="Checkpoint Logo Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/checkpoint-logo-dark.svg"
-  alt="Checkpoint Logo Dark"
-/>
+<div style={{ width: '100%', marginBottom: '3rem' }}>
+  <img
+    src="/images/hero-background.svg"
+    alt="Checkpoint Banner"
+    style={{ width: '100%', height: 'auto', display: 'block' }}
+  />
+</div>
 
-## Transform Off-Chain Points into Tradeable Assets
+<div style={{ maxWidth: '895px', padding: '0 16px', margin: '0 auto' }}>
+<div style={{ maxWidth: '687px', margin: '0 auto' }}>
 
-Checkpoint is a decentralized protocol that bridges off-chain loyalty points and rewards programs with on-chain liquidity. Enable seamless tokenization, trading, and settlement of points before Token Generation Events (TGE).
+<div className="flex justify-center mb-8">
+  <img
+    className="block dark:hidden h-16"
+    src="/images/checkpoint-logo-light.svg"
+    alt="Checkpoint Logo"
+  />
+  <img
+    className="hidden dark:block h-16"
+    src="/images/checkpoint-logo-dark.svg"
+    alt="Checkpoint Logo"
+  />
+</div>
 
-## What is Checkpoint?
+<div className="text-center mb-16">
 
-Checkpoint provides two main services that work together to create a complete points ecosystem:
+<h1 className="mint-block mint-text-4xl mint-font-medium mint-text-center mint-text-gray-900 dark:mint-text-zinc-50 mint-tracking-tight">
+  <span data-as="p">Documentation</span>
+</h1>
 
-<CardGroup cols={2}>
-  <Card title="Checkpoint Exchange" icon="exchange-alt" color="#32cd32">
-    Trade points before they become tokens. Buy and sell points with collateral-backed security.
-  </Card>
-  <Card title="Checkpoint Aggregator" icon="layer-group" color="#32cd32">
-    View all your points from different projects in one place. Track your portfolio across platforms.
-  </Card>
-</CardGroup>
+<div className="mint-max-w-xl mint-mx-auto mint-px-4 mint-mt-4 mint-text-lg mint-text-center mint-text-gray-500 dark:mint-text-zinc-500">
+  <span data-as="p">Creating the decentralized layer for the world's points, where every reward can move freely, be verified, and find real value.</span>
+</div>
 
-## How Checkpoint Works
+</div>
 
-Checkpoint creates a complete ecosystem for points trading with five core components:
-
-<Steps>
-  <Step title="Register Your Program">
-    Configure your points program in the Registry contract with custom parameters
-  </Step>
-  <Step title="Tokenize Points">
-    Users deposit off-chain points and receive ERC20 tokens + soulbound NFTs
-  </Step>
-  <Step title="Trade Pre-TGE">
-    Enable market trading with collateral-based offers before token launch
-  </Step>
-  <Step title="Settle Cross-Chain">
-    Distribute tokens across multiple chains using LayerZero infrastructure
-  </Step>
-</Steps>
-
-## Explore the Architecture
-
-<CardGroup cols={2}>
-  <Card
-    title="Try Checkpoint Exchange"
-    icon="rocket"
-    href="https://exchange.checkpoint.exchange"
-    color="#32cd32"
-  >
-    Start trading points today on our main platform
-  </Card>
-  <Card
-    title="View Points Aggregator"
-    icon="chart-bar"
-    href="https://points.0xportal.io"
-    color="#32cd32"
-  >
-    Track all your points across projects in one dashboard
-  </Card>
-</CardGroup>
-
-## Explore the Documentation
+<div className="mb-16">
 
 <CardGroup cols={2}>
   <Card
     title="Quickstart"
     icon="rocket"
-    href="/quickstart"
+    href="/get-started/quickstart"
     color="#32cd32"
   >
     Learn the essentials of Checkpoint and explore its core capabilities.
@@ -85,15 +54,15 @@ Checkpoint creates a complete ecosystem for points trading with five core compon
   <Card
     title="Technical"
     icon="code"
-    href="/architecture/overview"
+    href="/architecture/index"
     color="#32cd32"
   >
-    Explore the architecture, dive into the codebase, and start developing.
+    Explore the architecture, dive into the functions, and start developing.
   </Card>
   <Card
     title="Core Products"
     icon="cubes"
-    href="/core-products/point-exchange"
+    href="/core-products/"
     color="#32cd32"
   >
     Discover the Checkpoint ecosystem and how each product works together.
@@ -104,35 +73,82 @@ Checkpoint creates a complete ecosystem for points trading with five core compon
     href="/technical-reference/how-to-deposit"
     color="#32cd32"
   >
-    Discover how to use Checkpoint, from the interface to advanced integrations.
+    Understand how to use Checkpoint, from the interface to advanced integrations.
   </Card>
 </CardGroup>
 
-## Community & Support
+</div>
 
-<CardGroup cols={3}>
+
+
+<div className="mb-16">
+
+<h2 className="mint-text-2xl mint-font-semibold mint-text-gray-900 dark:mint-text-zinc-50 mint-text-center mb-6">Skip the docs, try the App</h2>
+
+<p className="mint-text-base mint-text-center mb-6">One app, two key experiences.<br/> Explore how Checkpoint works in real time.</p>
+
+<CardGroup cols={2}>
+  <Card
+    title="Trade your Points"
+    icon="rocket"
+    href="https://checkpoint.exchange"
+    color="#32cd32"
+  >
+    Start trading points today on our main platform.
+  </Card>
+  <Card
+    title="Check your Points"
+    icon="chart-bar"
+    href="https://points.0xportal.io"
+    color="#32cd32"
+  >
+    Track your points across projects in one dashboard.
+  </Card>
+</CardGroup>
+
+</div>
+
+</div>
+
+<h2 className="mint-text-2xl mint-font-semibold mint-text-gray-900 dark:mint-text-zinc-50 mint-text-center mb-6">Community & Support</h2>
+
+<p className="mint-text-base mint-text-center mb-6">Merit thrives when points have purpose.<br/> Join the conversation, share feedback, and help build a better Checkpoint.</p>
+
+<div style={{ maxWidth: '895px', margin: '0 auto', marginBottom: '4rem' }}>
+<CardGroup cols={4}>
   <Card
     title="Discord"
     icon="discord"
     href="https://discord.gg/fJ5dJbxxTT"
     color="#32cd32"
   >
-    Join our community for support and discussions
+    Join our community for support, discussions and requests.
   </Card>
   <Card
     title="GitHub"
     icon="github"
-    href="https://github.com/0xPortalLabs/checkpoint-v2-contracts"
+    href="https://github.com/0xPortalLabs/"
     color="#32cd32"
   >
-    View source code and contribute to the project
+    View source code and contribute to the project.
   </Card>
   <Card
     title="X (Twitter)"
     icon="x-twitter"
-    href="https://x.com/0xportallabs"
+    href="https://x.com/CheckpointEX"
     color="#32cd32"
   >
-    Follow us for updates and announcements
+    Follow Checkpoint for updates and announcements.
+  </Card>
+  <Card
+    title="Telegram"
+    icon="telegram"
+    href="https://t.me/CheckpointExchange"
+    color="#32cd32"
+  >
+    Join our Telegram for updates, support and memes.
   </Card>
 </CardGroup>
+</div>
+
+</div>
