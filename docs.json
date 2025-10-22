@@ -25,9 +25,9 @@
           "core-products/index",
           "core-products/point-exchange",
           "core-products/point-aggregator",
+          "core-products/point-oracle",
           "core-products/point-api",
           "core-products/point-tracking",
-          "core-products/point-oracle",
           "core-products/checkpoint-point-nfts"
         ]
       },
