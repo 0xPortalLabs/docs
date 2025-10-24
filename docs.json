@@ -46,7 +46,7 @@
           "architecture/oracle-system",
           "architecture/points-tokenization",
           "architecture/market-trading",
-          "architecture/cross-chain-settlement"
+          "architecture/program-settlement"
         ]
       },
       {
