@@ -20,6 +20,26 @@ to guarantee this deal."
 Of course we are not limited to using collateral as a guarantee, we can use off-chain agreements
 (legal contracts) or credit scores as well, this is totally up to the discretion of the seller.
 
+### Collateral
+
+There are many different types of collateral that can be used to back an offer. We will discuss
+liquid tokens such as USDC from now. However, sellers are not limited to using collateral tokens and
+can use off-chain agreements or credit scores as well. When creating an offer, the seller puts up a
+configurable amount of collateral. This collateral is held in escrow until the offer is settled, or
+the offer is cancelled.
+
+### Offer Status
+
+| Status                     | Description                                                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------- |
+| OFFER_CREATED              | The offer is new and waiting for buyers to fill it.                                                |
+| OFFER_FILLED_PARTIAL       | The offer has been partially filled by one or more buyers, with more supply remaining.             |
+| OFFER_FILLED               | The offer is completely filled by buyers.                                                          |
+| OFFER_SETTLED              | The offer has been settled with tokens provided to the Settlement contract for buyers to claim.    |
+| OFFER_SETTLED_WITH_VESTING | The offer has been settled but has a vesting schedule. Tokens unlock gradually over time.          |
+| OFFER_CANCELLED            | The offer was cancelled by the maker before any fills, and collateral was returned.                |
+| OFFER_OVERDUE_SETTLED      | The settlement deadline passed without the seller settling. Buyers claimed refunds and collateral. |
+
 ### Creating a Sell Offer
 
 ```mermaid
@@ -42,14 +62,6 @@ cancellation fee if defined), as long as there are no existing fills yet.
   {" "}
   You must have a valid deposit receipt NFT with enough available points to create an offer.{" "}
 </Note>
-
-### Collateral
-
-There are many different types of collateral that can be used to back an offer. We will discuss
-liquid tokens such as USDC from now. However, sellers are not limited to using collateral tokens and
-can use off-chain agreements or credit scores as well. When creating an offer, the seller puts up a
-configurable amount of collateral. This collateral is held in escrow until the offer is settled, or
-the offer is cancelled.
 
 ### Filling an Offer
 
@@ -164,187 +176,161 @@ tokens, deposits them to the `Settlement.sol` contract, and sends the USDC proce
 (minus the settlement fee if defined). The seller also gets their collateral back, and the filler
 can now claim their tokens from the `Settlement.sol` contract.
 
-### Cross-Chain Settlement (settleOfferViaOracle)
+### Cross-Chain Settlement
 
-For points programs on different blockchains, the oracle can verify settlement across chains:
+This is useful when the points program is on a different chain than the Market. Create an offer on
+one chain, the buyer fills it, but the token launches on another chain. To settle:
 
-```mermaid
-graph TB
-  A["Seller creates offer<br/>on Chain A"]
-  B["Settlement happens<br/>on Chain B"]
-  C["Oracle verifies<br/>settlement proof"]
-  D["Market processes<br/>settlement"]
-  E["Seller gets USDC<br/>+ collateral"]
+1. Provide tokens to the `RemoteSettlement.sol` contract on the token's chain
+2. Call `settleOfferViaOracle()` on `Market.sol` with the chain ID, transaction hash, and Oracle
+   signature
+3. The oracle verifies the settlement, and the Market sends you USDC and collateral back
 
-  A --> B
-  B --> C
-  C --> D
-  D --> E
-```
+The filler can then claim their tokens from `RemoteSettlement.sol` just like standard settlement.
 
-This is useful when the points program is on a different chain than the Market. You create an offer
-on one chain, the buyer fills it, but the actual token launches on another chain. You settle on that
-chain by providing the tokens, then call `settleOfferViaOracle()` with the chain ID, transaction
-hash, and Oracle signature. The oracle verifies the settlement happened on the other chain, and the
-Market sends you USDC and collateral back on the original chain.
+### Partial Fills
 
-### Vesting Settlement (completeVestingSettlement)
+If the offer is partially filled, the seller only needs to provide the percentage of tokens that was
+filled.
 
-For token programs with vesting schedules, settlement happens in two phases:
+**Formula:**
+
+$$\text{tokensToSend} = \left\lfloor \frac{\text{tokenAmount} \times \text{filledAmount}}{\text{price}} \right\rfloor$$
+
+**Example:**
+
+- Offer: 1000 points for 100 USDC
+- Buyers fill 600 USDC total (60% of the offer)
+- Seller only needs to provide 600 tokens (60% of 1000, assuming 1 point = 1 token)
+
+Each buyer receives their proportional share when they claim from `Settlement.sol` or
+`RemoteSettlement.sol`.
+
+### Vesting Settlement
+
+For token programs with vesting schedules, settlement happens in multiple phases:
 
 ```mermaid
 sequenceDiagram
-  participant Oracle
-  participant Market
   participant Seller
+  participant Market
+  participant Oracle
+  participant Settlement
+  participant Buyer
 
-  Oracle->>Market: Sets vesting schedule for offer
-  Note over Market: Vesting period begins
-  rect rgba(200, 150, 0, .1)
-  Note over Oracle,Seller: Vesting period active
-  Seller->>Seller: Waits for vesting to complete
+  Seller->>Market: Calls settleOffer()
+  Note over Seller,Market: Seller sends non-vested tokens<br/>to Settlement contract
+  Market->>Oracle: Gets currently claimable tokens
+  Market->>Settlement: Deposits non-vested tokens
+  Market-->>Seller: Sends USDC (minus fee)
+  Note over Market,Settlement: Vesting period active<br/>Tokens stream to buyer
+  rect rgba(148, 173, 7, 0.1)
+  Note over Oracle,Buyer: Vesting period active
+  Settlement-->>Buyer: Tokens unlock gradually
   end
   Seller->>Market: Calls completeVestingSettlement()
-  Market->>Market: Verifies vesting is complete
-  Market->>Seller: Returns collateral
+  Market->>Oracle: Verifies vesting is complete
+  Market-->>Seller: Returns collateral
 ```
 
-When a token has a vesting schedule, your collateral is held longer - through the entire vesting
-period. On day 1, your offer is filled with vesting enabled. Days 1-90 are the vesting period when
-tokens unlock gradually. On day 91, when vesting completes, you call `completeVestingSettlement()`
-and finally get your collateral back. This is different from standard settlement where collateral is
-returned immediately.
+When a token has a vesting schedule, settlement works differently:
 
-### Overdue Settlement (settleOverdueOffer)
+1. **Initial Settlement (`settleOffer()`)**: The seller calls `settleOffer()` and sends only the
+   tokens that are not vested (the currently claimable tokens according to the oracle's vesting
+   schedule). These non-vested tokens are deposited to the Settlement contract and become available
+   for the buyer to claim immediately.
 
-If the seller doesn't settle before the deadline, buyers have recourse:
+2. **Vesting Period**: As time passes, the remaining vested tokens unlock gradually according to the
+   vesting schedule. The oracle tracks when each tranche of tokens becomes claimable. The buyer can
+   claim these tokens from the Settlement contract as they unlock.
+
+3. **Complete Settlement (`completeVestingSettlement()`)**: Once the vesting period is fully
+   complete, the seller calls `completeVestingSettlement()`. The oracle verifies that vesting has
+   completed, and the seller finally receives their collateral back.
+
+The key difference from standard settlement is that the seller's collateral is held as security
+through the entire vesting period until all tokens have been vested and delivered to the buyer.
+
+### Overdue Settlement
+
+When a seller fails to settle by the deadline, fillers can recover their funds and receive
+compensation from the seller's collateral.
 
 ```mermaid
-graph TB
+graph LR
   A["Settlement deadline<br/>passes"]
   B["Seller hasn't settled<br/>the offer"]
-  C["Buyer calls<br/>settleOverdueOffer"]
-  D["Buyer gets USDC<br/>+ collateral share"]
+  C["Buyer calls<br/>settleOverdueOffer()"]
+  D["Buyer gets USDC refund<br/>and collateral share"]
   E["Fee goes to<br/>protocol"]
 
   A --> B --> C --> D
   C --> E
 ```
 
-This is the protection mechanism that makes the system trustless. When the settlement deadline
-arrives and the seller hasn't settled the offer, buyers can call `settleOverdueOffer()`. They
-immediately get their USDC payment back, plus a proportional share of the seller's collateral (after
-the protocol takes a small fee). This incentivizes sellers to settle on time, because if they don't,
-their collateral is distributed to the buyers as compensation.
+#### Settlement Process
 
-For example, if an offer has a 100 USDC price with 100 USDC collateral and a 5% protocol fee, and
-three buyers filled it with 50 USDC, 30 USDC, and 20 USDC respectively, each buyer gets their
-payment back plus their share of the remaining collateral. The first buyer gets ~97.5 USDC, the
-second gets ~58.5 USDC, and the third gets ~39 USDC, with the protocol keeping 5 USDC plus any dust.
-This way, everyone has recourse if the seller doesn't perform.
+When `settleOverdueOffer()` is called after the deadline:
 
-## Advanced Concepts
+1. Each buyer gets back their exact USDC amount they provided
+2. The seller's collateral is split proportionally among all fillers
+3. A configurable fee is deducted from the collateral pool before distribution (if defined)
 
-### Partial Fills with Settlement
+The settlement distributes the seller's collateral proportionally based on each filler's
+contribution.
 
-When multiple buyers fill the same offer at different times, settlement becomes more complex. With
-an offer of 1000 points for 100 USDC, Buyer A might fill 400 points for 40 USDC, Buyer B fills 300
-points for 30 USDC, and Buyer C fills 300 points for 30 USDC. When the seller settles with 100 USDC
-worth of tokens, Buyer A gets 40 USDC worth, Buyer B gets 30 USDC worth, and Buyer C gets 30 USDC
-worth - each proportional to their fill. If the points decreased to 600, each buyer gets 60% of
-their expected share, and they can individually call `settlePointsChange()` for refunds on the
-shortfall.
+**Each filler receives:**
 
-### Fee Structure
+$$
+C_i = \left\lfloor \frac{U_i}{U_{total}} \times C_{distributable} \right\rfloor
+$$
 
-The protocol takes fees at several key moments:
+where
 
-| Action           | Fee Type            | When Applied       |
-| ---------------- | ------------------- | ------------------ |
-| Offer Creation   | None                | Creating           |
-| Settlement       | settlementFee (%)   | Settling           |
-| Cancellation     | cancellationFee (%) | Cancelling         |
-| Overdue Handling | overdueFee (%)      | Overdue settlement |
+- $C_i$ = collateral for filler $i$
+- $U_i$ = USDC amount provided by filler $i$
+- $U_{total}$ = sum of all USDC amounts (total filled)
+- $C_{distributable}$ = collateral available after protocol fee
 
-For example, if you create an offer for 500 points at 100 USDC with 50 USDC collateral and the
-settlement fee is 2%, you'll provide 500 tokens to settle and receive 100 USDC - 2 USDC = 98 USDC,
-plus your 50 USDC collateral back. If you cancel the offer with a 1% cancellation fee, you get back
-50 USDC - 0.5 USDC = 49.5 USDC.
+#### Example
 
-## Price Discovery
+If an offer has:
 
-The Market enables natural price discovery. If your offer is too expensive, buyers won't fill it and
-prices drop. If it's too cheap, sellers sell out quickly and prices go up. When you find a fair
-price, trades happen regularly at that level. This creates a market-driven price for your points
-before TGE.
+- Total collateral: 1000 USDC
+- Overdue fee: 2% (200 bps)
+- Total filled: 500 USDC by two fillers (250 USDC each = 25% each, 50% total)
 
-## Trading Strategies
+Then,
 
-### Strategy 1: Quick Liquidity
+- Fee: 1000 × 0.02 = 20 USDC
+- Distributable: 1000 - 20 = 980 USDC
 
-Create low-priced offers to sell quickly. This strategy is best if you need cash now rather than
-waiting for TGE.
+**Each filler receives:**
 
-### Strategy 2: Speculative Hold
+- USDC refund: 250 USDC (their original payment)
+- Collateral share: (250 / 500) × 980 = 490 USDC
+- Total per filler: 250 + 490 = 740 USDC
 
-Hold your points and don't trade. Bet they'll be worth more at TGE.
+**Protocol receives:**
 
-### Strategy 3: Time the Market
+- 20 USDC (remaining collateral = fee + any rounding dust)
 
-Create offers at times when prices are high. Check the market regularly for good selling windows.
+<Note>
+  The seller forfeits **all** collateral, including any unused portion if there are partial fills.
+  They receive nothing from the settlement.
+</Note>
 
-### Strategy 4: Partial Offers
+## Fee Structure
 
-Create very large offers to attract multiple buyers and get exposure to more traders.
+| Action           | Fee     | Current Fee |
+| ---------------- | ------- | ----------- |
+| Offer Creation   | 0 bps   | 0%          |
+| Settlement       | 100 bps | 1%          |
+| Cancellation     | 250 bps | 2.5%        |
+| Overdue Handling | 500 bps | 5%          |
 
-## Key Concepts
-
-### Available vs. Held Points
-
-Available points are not in any offer and are free to trade. Held points are in an active offer and
-reserved for that specific trade.
-
-### Collateral
-
-Both sides put up guarantees that protect against dishonest behavior. Collateral is returned when
-trades complete normally, but forfeited if someone defaults.
-
-### Offer Status
-
-**CREATED** means the offer is new and waiting for buyers. **FILLED_PARTIAL** means it's partially
-sold with more to go. **FILLED** means it's completely sold and awaiting settlement. **SETTLED**
-means it's all done with tokens distributed. **CANCELLED** means the maker cancelled it.
-
-## Safety
-
-Your points are protected because escrow tokens only transfer when the price is paid, and collateral
-guarantees both sides. Contracts verify everything before executing. Fair pricing is ensured because
-there's no price manipulation (collateral prevents it), the market sets prices naturally, and
-everyone can see all offers. Settlement is guaranteed because makers must provide tokens to settle,
-if they don't then collateral compensates fillers, and the oracle can verify settlement on-chain.
-
-## Key Takeaways
-
-Offers let you buy and sell escrow tokens at a price you set. Collateral from both sides makes
-trades trustworthy. Partial fills let one seller reach multiple buyers. Cancellation returns your
-points if it hasn't filled yet. Settlement converts your offer into final tokens after TGE. There's
-no intermediary - everything is code and collateral.
-
-## Important Notes
-
-### Settlement Windows
-
-Before TGE happens, you can't settle offers yet. During the active settlement period after TGE, you
-can settle offers. After the deadline passes, you can no longer settle but buyers can claim overdue
-offers.
-
-### Gas Optimization
-
-For multiple offers, use batch operations like `getOffersBatch()` to get multiple offers in one
-call. This reduces read operations and gas costs.
-
-### State Transitions
-
-Not all state transitions are valid. You can go from CREATED → FILLED_PARTIAL → FILLED → SETTLED. Or
-directly from CREATED → FILLED → SETTLED. You can go from CREATED → CANCELLED. But you cannot go
-from FILLED → CREATED, from SETTLED → ANYTHING, or from CANCELLED → ANYTHING.
+<Note>
+  {" "}
+  Fees are governance parameters and can be updated via the DAO. The fees listed above reflect the current
+  values as of October 24th 2025.{" "}
+</Note>
