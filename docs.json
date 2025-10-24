@@ -3,11 +3,14 @@
   "theme": "willow",
   "name": "Checkpoint",
   "colors": {
-    "primary": "#32cd32",
-    "light": "#32cd32",
-    "dark": "#32cd32"
+    "primary": "#32CDCD",
+    "light": "#32CDCD",
+    "dark": "#32CDCD"
   },
-  "favicon": "/images/checkpoint-symbol-dark.svg",
+  "favicon": {
+    "light": "/images/checkpoint-symbol-dark.svg",
+    "dark": "/images/checkpoint-symbol-light.svg"
+  },
   "modeToggle": {
     "default": "dark",
     "isHidden": false
@@ -22,13 +25,18 @@
       {
         "group": "Core Products",
         "pages": [
-          "core-products/index",
-          "core-products/point-exchange",
-          "core-products/point-aggregator",
-          "core-products/point-oracle",
-          "core-products/point-api",
-          "core-products/point-tracking",
-          "core-products/checkpoint-point-nfts"
+          {
+            "group": "Checkpoint Products",
+            "pages": [
+              "core-products/index",
+              "core-products/point-exchange",
+              "core-products/point-aggregator",
+              "core-products/point-oracle",
+              "core-products/point-api",
+              "core-products/point-tracking",
+              "core-products/checkpoint-point-nfts"
+            ]
+          }
         ]
       },
       {
@@ -78,24 +86,24 @@
       "name": "Portal Dashboard",
       "icon": "rocket",
       "url": "https://0xportal.io",
-      "color": "#32cd32"
+      "color": "#32CDCD"
     },
     {
       "name": "GitHub",
       "icon": "github",
       "url": "https://github.com/0xPortalLabs/checkpoint-v2-contracts",
-      "color": "#777777"
+      "color": "#32CDCD"
     },
     {
       "name": "Discord",
       "icon": "discord",
       "url": "https://discord.gg/fJ5dJbxxTT",
-      "color": "#32cd32"
+      "color": "#32CDCD"
     }
   ],
   "logo": {
-    "light": "/images/checkpoint-logo-light.svg",
-    "dark": "/images/checkpoint-logo-dark.svg",
+    "light": "/images/checkpoint-logo-dark.svg",
+    "dark": "/images/checkpoint-logo-light.svg",
     "href": "https://checkpoint.exchange"
   },
   "search": {
@@ -121,7 +129,8 @@
     "socials": {
       "x": "https://x.com/0xportallabs",
       "github": "https://github.com/0xPortalLabs",
-      "discord": "https://discord.gg/fJ5dJbxxTT"
+      "discord": "https://discord.gg/fJ5dJbxxTT",
+      "telegram": "https://t.me/CheckpointExchange"
     }
   },
   "backgroundImage": "/images/checkpoint-logo-dark.svg"

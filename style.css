@@ -1,0 +1,220 @@
+/* Custom CSS per Mintlify guide: https://www.mintlify.com/docs/customize/custom-scripts#custom-css */
+
+/* Light mode (default) */
+html {
+  --cp-accent: #32CDCD;
+  --cp-bg: #ffffff;
+  --cp-bg-rgb: 255 255 255;
+  --cp-text: #0a0a0a;
+  --cp-text-muted: #5e5e5e;
+  --cp-heading: #0a0a0a;
+  --cp-border: #e5e7eb;
+
+  /* Surfaces */
+  --cp-surface: #f7f7f7;
+  --cp-surface-1: #f7f7f7;
+  --cp-surface-2: #;
+  --cp-surface-3: #eaeef3;
+  --cp-surface-1-rgb: 247 247 247;
+  --cp-surface-bg: var(--cp-surface-1);
+
+  /* Components */
+  --cp-navbar-bg: #f7f7f7;
+  --cp-navbar-border: #e5e7eb;
+  --cp-sidebar-bg: #f7f7f7;
+  --cp-sidebar-border: #e5e7eb;
+  --cp-toc-bg: #ffffff;
+  --cp-input-bg: #ffffff;
+  --cp-input-border: #d1d5db;
+
+  /* Links & code */
+  --cp-link: #32CDCD;
+  --cp-link-hover: #32CDCD;
+  --cp-code-bg: #f8fafc;
+  --cp-code-text: #0a0a0a;
+
+  /* Tables */
+  --cp-table-header-bg: #f3f4f6;
+  --cp-table-row-alt-bg: #fafafa;
+
+  /* Callouts */
+  --cp-info: #2563eb;
+  --cp-success: #16a34a;
+  --cp-warning: #d97706;
+  --cp-error: #dc2626;
+
+  /* Map Mintlify background vars that use rgb(var(--...)) */
+  --background: var(--cp-bg-rgb);
+  --background-light: var(--cp-bg-rgb);
+}
+
+/* Dark mode */
+html.dark, html[data-theme="dark"] {
+  --cp-accent: #32CDCD;
+  --cp-bg: #1a1a1a;
+  --cp-bg-rgb: 26 26 26;
+  --cp-text: #e7e7e7;
+  --cp-text-muted: #a3a3a3;
+  --cp-heading: #f5f5f5;
+  --cp-border: #1f2937;
+
+  /* Surfaces */
+  --cp-surface: #101010;
+  --cp-surface-1: #101010;
+  --cp-surface-2: #;
+  --cp-surface-3: #111827;
+  --cp-surface-1-rgb: 32 34 34;
+  --cp-surface-bg: var(--cp-surface-1);
+
+  /* Components */
+  --cp-navbar-bg: #0b0b0b;
+  --cp-navbar-border: #272727;
+  --cp-sidebar-bg: #111111;
+  --cp-sidebar-border: #272727;
+  --cp-toc-bg:  var(--cp-bg);
+  --cp-input-bg: #0e0e0e;
+  --cp-input-border: #1f2937;
+
+  /* Links & code */
+  --cp-link: #32CDCD;
+  --cp-link-hover: #32CDCD;
+  --cp-code-bg: #0f1720;
+  --cp-code-text: #e7e7e7;
+
+  /* Tables */
+  --cp-table-header-bg: #111827;
+  --cp-table-row-alt-bg: #0e141b;
+
+  /* Callouts */
+  --cp-info: #60a5fa;
+  --cp-success: #22c55e;
+  --cp-warning: #f59e0b;
+  --cp-error: #ef4444;
+
+  /* Map/override Mintlify rgb(var(--background-dark)) consumers */
+  --background: var(--cp-bg-rgb);
+  --background-dark: var(--cp-surface-1-rgb);
+}
+
+html, body {
+  background-color: var(--cp-bg) !important;
+  color: var(--cp-text);
+}
+
+a { color: var(--cp-link); }
+ a:hover { color: var(--cp-link-hover); }
+
+/* Headings and text */
+h1, h2, h3, h4, h5, h6 { color: var(--cp-heading); }
+.prose, .mdx-content { color: var(--cp-text); }
+.prose p, .mdx-content p { color: var(--cp-text); }
+.prose small, .mdx-content small, .text-muted { color: var(--cp-text-muted); }
+
+/* Common surface-style components (exclude code here to avoid conflicts) */
+.card, .callout, .alert, .note, .admonition, .panel {
+  background-color: var(--cp-surface-bg);
+}
+
+/* Borders */
+hr, .divider, .card, .panel, .callout, .code-block, pre, code,
+table, th, td, input, textarea, select,
+.sidebar, .sidebar-content, .toc, .table-of-contents, #table-of-contents {
+  border-color: var(--cp-border);
+}
+
+/* Navbar */
+#navbar, .navbar, [data-identifier="navbar"] {
+  background-color: var(--cp-navbar-bg);
+  border-bottom: 1px solid var(--cp-navbar-border);
+  color: var(--cp-text);
+}
+.nav-logo, [data-selector="nav-logo"] { color: var(--cp-text); }
+.navbar-link, [data-selector="navbar-link"] { color: var(--cp-text); }
+.topbar-cta-button, [data-identifier="topbar-cta-button"] {
+  background-color: var(--cp-accent);
+  color: #ffffff;
+  border: 1px solid var(--cp-accent);
+}
+
+/* Sidebar */
+#sidebar, .sidebar, [data-identifier="sidebar"], .sidebar-content {
+  background-color: var(--cp-sidebar-bg);
+  color: var(--cp-text);
+  border-right: 1px solid var(--cp-sidebar-border);
+}
+.sidebar-title, [data-selector="sidebar-title"] { color: var(--cp-heading); }
+.sidebar-group-header, [data-selector="sidebar-group-header"] { color: var(--cp-text-muted); }
+
+/* Table of contents */
+.toc, .table-of-contents, #table-of-contents, [data-identifier="table-of-contents"], [data-selector="toc"] {
+  background-color: var(--cp-toc-bg);
+  color: var(--cp-text);
+}
+.toc-item, [data-selector="toc-item"] { color: var(--cp-text); }
+
+/* Cards and panels */
+.card, [data-selector="card"], .panel, [data-selector="panel"] {
+  background-color: var(--cp-surface-1);
+  border: 1px solid var(--cp-border);
+}
+.card-group, [data-selector="card-group"] { background-color: var(--cp-surface-2); }
+
+/* Code */
+pre, code, .code-block, [data-selector="code-block"] {
+  background-color: var(--cp-code-bg);
+  color: var(--cp-code-text);
+}
+.code-group, [data-selector="code-group"] { background-color: var(--cp-surface-2); }
+
+/* Inputs & search */
+input, textarea, select, .search-input, #search-input, [data-identifier="search-input"] {
+  background-color: var(--cp-input-bg);
+  color: var(--cp-text);
+  border: 1px solid var(--cp-input-border);
+}
+input::placeholder, textarea::placeholder { color: var(--cp-text-muted); }
+
+/* Tables */
+table thead th { background-color: var(--cp-table-header-bg); color: var(--cp-heading); }
+table tbody tr:nth-child(even) { background-color: var(--cp-table-row-alt-bg); }
+
+/* Pagination */
+.pagination, [data-identifier="pagination"] { color: var(--cp-text); }
+.pagination-prev, .pagination-next, [data-selector="pagination-prev"], [data-selector="pagination-next"] {
+  color: var(--cp-link);
+}
+
+/* Anchors */
+.nav-anchors, [data-selector="nav-anchors"] { background: transparent; }
+.nav-anchor, [data-selector="nav-anchor"] { color: var(--cp-link); }
+
+/* Callouts */
+.callout, [data-selector="callout"] {
+  background-color: var(--cp-surface-2);
+  border: 1px solid var(--cp-border);
+}
+.callout.info, [data-variant="info"] { border-left: 4px solid var(--cp-info); }
+.callout.success, [data-variant="success"] { border-left: 4px solid var(--cp-success); }
+.callout.warning, [data-variant="warning"] { border-left: 4px solid var(--cp-warning); }
+.callout.error, [data-variant="error"] { border-left: 4px solid var(--cp-error); }
+
+/* Utilities: fine control per section/component in MDX */
+.cp-surface-none { --cp-surface-bg: transparent !important; }
+.cp-bg-none { background-color: transparent !important; }
+.cp-no-border { border: none !important; box-shadow: none !important; }
+.cp-surface-1-bg { background-color: var(--cp-surface-1) !important; }
+.cp-surface-2-bg { background-color: var(--cp-surface-2) !important; }
+.cp-surface-3-bg { background-color: var(--cp-surface-3) !important; }
+
+/* Hover effects for images */
+.hover-image:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: var(--cp-accent) !important;
+}
+
+.dark .hover-image:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+

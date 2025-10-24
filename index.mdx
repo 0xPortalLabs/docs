@@ -4,29 +4,23 @@ description: "Creating the decentralized layer for the world's points, where eve
 mode: "custom"
 ---
 
-<div style={{ width: '100%', marginBottom: '3rem' }}>
+<div style={{ width: '100%', maxWidth: '1600px', margin: '0 auto 3rem', pointerEvents: 'none' }}>
   <img
-    src="/images/hero-background.svg"
+    className="block dark:hidden"
+    src="/images/documentationheading_light.webp"
     alt="Checkpoint Banner"
-    style={{ width: '100%', height: 'auto', display: 'block' }}
+    style={{ width: '100%', height: 'auto' }}
+  />
+  <img
+    className="hidden dark:block"
+    src="/images/documentationheading_dark.webp"
+    alt="Checkpoint Banner"
+    style={{ width: '100%', height: 'auto' }}
   />
 </div>
 
 <div style={{ maxWidth: '895px', padding: '0 16px', margin: '0 auto' }}>
 <div style={{ maxWidth: '687px', margin: '0 auto' }}>
-
-<div className="flex justify-center mb-8">
-  <img
-    className="block dark:hidden h-16"
-    src="/images/checkpoint-logo-light.svg"
-    alt="Checkpoint Logo"
-  />
-  <img
-    className="hidden dark:block h-16"
-    src="/images/checkpoint-logo-dark.svg"
-    alt="Checkpoint Logo"
-  />
-</div>
 
 <div className="text-center mb-16">
 
@@ -47,7 +41,6 @@ mode: "custom"
     title="Quickstart"
     icon="rocket"
     href="/get-started/quickstart"
-    color="#32cd32"
   >
     Learn the essentials of Checkpoint and explore its core capabilities.
   </Card>
@@ -55,7 +48,6 @@ mode: "custom"
     title="Technical"
     icon="code"
     href="/architecture/index"
-    color="#32cd32"
   >
     Explore the architecture, dive into the functions, and start developing.
   </Card>
@@ -63,7 +55,6 @@ mode: "custom"
     title="Core Products"
     icon="cubes"
     href="/core-products/"
-    color="#32cd32"
   >
     Discover the Checkpoint ecosystem and how each product works together.
   </Card>
@@ -71,7 +62,6 @@ mode: "custom"
     title="Guides"
     icon="book-open"
     href="/technical-reference/how-to-deposit"
-    color="#32cd32"
   >
     Understand how to use Checkpoint, from the interface to advanced integrations.
   </Card>
@@ -88,22 +78,46 @@ mode: "custom"
 <p className="mint-text-base mint-text-center mb-6">One app, two key experiences.<br/> Explore how Checkpoint works in real time.</p>
 
 <CardGroup cols={2}>
-  <Card
-    title="Trade your Points"
-    icon="rocket"
-    href="https://checkpoint.exchange"
-    color="#32cd32"
-  >
-    Start trading points today on our main platform.
-  </Card>
-  <Card
-    title="Check your Points"
-    icon="chart-bar"
-    href="https://points.0xportal.io"
-    color="#32cd32"
-  >
-    Track your points across projects in one dashboard.
-  </Card>
+  <div>
+    <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+      <a href="https://checkpoint.exchange" target="_blank" rel="noopener noreferrer">
+        <img
+          className="block dark:hidden hover-image"
+          src="/images/Card_Checkpoint_Light.svg"
+          alt="Checkpoint Card"
+          style={{ width: 'auto', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', transition: 'all 0.3s ease' }}
+        />
+        <img
+          className="hidden dark:block hover-image"
+          src="/images/Card_Checkpoint_Dark.svg"
+          alt="Checkpoint Card"
+          style={{ width: 'auto', height: 'auto', borderRadius: '8px', border: '1px solid #374151', transition: 'all 0.3s ease' }}
+        />
+      </a>
+       <h3 className="mint-text-xl mint-font-semibold mint-text-gray-900 dark:mint-text-zinc-50 mint-text-left mt-4 mb-2">Trade your Points</h3>
+       <p className="mint-text-base mint-text-left mint-text-gray-600 dark:mint-text-zinc-400">Start trading points today on our main platform.</p>
+    </div>
+  </div>
+  <div>
+    <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+      <a href="https://points.0xportal.io" target="_blank" rel="noopener noreferrer">
+        <img
+          className="block dark:hidden hover-image"
+          src="/images/Circle_Light.svg"
+          alt="Circle"
+          style={{ width: 'auto', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', transition: 'all 0.3s ease' }}
+        />
+        <img
+          className="hidden dark:block hover-image"
+          src="/images/Circle_Dark.svg"
+          alt="Circle"
+          style={{ width: 'auto', height: 'auto', borderRadius: '8px', border: '1px solid #374151', transition: 'all 0.3s ease' }}
+        />
+      </a>
+       <h3 className="mint-text-xl mint-font-semibold mint-text-gray-900 dark:mint-text-zinc-50 mint-text-left mt-4 mb-2">Check your Points</h3>
+       <p className="mint-text-base mint-text-left mint-text-gray-600 dark:mint-text-zinc-400">Track your points across projects in one dashboard.</p>
+    </div>
+  </div>
 </CardGroup>
 
 </div>
@@ -120,7 +134,6 @@ mode: "custom"
     title="Discord"
     icon="discord"
     href="https://discord.gg/fJ5dJbxxTT"
-    color="#32cd32"
   >
     Join our community for support, discussions and requests.
   </Card>
@@ -128,7 +141,6 @@ mode: "custom"
     title="GitHub"
     icon="github"
     href="https://github.com/0xPortalLabs/"
-    color="#32cd32"
   >
     View source code and contribute to the project.
   </Card>
@@ -136,7 +148,6 @@ mode: "custom"
     title="X (Twitter)"
     icon="x-twitter"
     href="https://x.com/CheckpointEX"
-    color="#32cd32"
   >
     Follow Checkpoint for updates and announcements.
   </Card>
@@ -144,7 +155,6 @@ mode: "custom"
     title="Telegram"
     icon="telegram"
     href="https://t.me/CheckpointExchange"
-    color="#32cd32"
   >
     Join our Telegram for updates, support and memes.
   </Card>
