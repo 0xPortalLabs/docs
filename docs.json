@@ -23,20 +23,15 @@
         "pages": ["index", "get-started/quickstart", "get-started/about-checkpoint"]
       },
       {
-        "group": "Core Products",
+        "group": "Checkpoint Products",
         "pages": [
-          {
-            "group": "Checkpoint Products",
-            "pages": [
-              "core-products/index",
-              "core-products/point-exchange",
-              "core-products/point-aggregator",
-              "core-products/point-oracle",
-              "core-products/point-api",
-              "core-products/point-tracking",
-              "core-products/checkpoint-point-nfts"
-            ]
-          }
+          "core-products/index",
+          "core-products/point-exchange",
+          "core-products/point-aggregator",
+          "core-products/point-oracle",
+          "core-products/point-api",
+          "core-products/point-tracking",
+          "core-products/checkpoint-point-nfts"
         ]
       },
       {
@@ -48,10 +43,6 @@
           "architecture/market-trading",
           "architecture/program-settlement"
         ]
-      },
-      {
-        "group": "Integration Guides",
-        "pages": ["technical-reference/how-to-deposit", "technical-reference/interact-with-market"]
       },
       {
         "group": "API Reference",
