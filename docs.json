@@ -20,7 +20,11 @@
     "groups": [
       {
         "group": "Get Started",
-        "pages": ["index", "get-started/quickstart", "get-started/about-checkpoint"]
+        "pages": [
+          "index",
+          "get-started/quickstart",
+          "get-started/about-checkpoint"
+        ]
       },
       {
         "group": "Checkpoint Products",
@@ -62,40 +66,18 @@
       "prefill": true
     }
   },
-  "topbarLinks": [
-    {
-      "name": "Community",
-      "url": "https://discord.gg/fJ5dJbxxTT"
-    }
-  ],
-  "topbarCtaButton": {
-    "type": "github",
-    "url": "https://github.com/0xPortalLabs/checkpoint-v2-contracts"
+  "navbar": {
+    "links": [
+      {
+        "label": "Checkpoint Exchange",
+        "icon": "/images/checkpoint-symbol-neutral.svg",
+        "href": "https://checkpoint.exchange"
+      }
+    ]
   },
-  "anchors": [
-    {
-      "name": "Portal Dashboard",
-      "icon": "rocket",
-      "url": "https://0xportal.io",
-      "color": "#32CDCD"
-    },
-    {
-      "name": "GitHub",
-      "icon": "github",
-      "url": "https://github.com/0xPortalLabs/checkpoint-v2-contracts",
-      "color": "#32CDCD"
-    },
-    {
-      "name": "Discord",
-      "icon": "discord",
-      "url": "https://discord.gg/fJ5dJbxxTT",
-      "color": "#32CDCD"
-    }
-  ],
   "logo": {
     "light": "/images/checkpoint-logo-dark.svg",
-    "dark": "/images/checkpoint-logo-light.svg",
-    "href": "https://checkpoint.exchange"
+    "dark": "/images/checkpoint-logo-light.svg"
   },
   "search": {
     "prompt": "Search documentation..."
@@ -114,7 +96,14 @@
     }
   },
   "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude", "perplexity", "cursor"]
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "cursor"
+    ]
   },
   "footer": {
     "socials": {
@@ -123,6 +112,5 @@
       "discord": "https://discord.gg/fJ5dJbxxTT",
       "telegram": "https://t.me/CheckpointExchange"
     }
-  },
-  "backgroundImage": "/images/checkpoint-logo-dark.svg"
+  }
 }

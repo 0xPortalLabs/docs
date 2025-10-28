@@ -130,6 +130,30 @@ table, th, td, input, textarea, select,
 }
 .nav-logo, [data-selector="nav-logo"] { color: var(--cp-text); }
 .navbar-link, [data-selector="navbar-link"] { color: var(--cp-text); }
+.navbar-link img, [data-selector="navbar-link"] img {
+  background-color: transparent !important;
+}
+/* Override dark mode background for navbar icons */
+.dark .navbar-link img, .dark [data-selector="navbar-link"] img,
+.navbar-link img.dark\:bg-gray-500, [data-selector="navbar-link"] img.dark\:bg-gray-500 {
+  background-color: transparent !important;
+}
+/* Target navbar icons specifically */
+.navbar-link svg, [data-selector="navbar-link"] svg,
+.navbar-link img[src*="checkpoint-symbol"], [data-selector="navbar-link"] img[src*="checkpoint-symbol"] {
+  background-color: transparent !important;
+}
+.dark .navbar-link svg, .dark [data-selector="navbar-link"] svg,
+.dark .navbar-link img[src*="checkpoint-symbol"], .dark [data-selector="navbar-link"] img[src*="checkpoint-symbol"] {
+  background-color: transparent !important;
+}
+/* Override specific Tailwind classes for navbar icons */
+img.h-4.w-4.dark\:bg-gray-500.bg-transparent {
+  background-color: transparent !important;
+}
+.dark img.h-4.w-4.dark\:bg-gray-500.bg-transparent {
+  background-color: transparent !important;
+}
 .topbar-cta-button, [data-identifier="topbar-cta-button"] {
   background-color: var(--cp-accent);
   color: #ffffff;
@@ -216,5 +240,6 @@ table tbody tr:nth-child(even) { background-color: var(--cp-table-row-alt-bg); }
 .dark .hover-image:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
+
 
 

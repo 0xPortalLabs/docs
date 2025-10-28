@@ -15,8 +15,8 @@ a Token Generation Event (TGE), giving users a way to bring real utility to thei
 Turning isolated points programs into a unified layer of value, where rewards can move freely, be
 verified, and find real market liquidity.
 
-<Card title="Product Overview" icon="text" href="/core-products" horizontal>
-  Learn more about Checkpoints core products.
+<Card title="Product Overview" icon="cubes" href="/core-products" horizontal>
+  Learn more about Checkpoints products and ecosystem.
 </Card>
 
 ## Getting Started
@@ -32,11 +32,11 @@ overview of rewards collected across supported protocols.
 
 If you do not have an address yet, use any of these links to see it in action:
 
-- [**mrbang**](https://points.0xportal.io/?address=0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6)
+- [**mrbang** <Icon icon="arrow-up-right"/>](https://points.0xportal.io/?address=0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6)
   (0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6)
-- [**vitalik.eth**](https://points.0xportal.io/?address=0xd8da6bf26964af9d7eed9e03e53415d37aa96045)
+- [**vitalik.eth** <Icon icon="arrow-up-right"/>](https://points.0xportal.io/?address=0xd8da6bf26964af9d7eed9e03e53415d37aa96045)
   (0xd8da6bf26964af9d7eed9e03e53415d37aa96045)
-- [**khunchan.eth**](https://points.0xportal.io/?address=0x4cb75146e98562c9d79b31649c6c739e4dcb7cd5)
+- [**khunchan.eth** <Icon icon="arrow-up-right"/>](https://points.0xportal.io/?address=0x4cb75146e98562c9d79b31649c6c739e4dcb7cd5)
   (0x4cb75146e98562c9d79b31649c6c739e4dcb7cd5)
 
 The Points Aggregator only requires an EVM compatible address, but Checkpoint is built on a
@@ -227,36 +227,39 @@ expand its capabilities.
 
 <AccordionGroup>
   <Accordion title="Registry Contract" icon="book">
-    Central registry for all points programs with configurable parameters:
+    **Central registry for all points programs with configurable parameters**
     - Program registration and management
     - Oracle signer configuration
     - Custom vesting schedules
     - Access control and permissions
   </Accordion>
 
-{" "}
+  <Accordion title="Deposit Contract" icon="inbox">
+    **Handles tokenization of off-chain points into on-chain assets**
+    - Oracle-verified point deposits
+    - Soulbound NFT minting for tracking
+    - ERC20 escrow token creation
+    - Point holding for market orders
+  </Accordion>
 
-<Accordion title="Deposit Contract" icon="inbox">
-  Handles tokenization of off-chain points into on-chain assets: - Oracle-verified point deposits -
-  Soulbound NFT minting for tracking - ERC20 escrow token creation - Point holding for market orders
-</Accordion>
+  <Accordion title="Oracle Contract" icon="certificate">
+    **Cryptographic verification system for off-chain claims**
+    - ECDSA signature verification
+    - Nonce-based replay protection
+    - Time-based expiry validation
+    - Vesting schedule management
+  </Accordion>
 
-{" "}
-
-<Accordion title="Oracle Contract" icon="certificate">
-  Cryptographic verification system for off-chain claims: - ECDSA signature verification -
-  Nonce-based replay protection - Time-based expiry validation - Vesting schedule management
-</Accordion>
-
-{" "}
-
-<Accordion title="Market Contract" icon="store">
-  Decentralized order book for pre-TGE trading: - Collateral-based offer creation - USDC payment
-  processing - Escrow token distribution - Order matching and settlement
-</Accordion>
+  <Accordion title="Market Contract" icon="store">
+    **Decentralized order book for pre-TGE trading**
+    - Collateral-based offer creation
+    - USDC payment processing
+    - Escrow token distribution
+    - Order matching and settlement
+  </Accordion>
 
   <Accordion title="Settlement Contract" icon="handshake">
-    Cross-chain token distribution after TGE:
+    **Cross-chain token distribution after TGE**
     - LayerZero message passing
     - Multi-chain token transfers
     - Proportional distribution logic
