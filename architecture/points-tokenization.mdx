@@ -1,12 +1,12 @@
 ---
 title: "Points Tokenization"
-description: "How off-chain points become on-chain assets you can trade"
+description: "How offchain points become onchain assets you can trade"
 ---
 
 # Points Tokenization
 
-The points tokenization system transforms your off-chain loyalty points into real, tradeable
-on-chain assets. It's a three-step process: verification, minting, and tracking.
+The points tokenization system transforms your offchain loyalty points into real, tradeable
+onchain assets.
 
 ## The Deposit Process
 
@@ -19,7 +19,7 @@ on-chain assets. It's a three-step process: verification, minting, and tracking.
     participant NFT as Soulbound NFT
 
     User->>Oracle: I have X points in program Y
-    Oracle->>Oracle: Verifies claim off-chain
+    Oracle->>Oracle: Verifies claim offchain
     Oracle-->>User: Return signature
     User->>Deposit: Submit signature + amount
     Deposit->>Oracle Contract: Validate signature
@@ -43,14 +43,14 @@ required to create offers on the market.
 
 Referenced as the `DepositReceipt.sol` contract.
 
-**On-chain points data**:
+**onchain points data**:
 
-Point balance changes are tracked on-chain via the
+Point balance changes are tracked onchain via the
 [Oracle](./oracle-system#tracking-historical-changes), which internally uses
 [OpenZeppelin's Checkpoints](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/Checkpoints.sol)
 library to maintain an immutable record of all balance updates.
 
-This data is queryable on-chain via the Soulbound NFT (DepositReceipt.sol)
+This data is queryable onchain via the Soulbound NFT (DepositReceipt.sol)
 
 <CodeGroup>
 

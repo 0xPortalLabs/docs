@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Checkpoint Oracle API",
-    "description": "Cryptographic verification of off-chain claims",
+    "description": "Cryptographic verification of offchain claims",
     "version": "1.0.0",
     "contact": {
       "name": "Checkpoint Support",
@@ -59,7 +59,7 @@
     "/claim/settlement": {
       "post": {
         "summary": "Get Settlement Claim",
-        "description": "Verify that an offer was properly settled on-chain and get a signature for a cross-chain settlement transaction",
+        "description": "Verify that an offer was properly settled onchain and get a signature for a crosschain settlement transaction",
         "operationId": "getSettlementClaim",
         "tags": ["Claims"],
         "requestBody": {

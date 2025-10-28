@@ -17,14 +17,14 @@ An offer is a binding commitment to trade points at a specific price with collat
 **Example**: "I'll sell you 500 of my points for 50 USDC, and I'm putting up 50 USDC as collateral
 to guarantee this deal."
 
-Of course we are not limited to using collateral as a guarantee, we can use off-chain agreements
+Of course we are not limited to using collateral as a guarantee, we can use offchain agreements
 (legal contracts) or credit scores as well, this is totally up to the discretion of the seller.
 
 ### Collateral
 
 There are many different types of collateral that can be used to back an offer. We will discuss
 liquid tokens such as USDC from now. However, sellers are not limited to using collateral tokens and
-can use off-chain agreements or credit scores as well. When creating an offer, the seller puts up a
+can use offchain agreements or credit scores as well. When creating an offer, the seller puts up a
 configurable amount of collateral. This collateral is held in escrow until the offer is settled, or
 the offer is cancelled.
 
@@ -176,7 +176,7 @@ tokens, deposits them to the `Settlement.sol` contract, and sends the USDC proce
 (minus the settlement fee if defined). The seller also gets their collateral back, and the filler
 can now claim their tokens from the `Settlement.sol` contract.
 
-### Cross-Chain Settlement
+### Crosschain Settlement
 
 This is useful when the points program is on a different chain than the Market. Create an offer on
 one chain, the buyer fills it, but the token launches on another chain. To settle:

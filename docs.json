@@ -49,9 +49,14 @@
         ]
       },
       {
-        "group": "API Reference",
+        "group": "Oracle API Reference",
         "openapi": "spec/oracle.json",
         "pages": ["api/oracle-api"]
+      },
+      {
+        "group": "Points API Reference",
+        "openapi": "spec/points.yaml",
+        "pages": ["api/points-api"]
       }
     ]
   },
