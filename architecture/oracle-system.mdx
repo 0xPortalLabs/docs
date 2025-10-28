@@ -1,11 +1,11 @@
 ---
 title: "Oracle System"
-description: "Cryptographic verification of off-chain points"
+description: "Cryptographic verification of offchain points"
 ---
 
 # Oracle System
 
-The Oracle is Checkpoint's verification layer. It queries off-chain points APIs, generates
+The Oracle is Checkpoint's verification layer. It queries offchain points APIs, generates
 cryptographic signatures to prove the data is legitimate, and the blockchain verifies these
 signatures trustlessly. This approach makes onboarding new projects easy and simple.
 
@@ -109,7 +109,7 @@ curl -X POST "https://oracle.checkpoint.exchange/claim/deposit" \
 
 **POST /claim/settlement**
 
-- Verify that a trade was properly settled on-chain and get a signature for a crosschain settlement
+- Verify that a trade was properly settled onchain and get a signature for a crosschain settlement
   transaction
 - [Full documentation →](/api-reference/claims/get-settlement-claim)
 
@@ -123,7 +123,7 @@ curl -X POST "https://oracle.checkpoint.exchange/claim/deposit" \
 
 ## Tracking Historical Changes
 
-When your points balance changes, the oracle records this on-chain via `changePoints()`.
+When your points balance changes, the oracle records this onchain via `changePoints()`.
 
 <Info> This usually happens every 24 hours but there is no strong guarantee. </Info>
 

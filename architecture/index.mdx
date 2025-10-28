@@ -1,19 +1,19 @@
 ---
 title: "Technical Overview"
-description: "How Checkpoint V2 converts off-chain points into tradeable on-chain assets"
+description: "How Checkpoint V2 converts offchain points into tradeable onchain assets"
 ---
 
 # Technical Overview
 
-Checkpoint V2 is a decentralized protocol that bridges off-chain loyalty points programs with
-on-chain liquidity. It enables users to tokenize their points, trade them before a Token Generation
+Checkpoint V2 is a decentralized protocol that bridges offchain loyalty points programs with
+onchain liquidity. It enables users to tokenize their points, trade them before a Token Generation
 Event (TGE), and ultimately redeem them for tokens with guaranteed settlement.
 
 ## The Core Flow
 
 <Mermaid>
   sequenceDiagram actor User participant Deposit participant Market participant Settlement
-  User->>Deposit: Deposit off-chain points
+  User->>Deposit: Deposit offchain points
   <br />
   (with oracle signature) Deposit->>User: Receive NFT + escrow tokens User->>Market: Create/fill
   trading offers
@@ -35,14 +35,14 @@ Checkpoint consists of five interconnected smart contracts, each with a specific
 
 {" "}
 <Card title="Deposit" icon="inbox">
-  Handles the initial tokenization. Users submit their off-chain points (with a cryptographic
+  Handles the initial tokenization. Users submit their offchain points (with a cryptographic
   signature from the oracle), and Deposit mints them a soulbound NFT and escrow tokens representing
-  their points on-chain.
+  their points onchain.
 </Card>
 
 {" "}
 <Card title="Oracle" icon="certificate">
-  Cryptographic verification layer. Confirms that off-chain point claims are valid by checking
+  Cryptographic verification layer. Confirms that offchain point claims are valid by checking
   digital signatures. Prevents fraud and keeps the system trustless.
 </Card>
 
@@ -55,7 +55,7 @@ Checkpoint consists of five interconnected smart contracts, each with a specific
   <Card title="Settlement" icon="handshake">
     Post-TGE token distribution. Once the actual tokens are live, Settlement
     distributes them to escrow token holders at a 1:1 ratio. Supports
-    cross-chain transfers via LayerZero.
+    crosschain transfers via LayerZero.
   </Card>
 </CardGroup>
 
@@ -87,11 +87,11 @@ Once the actual token is deployed, you can:
 ### Step 1: Deposit Points
 
 ```
-User → Signs off-chain data with oracle →
+User → Signs offchain data with oracle →
 Sends deposit transaction → Receives NFT + escrow tokens
 ```
 
-The oracle verifies your claim off-chain, then you send a transaction with the signature. The
+The oracle verifies your claim offchain, then you send a transaction with the signature. The
 Deposit contract verifies it matches and creates your tokens.
 
 ### Step 2: Trade Points (Optional)
@@ -134,8 +134,8 @@ keeps the collateral as compensation.
 
 ### Oracle Verification
 
-The Oracle contract uses cryptographic signatures to verify that points claimed on-chain actually
-exist off-chain. This keeps the system secure without needing a centralized points database.
+The Oracle contract uses cryptographic signatures to verify that points claimed onchain actually
+exist offchain. This keeps the system secure without needing a centralized points database.
 
 ### Settlement
 
@@ -155,7 +155,7 @@ Checkpoint is designed to be battle-tested:
 ## Information Flow
 
 <Mermaid>
-  graph LR A["Off-Chain Points
+  graph LR A["offchain Points
   <br />
   (User has points
   <br />
@@ -163,7 +163,7 @@ Checkpoint is designed to be battle-tested:
   <br />
   (Verifies claims
   <br />
-  off-chain)"] C["Blockchain
+  offchain)"] C["Blockchain
   <br />
   (Deposit, Market,
   <br />
@@ -184,10 +184,10 @@ Checkpoint is designed to be battle-tested:
 | **Where?**             | Checkpoint Market                  | Any DEX/exchange            |
 | **Settlement**         | Coming soon                        | Completed                   |
 
-## Cross-Chain Support
+## Crosschain Support
 
 For projects launching on multiple chains, LayerZero integration enables:
 
 - Escrow tokens on multiple chains before TGE
-- Cross-chain settlement after token launch
+- Crosschain settlement after token launch
 - Consistent 1:1 ratios across all chains
