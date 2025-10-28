@@ -1,0 +1,137 @@
+openapi: 3.0.3
+info:
+  title: Points API
+  description: API for querying points data from various adapters and managing API keys
+  version: 1.0.0
+  contact:
+    name: Portal Labs
+    url: https://0xportal.io
+servers:
+  - url: https://points.0xportal.io/api/v1
+    description: Production server
+
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key based authentication
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        error:
+          type: string
+
+    EVMAddress:
+      type: string
+      pattern: ^0x[a-fA-F0-9]{40}$
+
+    Domain:
+      type: string
+      format: hostname
+      description: A valid origin
+
+    AdaptersList:
+      type: object
+      properties:
+        success:
+          type: boolean
+        adapters:
+          type: array
+          items:
+            type: string
+
+    AdaptersPointsResults:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              error:
+                type: string
+              points:
+                type: object
+                additionalProperties: true
+
+paths:
+  /adapters:
+    get:
+      tags:
+        - Points
+      summary: List all available adapters
+      security:
+        - apiKeyAuth: []
+      responses:
+        "200":
+          description: Successfully returned list of adapters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdaptersList"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /adapters/{address}:
+    parameters:
+      - name: address
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/EVMAddress"
+        description: The EVM address to query points for
+      - name: adapters
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Comma-separated list of adapter names to run
+      - name: timeout
+        in: query
+        required: false
+        schema:
+          type: number
+        description: Timeout in seconds
+    get:
+      tags:
+        - Points
+      summary: Get points data for a specific address
+      security:
+        - apiKeyAuth: []
+      responses:
+        "200":
+          description: Successfully returned points data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdaptersPointsResults"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+tags:
+  - name: Points
+    description: Endpoints for retrieving points data for a specific address across one or more protocols
+

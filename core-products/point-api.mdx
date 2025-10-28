@@ -18,85 +18,183 @@ description: "Programmatic access to points data and trading functionality"
   style={{ pointerEvents: 'none' }}
 />
 
-# Point API
+# Points API
 
-The Point API provides developers with programmatic access to Checkpoint's points data and trading functionality. Build applications, bots, and integrations on top of the Checkpoint ecosystem.
+The Points API provides developers with programmatic access to Checkpoint's points data across 30+ DeFi protocols. Query points balances, retrieve historical data, and integrate points tracking directly into your applications with simple REST endpoints.
 
-## API Endpoints
+## Overview
 
-### Oracle API
+The Points API is built around a few core concepts:
 
-Access the Oracle service for points verification and claim generation:
+<CardGroup cols={2}>
+  <Card title="Multi-Protocol Support" icon="layer-group" color="#32cd32">
+    Query points data across 30+ DeFi protocols through a single unified interface
+  </Card>
+  <Card title="Real-time Data" icon="clock" color="#32cd32">
+    Access up-to-date points balances and rankings for any address
+  </Card>
+  <Card title="Normalized Data Format" icon="code" color="#32cd32">
+    All points data is normalized into a consistent JSON format across all protocols
+  </Card>
+  <Card title="Flexible Queries" icon="sliders" color="#32cd32">
+    Query all protocols or specify specific adapters for targeted data retrieval
+  </Card>
+</CardGroup>
 
-- **Deposit Claims**: Generate signatures for point deposits
-- **Settlement Claims**: Verify trade settlements for cross-chain operations
-- **Points Verification**: Validate off-chain points data
+## How It Works
 
-### Market API
+The Points API operates as a data aggregation layer that:
 
-Interact with the trading system programmatically:
+<Steps>
+  <Step title="Accepts Address Query">
+    User submit an address to query points for
+  </Step>
+  <Step title="Aggregates Protocol Data">
+    The API queries multiple protocol adapters simultaneously
+  </Step>
+  <Step title="Returns Unified Response">
+    Points data from all protocols is returned in a consistent JSON format
+  </Step>
+  <Step title="Supports Selective Queries">
+    Optional adapter filtering allows querying specific protocols
+  </Step>
+</Steps>
 
-- **Order Management**: Create, modify, and cancel trading orders
-- **Market Data**: Access real-time prices and order book data
-- **Trade Execution**: Execute trades through API calls
+## Core Endpoints
 
-### Aggregator API
+The Points API provides two main endpoints:
 
-Access aggregated points data across projects:
+### 1. Get Points for Address
 
-- **User Points**: Retrieve points data for specific addresses
-- **Project Data**: Get information about supported projects
-- **Historical Data**: Access historical points and trading data
+Retrieve points data for a specific Ethereum address across one or more protocols:
+
+**GET /adapters/\{address\}**
+
+- [Full documentation →](/api-reference/points/get-points-data-for-a-specific-address)
+
+```json Example Request
+curl "https://points.0xportal.io/api/v1/adapters/0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6?adapters=sonic,henlo" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Example Response
+{
+  "success": true,
+  "results": {
+    "sonic": {
+      "total": 1500,
+      "rank": 245,
+      "data": { ... },
+      "claimable": true
+    },
+    "henlo": {
+      "total": 2300,
+      "rank": 189,
+      "claimable": false
+    }
+  }
+}
+```
+
+### 2. List Available Adapters
+
+Get the complete list of supported protocol adapters:
+
+**GET /adapters**
+
+- [Full documentation →](/api-reference/points/list-all-available-adapters)
+
+```bash Example Request
+GET https://points.0xportal.io/api/v1/adapters
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```json Example Response
+{
+  "success": true,
+  "adapters": [
+    "avalon",
+    "bedrock",
+    "corn",
+    "dolomite",
+    "ethereal",
+    "etherfi",
+    "henlo",
+    "karak",
+    "kelpdao",
+    "sonic",
+    "symbiotic",
+    "taiko",
+    "veda",
+    ...
+  ]
+}
+```
 
 ## Authentication
 
-API access requires authentication for most endpoints:
+The Points API uses API key-based authentication:
 
-1. **API Key**: Generate an API key from your dashboard
-2. **Rate Limits**: Respect rate limits to ensure fair usage
-3. **Webhooks**: Subscribe to real-time events and updates
+<Steps>
+  <Step title="Generate API Key">
+    Sign in to the <a href="https://points.0xportal.io/apikeys" target="_blank">Portal Dashboard</a> and create a new API key
+  </Step>
+  <Step title="Specify Authorized Domains">
+    Configure which domains are authorized to use your API key
+  </Step>
+  <Step title="Include in Requests">
+    Add your API key to the Authorization header of each request
+  </Step>
+</Steps>
 
-## SDKs and Libraries
+Include your API key in every request:
 
-Official SDKs are available for popular programming languages:
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
 
-- **TypeScript/JavaScript**: Full-featured SDK for web applications
-- **Python**: Python SDK for data analysis and automation
-- **Go**: Go SDK for high-performance applications
+## Rate Limiting
+
+The Points API implements a "soft" rate limit of 50 requests per 10 seconds window. This ensures fair access for all users while allowing burst usage patterns.
+
+If you need higher rate limits for your use case, please reach out to us.
 
 ## Use Cases
 
-### Trading Bots
-
-Build automated trading strategies:
-
-- **Price Monitoring**: Track points prices across projects
-- **Arbitrage**: Identify and execute arbitrage opportunities
-- **Portfolio Management**: Automatically rebalance your points portfolio
-
-### Analytics Platforms
-
-Create comprehensive analytics:
-
-- **Points Tracking**: Monitor points across multiple projects
-- **Performance Analysis**: Analyze trading performance and strategies
-- **Market Research**: Study points markets and trends
-
-### Integration Tools
-
-Connect Checkpoint with other platforms:
-
-- **Portfolio Trackers**: Integrate with existing portfolio management tools
-- **Social Platforms**: Share points achievements on social media
-- **Gaming Platforms**: Connect gaming achievements with points
+<CardGroup cols={2}>
+  <Card title="Points Dashboard" icon="chart-line" color="#32cd32">
+    Build web applications that display points balances and rankings across protocols
+  </Card>
+  <Card title="Trading Integrations" icon="arrows-repeat" color="#32cd32">
+    Integrate points data into trading platforms and portfolio trackers
+  </Card>
+  <Card title="Analytics Platforms" icon="magnifying-glass" color="#32cd32">
+    Analyze points distribution, trends, and market data across protocols
+  </Card>
+  <Card title="Automated Tools" icon="robot" color="#32cd32">
+    Build bots and automation tools that monitor points across multiple users
+  </Card>
+</CardGroup>
 
 ## Getting Started
 
-1. **Register for API Access**: Sign up for an API key
-2. **Read the Documentation**: Review the complete API reference
-3. **Try the Playground**: Test endpoints in the interactive playground
-4. **Build Your Application**: Start building with our SDKs
+To start using the Points API:
+
+<Steps>
+  <Step title="Get API Key">
+    Sign up and generate an API key from the <a href="https://points.0xportal.io/apikeys" target="_blank">Portal Dashboard</a>
+  </Step>
+  <Step title="Explore Endpoints">
+    Review the [Points API Reference](/api/points-api) for detailed endpoint documentation
+  </Step>
+  <Step title="Test Integration">
+    Use the interactive API reference to test endpoints with your API key
+  </Step>
+  <Step title="Build Your App">
+    Integrate the API into your application using the provided examples
+  </Step>
+</Steps>
 
 <Note>
-  **Developer Support**: Join our Discord for technical support and to connect with other developers building on Checkpoint.
+**Full Documentation:** Check out the [Points API Reference](/api/points-api) for detailed parameter specifications, response formats, error handling, and code examples.
 </Note>
