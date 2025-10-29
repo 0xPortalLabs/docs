@@ -20,7 +20,10 @@ description: "Trade points before they become tokens with collateral-backed secu
 
 # Checkpoint Exchange
 
-The Points Exchange is Checkpoint's core trading platform where users can buy and sell points before they become official tokens. All trades are secured with collateral to ensure both parties fulfill their obligations.
+The Points Exchange is Checkpoint's core trading platform where users can buy and sell points before they become official tokens. All trades are secured with USDC collateral to ensure both sellers and buyers fulfill their obligations on **settlement**.
+
+<Note>Checkpoint Exchange is running at the moment on testnet</Note>
+
 
 <img 
   className="block dark:hidden rounded-lg" 
@@ -34,74 +37,151 @@ The Points Exchange is Checkpoint's core trading platform where users can buy an
   alt="Checkpoint Exchange Alpha Screen Grab Dark"
 />
 
-## Selling Points
+An important part of Checkpoint is that all trades are secured with USDC collateral. This gives the points deposited trading value. The collateral is kept in an **escrow** contract until settlement.
 
-### Deposit
+<Card title="Market Trading" icon="code" href="/architecture/market-trading" horizontal>
+  Learn more about the Exchange inner workings.
+</Card>
 
-### Sell Offer
+# Creating and Filling Offers
+The market part of the exchange is a decentralized orderbook where users can either create or fill offers.
 
-#### Collateral
+### Creating a Sell Offer
+    Selling points requires users to have points to sell. For this, the user needs to have points on a platform that has been integrated to the Checkpoint Ecosystem and a market needs to be available for points to be traded.
+    
+    <Steps titleSize="h4">
+      <Step title="Deposit Points">
+        Users that want to sell points need to deposit their off-chain points to be on-chain. For this, the user needs to interact with the Oracle and verify that they have points to deposit.
+      
+        When a user deposits points, they receive a non-transferable NFT that represents the deposit on-chain. This NFT becomes a record for users that they have on-chain points to trade.
+      
+        A user needs to have enough available points to be able to make an offer.
 
-## Buying Points
+        [Learn more about Checkpoint NFTs →](/core-products/checkpoint-point-nfts)
+      </Step>
+      <Step title="Create a Sell Offer">
+        After the user has deposited points, they can place a sell offer. A sell offer requires:
+        * **Amount of points to sell**
+        * **Price of the points sold**
+        * **Collateral backing the sell offer**
 
-### Fill Offer
+        The collateral amount is separate from the price and acts as a security deposit. When creating an offer, users must provide USDC collateral upfront. This collateral is held in escrow until settlement.
 
-#### Escrow
+        **Offer Status**
 
-## Settlement
+        Offers have different statuses and behaviors depending on their state.
 
-## Exchange Fees
+        * **Created**: Your offer is live and available for buyers to fill
+        * **Filled**: Your offer has been completely filled by buyers
+        * **Partially Filled**: Some buyers have filled part of your offer
+        * **Settled**: The offer has been settled
+        * **Cancelled**: You have cancelled the offer
 
-## Notes
+        **Offer Management**
 
+        Once you have created a sell offer, you can manage it through the UI.
 
-<br/>
-<br/>
+        * You can only cancel offers that are in "Created" status
+        * Partially filled offers cannot be cancelled, they must be settled
+        * When you cancel an offer, you pay a cancellation fee
+        
+        When cancelling your collateral is returned minus protocol fees and your points become available again for new offers.
 
-## How to use
+      </Step>
+      <Step title="Seller Settlement">
+        Settlement is the final phase where you receive payment for your sold points. Settlement occurs when a protocol's token launches and becomes available for distribution.
+      
+        **When Settlement begins**
 
-### Buying Points
+        * Settlement is triggered when a protocol's token launches
+        * No new offers can be created once settlement is active
+        * Your existing offers must be settled according to their terms
+        
+        <Info>Offers in the Created status receive allocated collateral minus Fees</Info>
+       
+        **Settlement Process for Sellers**
 
-When you want to buy points from another user:
+        * You must transfer the protocol tokens to the settlement contract
+        * Your collateral is returned to you
+        * You receive payment for the points you sold
+        * A settlement fee is deducted from your payment
 
-1. **Browse Available Offers**: View all active sell offers for the points you want
-2. **Review Terms**: Check the price, amount, and collateral requirements
-3. **Post Collateral**: Deposit USDC as collateral to secure your purchase
-4. **Execute Trade**: Complete the transaction and receive the points
-5. **Hold Until TGE**: Keep your points until the official token launch
+        <Danger>Overdue settlement result in additional fees and partial or total loss of the collateral</Danger>
+        [Learn more about settlement →](/architecture/program-settlement)
+      </Step>
+    </Steps>
 
-### Selling Points
+### Filling a Buy Offer
+    Buying points on Checkpoint Exchange means filling existing sell offers created by other users. You can either fill an entire offer or partially fill it with any amount you choose.
+    
+    <Steps titleSize="h3">
+      <Step title="Finding Offers">
+        Browse the orderbook to find offers for the points you want to buy. In the UI some of the elements you will see are
 
-When you want to sell your points:
+        * How many points are available
+        * Price per point or total in USDC
+        * How much has already been filled (if any)
 
-1. **Deposit Points**: First tokenize your offchain points through the deposit process
-2. **Create Offer**: Set your desired price and amount to sell
-3. **Post Collateral**: Deposit USDC as collateral to secure your sale
-4. **Wait for Buyer**: Your offer appears in the marketplace for others to fill
-5. **Complete Trade**: When filled, receive payment and transfer points to buyer
+        <Info>You cannot fill your own offers, you can only buy from other users' offers</Info>
+      
+      </Step>
+      <Step title="Choosing Fill Type">
+        After choosing an offer, you will be able to fill partially or the entire offer. This is based on how much USDC you are committing to fill. A 50% fill will also warrant 50% of the escrow tokens associated to the offer selected.
+        
+        This system allows for flexible trading where you can buy exactly the amount of points you want, regardless of the offer size.
 
-### Collateral & Escrow
+        <Warning>Checkpoint does not currently have a secondary market for escrow tokens (chXXX)</Warning>
 
-All trades require collateral from both parties:
+      </Step>
+      <Step title="What you receive">
+        After filling an offer, the seller's NFT will mint escrow tokens (chXXX) proportional to the amount filled. These escrow tokens are a 1:1 on the points the seller has deposited. However, this is not a 1:1 on tokens to be received on settlement.
+        
+        **Escrow tokens are not TGE Tokens**
 
-- **Buyer Collateral**: Ensures the buyer has funds to complete the purchase
-- **Seller Collateral**: Ensures the seller will deliver the points as promised
-- **Automatic Release**: Collateral is released when trades complete successfully
-- **Dispute Resolution**: If either party fails to fulfill, the other keeps the collateral
+         The escrow tokens (chXXX) are not representative of the tokens issued on TGE by the protocol, but the proportion of the user's claim to their TGE tokens.
 
-### Settlement
+         <Danger>The escrow tokens (chXXX) are not representative to the tokens issued on TGE by the protocol, but the proportion of the user claim to their TGE tokens</Danger>
+         
+         [Learn more about escrow settlement convertion →](/architecture/points-tokenization#2-escrow-token-chxxx-tokens)
 
-After the Token Generation Event (TGE):
+      </Step>
+      <Step title="Buyer Settlement">
+       Settlement is the final phase where you receive the actual protocol tokens for your purchased points. Settlement occurs when a protocol's token launches and becomes available for distribution.
+       
+        **Settlement Process for Buyers**
 
-1. **Token Launch**: The official project token becomes available
-2. **Settlement Activation**: The settlement contract is activated by the project
-3. **Redemption**: Exchange your points tokens for real project tokens
-4. **Crosschain Support**: Receive tokens on multiple chains if supported
+        * You can claim your protocol tokens using your escrow tokens
+        * The system calculates your share based on your escrow token balance
+        * You receive the actual protocol tokens (not more escrow tokens)
+        * Your escrow tokens are burned in the process
 
-## Learn more on Checkpoint Exchange
+        **Overdue Settlement**
 
-Visit the [Checkpoint Exchange](https://checkpoint.exchange) to start trading points today.
+        * If a seller fails to provide their protocol tokens during settlement, they enter the "overdue" stage
+        * In this case, a buyer can claim partial or total collateral of the seller minus protocol fees
+        
+        **Cross-Chain Settlement**
 
-<Note>
-  **Security First**: All trades are backed by collateral to protect both buyers and sellers from counterparty risk.
-</Note>
+        * Settlement can occur on different chains than where you bought the points
+        * You'll receive your protocol tokens on the appropriate chain
+        * You may need to claim tokens on a different chain than where you made the purchase
+
+        [Learn more about settlement →](/architecture/program-settlement)
+
+      </Step>
+    </Steps>
+
+<Card title="Checkpoint Exchange Fees " icon="vault" href="architecture/market-trading#fee-structure" horizontal>
+  Learn more about the Fee Structure.
+</Card>
+
+## Further exploring
+
+<CardGroup cols={2}>
+  <Card title="Check it out" icon="link" href="https://checkpoint.exchange">
+    Visit the Checkpoint Exchange to start trading points today
+  </Card>
+  <Card title="Get more technical" icon="code" href="/architecture">
+    Explore and learn about Checkpoints architecture
+  </Card>
+</CardGroup>

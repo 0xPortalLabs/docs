@@ -129,6 +129,15 @@ table, th, td, input, textarea, select,
   color: var(--cp-text);
 }
 .nav-logo, [data-selector="nav-logo"] { color: var(--cp-text); }
+
+/* Logo sizing */
+[data-selector="nav-logo"],
+.nav-logo,
+.logo {
+  height: 48px !important;
+  width: auto !important;
+  min-width: auto !important;
+}
 .navbar-link, [data-selector="navbar-link"] { color: var(--cp-text); }
 .navbar-link img, [data-selector="navbar-link"] img {
   background-color: transparent !important;
