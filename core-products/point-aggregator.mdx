@@ -18,52 +18,61 @@ description: "View and track all your points from different projects in one plac
   style={{ pointerEvents: 'none' }}
 />
 
-# Point Aggregator
+# Checkpoint Aggregator
 
-The Point Aggregator is your central hub for viewing and managing all your points across different projects. Instead of checking multiple websites and platforms, see everything in one unified dashboard.
+The Points Aggregator is your central hub for viewing all your points across different projects. Instead of checking multiple websites and platforms, see everything in one unified dashboard.
 
-## Features
 
-### ENS Integration
+<img 
+  className="block dark:hidden rounded-lg" 
+  src="/images/Aggregator_Screen_Light.png" 
+  alt="Checkpoint Aggregator Screen Grab Light"
+/>
 
-Connect your ENS domain to automatically track points associated with your primary identity:
+<img 
+  className="hidden dark:block rounded-lg" 
+  src="/images/Aggregator_Screen_Dark.png" 
+  alt="Checkpoint Aggregator Screen Grab Dark"
+/>
 
-- **Automatic Discovery**: Find points linked to your ENS name across supported projects
-- **Unified Identity**: Use your ENS as your primary identifier across the ecosystem
-- **Easy Management**: Manage all your points from a single, memorable address
+The Points Aggregator allows you to check points balances without connecting a wallet. You can simply paste any address and retrrieve the points directly in your browser. The system fetches points data from integrated protocols and displays the results for available points to that address.
 
-### Clusters
+<Card title="Test it out" icon="link" href="https://checkpoint.exchange" horizontal>
+  Check your own points across multiple protocols today.
+</Card>
 
-Organize and group related addresses to track points across multiple wallets:
+## Aggregator Features
 
-- **Multi-Wallet Support**: Connect multiple addresses to see your total points
-- **Smart Grouping**: Automatically detect related addresses and wallets
-- **Portfolio View**: See your complete points portfolio across all connected addresses
+The Points Aggregator fires the [Points API](/core-products/point-api) endpoints to retrieve and normalize the data for the dashboard. It creates a data snapshot and displays points for protocols you have points for, including a breakdown for it.
 
-### Real-Time Updates
+It not only works on your address, but any address or unique identifier.
 
-Stay up-to-date with your points across all projects:
-
-- **Live Tracking**: Points update in real-time as you earn them
-- **Historical Data**: View your points history and trends over time
-- **Notifications**: Get alerts when your points change significantly
-
-## Supported Projects
-
-The Point Aggregator supports points from hundreds of projects including:
-
-- **DeFi Protocols**: Uniswap, Aave, Compound, and more
-- **NFT Platforms**: OpenSea, Blur, Foundation, and others
-- **Social Platforms**: Farcaster, Lens, and emerging social protocols
-- **Gaming**: Various play-to-earn and gaming platforms
-
-## Getting Started
-
-1. **Connect Your Wallet**: Link your primary wallet address
-2. **Add ENS Domain**: Optionally connect your ENS for automatic discovery
-3. **Create Clusters**: Group related addresses together
-4. **Track Points**: View all your points in one dashboard
+<CardGroup cols={2}>
+  <Card title="Supporting any Points System" icon="layer-group">
+    Works with any integrated protocol, only needing a unique identifier to retrieve points data
+  </Card>
+  <Card title="Real-time Snapshot" icon="hourglass-end">
+    Live points data from integrated protocols, presented in an easy-to-read format
+  </Card>
+  <Card title="Insightful Data" icon="brain">
+    Standardized data structure across all protocols, understand from what actions you are getting points for
+  </Card>
+  <Card title="Address Resolution" icon="address-book">
+    Built-in address resolution for ENS and Clusters, just type a name and get the address
+  </Card>
+</CardGroup>
 
 <Note>
-  **Privacy First**: The aggregator only reads public onchain data and existing API endpoints. No private keys or sensitive data are stored.
+**Integrating your points system?** Check out our [Listing Guide](/get-started/quickstart#listing-on-checkpoint) or reach out on [Discord](https://discord.gg/fJ5dJbxxTT)
 </Note>
+
+## Explore Further
+
+<CardGroup cols={2}>
+  <Card title="Check Points API" icon="server" href="/core-products/point-api">
+    Visit the Checkpoint Exchange to start trading points today
+  </Card>
+  <Card title="Get more technical" icon="code" href="/architecture">
+    Explore and learn about Checkpoints architecture
+  </Card>
+</CardGroup>
