@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "willow",
-  "name": "Checkpoint",
+  "name": "Checkpoint Exchange Documentation",
   "colors": {
     "primary": "#32CDCD",
     "light": "#32CDCD",
@@ -93,7 +93,29 @@
     "raiseIssue": true
   },
   "seo": {
-    "indexHiddenPages": false
+    "indexHiddenPages": false,
+    "metatags": {
+      "canonical": "https://docs.checkpoint.exchange",
+      "description": "Checkpoint docs: check, track, trade and tokenize points with secure, on-chain settlement.",
+      "keywords": "checkpoint documentation, points aggregator, points checker, points exchange, points trading, loyalty points tokenization, tokenize rewards points, pre-token trading, point oracle, points API, crypto points marketplace, rewards points crypto, selling points, pre-tge trading",
+      "robots": "index, follow",
+      "googlebot": "index, follow",
+      "viewport": "width=device-width, initial-scale=1.0",
+      "referrer": "strict-origin-when-cross-origin",
+      "theme-color": "#32CDCD",
+      "color-scheme": "light dark",
+      "og:title": "Checkpoint Documentation",
+      "og:description": "Check, track, trade and tokenize points with secure, on-chain settlement.",
+      "og:type": "website",
+      "og:url": "https://docs.checkpoint.exchange",
+      "og:image": "https://docs.checkpoint.exchange/images/Checkpoint_Docs_BG.jpg",
+      "og:site_name": "Checkpoint",
+      "twitter:card": "summary_large_image",
+      "twitter:site": "@CheckpointEX",
+      "twitter:title": "Checkpoint Documentation",
+      "twitter:description": "Check, track, trade and tokenize points.",
+      "twitter:image": "https://docs.checkpoint.exchange/images/Checkpoint_Docs_BG.jpg"
+    }
   },
   "analytics": {
     "plausible": {
