@@ -20,16 +20,41 @@ description: "Soulbound NFTs that represent and track your points deposits"
 
 # Checkpoint NFT
 
-Checkpoint NFT are soulbound (non-transferable) NFTs that serve as immutable receipts for your points deposits. They provide a permanent, onchain record of your points history and are essential for participating in the Checkpoint ecosystem.
+The **Points NFT** are soulbound (non-transferable) NFTs that serve as immutable receipts for your points deposits. They provide a permanent, onchain record of your points history and are essential for participating in the Checkpoint ecosystem.
+
+<img 
+  className="block dark:hidden rounded-lg" 
+  src="/images/NFT_Screen_Light.png" 
+  alt="Checkpoint NFT Screen Grab Light"
+/>
+
+<img 
+  className="hidden dark:block rounded-lg" 
+  src="/images/NFT_Screen_Dark.png" 
+  alt="Checkpoint NFT Screen Grab Dark"
+/>
+
 
 ## What are Soulbound NFTs?
 
-Soulbound NFTs are a special type of NFT that cannot be transferred to other addresses. They are permanently bound to the wallet that created them, ensuring:
+Soulbound NFTs are a special type of NFT that cannot be transferred to other addresses. They are permanently bound to the wallet that created them, ensuring
 
-- **Authentic Ownership**: Proves you are the original depositor of the points
-- **Immutable History**: Creates a permanent record of your points activity
-- **Fraud Prevention**: Prevents transfer of points receipts to other users
-- **Audit Trail**: Provides complete transparency of your points journey
+
+<CardGroup cols={2}>
+  <Card title="Authentic Ownership" icon="id-card">
+    Proves you are the original depositor of the points
+  </Card>
+  <Card title="Immutable History" icon="timeline">
+    Creates a permanent record of your points activity
+  </Card>
+  <Card title="Fraud Prevention" icon="receipt">
+    Prevents transfer of points receipts to other users
+  </Card>
+  <Card title="Audit Trail" icon="swatchbook">
+    Complete transparency of your points journey
+  </Card>
+</CardGroup>
+
 
 ## How Point NFTs Work
 
@@ -51,17 +76,6 @@ Each Point NFT contains:
 - **Deposit Timestamp**: When the points were deposited
 - **Unique Token ID**: A unique identifier for this specific deposit
 - **Metadata URI**: Link to additional metadata and artwork
-
-## NFT Metadata and Artwork
-
-### Visual Design
-
-Each Point NFT features:
-
-- **Project Branding**: Custom artwork representing the source project
-- **Points Visualization**: Visual representation of the points amount
-- **Dynamic Elements**: Artwork that may change based on points amount
-- **Rarity Indicators**: Special visual elements for significant deposits
 
 ### Metadata Structure
 
@@ -87,32 +101,6 @@ Each Point NFT features:
 }
 ```
 
-## Use Cases
-
-### Trading Requirements
-
-Point NFTs are required for:
-
-- **Creating Sell Orders**: Must own the NFT to create offers to sell points
-- **Proving Ownership**: Demonstrates you have the right to trade specific points
-- **Market Access**: Required for participating in the points trading market
-
-### Portfolio Tracking
-
-Use NFTs for:
-
-- **Historical Records**: Complete history of all your points deposits
-- **Portfolio Management**: Track your points across different projects
-- **Tax Reporting**: Detailed records for tax and accounting purposes
-- **Achievement Display**: Show off your points achievements
-
-### Integration Benefits
-
-- **Wallet Compatibility**: Works with all major NFT wallets
-- **Marketplace Support**: Display on NFT marketplaces (though non-transferable)
-- **API Access**: Query NFT data programmatically
-- **Social Sharing**: Share your points achievements on social media
-
 ## Technical Details
 
 ### Smart Contract
@@ -131,21 +119,6 @@ Point NFTs are implemented as:
 - **Query Optimization**: Efficient indexing for fast lookups
 - **Historical Preservation**: All historical data is permanently preserved
 
-## Privacy and Security
-
-### Data Protection
-
-- **Public Information**: NFT data is public onchain (by design)
-- **No Private Keys**: NFTs don't contain or require private key access
-- **Immutable Records**: Once created, NFT data cannot be modified
-- **Transparent History**: Complete transparency of all points activity
-
-### Security Features
-
-- **Transfer Prevention**: Technical safeguards prevent unauthorized transfers
-- **Ownership Verification**: Cryptographic proof of ownership
-- **Fraud Detection**: Built-in mechanisms to detect and prevent fraud
-- **Audit Trail**: Complete audit trail of all NFT operations
 
 ## Getting Started
 

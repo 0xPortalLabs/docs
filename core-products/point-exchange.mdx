@@ -20,7 +20,7 @@ description: "Trade points before they become tokens with collateral-backed secu
 
 # Checkpoint Exchange
 
-The Points Exchange is Checkpoint's core trading platform where users can buy and sell points before they become official tokens. All trades are secured with USDC collateral to ensure both sellers and buyers fulfill their obligations on **settlement**.
+The **Points Exchange** is Checkpoint's core trading platform where users can buy and sell points before they become official tokens. All trades are secured with USDC collateral to ensure both sellers and buyers fulfill their obligations on **settlement**.
 
 <Note>Checkpoint Exchange is running at the moment on testnet</Note>
 
@@ -86,8 +86,9 @@ The market part of the exchange is a decentralized orderbook where users can eit
         * When you cancel an offer, you pay a cancellation fee
         
         When cancelling your collateral is returned minus protocol fees and your points become available again for new offers.
-
+        <Warning>Balance change can trigger [Shortfall Event](/architecture/market-trading#shortfall-of-points), enabling buyers to cancel offers within a time frame</Warning>
       </Step>
+      
       <Step title="Seller Settlement">
         Settlement is the final phase where you receive payment for your sold points. Settlement occurs when a protocol's token launches and becomes available for distribution.
       

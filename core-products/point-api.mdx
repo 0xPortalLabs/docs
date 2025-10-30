@@ -18,13 +18,33 @@ description: "Programmatic access to points data and trading functionality"
   style={{ pointerEvents: 'none' }}
 />
 
-# Points API
+# Checkpoint API
 
-The Points API provides developers with programmatic access to Checkpoint's points data across 30+ DeFi protocols. Query points balances, retrieve historical data, and integrate points tracking directly into your applications with simple REST endpoints.
+The **Points API** provides developers with programmatic access to Checkpoint's points data across all integrated protocols. Query points balances and integrate points tracking directly into your applications with simple REST endpoints.
+
+<img 
+  className="block dark:hidden rounded-lg" 
+  src="/images/API_Screen_Dark.png" 
+  alt="Checkpoint Dark Screen Grab Dark"
+/>
+
+<img 
+  className="hidden dark:block rounded-lg" 
+  src="/images/API_Screen_Light.png" 
+  alt="Checkpoint API Screen Grab Ligth"
+/>
+
+The API is powered by a modular adapter system: each protocol has a lightweight adapter that fetches raw data and normalizes it into consistent fields.
+
+<Card title="Build with the API" icon="code" href="/api/points-api" horizontal>
+  Get familiar with the API technical reference.
+</Card>
 
 ## Overview
 
-The Points API is built around a few core concepts:
+Built for speed and scale, the Points API delivers unified, real‑time points data across protocols with a simple, developer‑friendly interface.
+
+The Points API is built around a few core concepts
 
 <CardGroup cols={2}>
   <Card title="Multi-Protocol Support" icon="layer-group">
@@ -43,7 +63,7 @@ The Points API is built around a few core concepts:
 
 ## How It Works
 
-The Points API operates as a data aggregation layer that:
+The Points API operates as a data aggregation layer that
 
 <Steps>
   <Step title="Accepts Address Query">
@@ -62,15 +82,15 @@ The Points API operates as a data aggregation layer that:
 
 ## Core Endpoints
 
-The Points API provides two main endpoints:
+The Points API provides two main endpoints
 
 ### 1. Get Points for Address
 
-Retrieve points data for a specific Ethereum address across one or more protocols:
+Retrieve points data for a specific Ethereum address across one or more protocols
 
 **GET /adapters/\{address\}**
 
-- [Full documentation →](/api-reference/points/get-points-data-for-a-specific-address)
+- [Review full documentation →](/api-reference/points/get-points-data-for-a-specific-address)
 
 ```json Example Request
 curl "https://points.0xportal.io/api/v1/adapters/0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6?adapters=sonic,henlo" \
@@ -98,11 +118,11 @@ curl "https://points.0xportal.io/api/v1/adapters/0x69155e7ca2e688ccdc247f6c4ddf3
 
 ### 2. List Available Adapters
 
-Get the complete list of supported protocol adapters:
+Get the complete list of supported protocol adapters
 
 **GET /adapters**
 
-- [Full documentation →](/api-reference/points/list-all-available-adapters)
+- [Review full documentation →](/api-reference/points/list-all-available-adapters)
 
 ```bash Example Request
 GET https://points.0xportal.io/api/v1/adapters
@@ -133,11 +153,11 @@ GET https://points.0xportal.io/api/v1/adapters
 
 ## Authentication
 
-The Points API uses API key-based authentication:
+The Points API uses API key-based authentication
 
 <Steps>
   <Step title="Generate API Key">
-    Sign in to the <a href="https://points.0xportal.io/apikeys" target="_blank">Portal Dashboard</a> and create a new API key
+    Sign in to the [Portal Dashboard <Icon icon="arrow-up-right"/>](https://points.0xportal.io/apikeys) and create a new API key
   </Step>
   <Step title="Specify Authorized Domains">
     Configure which domains are authorized to use your API key
@@ -157,7 +177,7 @@ Authorization: Bearer YOUR_API_KEY
 
 The Points API implements a "soft" rate limit of 50 requests per 10 seconds window. This ensures fair access for all users while allowing burst usage patterns.
 
-If you need higher rate limits for your use case, please reach out to us.
+<Tip>If you need higher rate limits for your use case, reach out on [<Icon icon="discord"/> Discord](https://discord.gg/fJ5dJbxxTT).</Tip>
 
 ## Use Cases
 
@@ -182,7 +202,7 @@ To start using the Points API:
 
 <Steps>
   <Step title="Get API Key">
-    Sign up and generate an API key from the <a href="https://points.0xportal.io/apikeys" target="_blank">Portal Dashboard</a>
+    Sign up and generate an API key from the [Portal Dashboard <Icon icon="arrow-up-right"/>](https://points.0xportal.io/apikeys)
   </Step>
   <Step title="Explore Endpoints">
     Review the [Points API Reference](/api/points-api) for detailed endpoint documentation
