@@ -221,7 +221,7 @@ If you want to see your favorite points system onboarded, here are the main thin
     Protocols listed on Checkpoint must provide an open and accessible points API.
   </Step>
   <Step title="Stable points API">
-    Stability is essential, both technically and in how points are distributed over time.
+    Stability is essential for the protocol to function properly.
   </Step>
   <Step title="Active Community">
     While not mandatory, having an engaged community increases the value of integration and ensures
@@ -245,17 +245,12 @@ expand its capabilities.
   <Accordion title="Registry Contract" icon="book">
     **Central registry for all points programs with configurable parameters**
     - Program registration and management
-    - Oracle signer configuration
-    - Custom vesting schedules
-    - Access control and permissions
   </Accordion>
 
   <Accordion title="Deposit Contract" icon="inbox">
     **Handles tokenization of offchain points into onchain assets**
     - Oracle-verified point deposits
     - Soulbound NFT minting for tracking
-    - ERC20 escrow token creation
-    - Point holding for market orders
   </Accordion>
 
   <Accordion title="Oracle Contract" icon="certificate">
@@ -263,7 +258,6 @@ expand its capabilities.
     - ECDSA signature verification
     - Nonce-based replay protection
     - Time-based expiry validation
-    - Vesting schedule management
   </Accordion>
 
   <Accordion title="Market Contract" icon="store">
@@ -276,10 +270,8 @@ expand its capabilities.
 
   <Accordion title="Settlement Contract" icon="handshake">
     **Crosschain token distribution after TGE**
-    - LayerZero message passing
-    - Multi-chain token transfers
-    - Proportional distribution logic
-    - Vesting unlock handling
+    - LayerZero message communication
+    - Token distribution logic
   </Accordion>
 </AccordionGroup>
 

@@ -20,7 +20,7 @@ description: "Trade points before they become tokens with collateral-backed secu
 
 # Checkpoint Exchange
 
-The **Points Exchange** is Checkpoint's core trading platform where users can buy and sell points before they become official tokens. All trades are secured with USDC collateral to ensure both sellers and buyers fulfill their obligations on **settlement**.
+The **Points Exchange** is Checkpoint's core trading platform where users can buy and sell points before they become official tokens. All trades are secured with collateral to ensure both sellers and buyers fulfill their obligations on **settlement**.
 
 <Note>Checkpoint Exchange is running at the moment on testnet</Note>
 
@@ -37,7 +37,7 @@ The **Points Exchange** is Checkpoint's core trading platform where users can bu
   alt="Checkpoint Exchange alpha version application screenshot, dark theme"
 />
 
-An important part of Checkpoint is that all trades are secured with USDC collateral. This gives the points deposited trading value. The collateral is kept in an **escrow** contract until settlement.
+An important part of Checkpoint is that all trades are secured with collateral. This gives the points deposited trading value. The collateral is kept in an **escrow** contract until settlement. The collateral is typically a stablecoin like USDC, but can be any whitelisted token.
 
 <Card title="Market Trading" icon="code" href="/architecture/market-trading" horizontal>
   Learn more about the Exchange inner workings.
@@ -51,9 +51,9 @@ The market part of the exchange is a decentralized orderbook where users can eit
     
     <Steps titleSize="h4">
       <Step title="Deposit Points">
-        Users that want to sell points need to deposit their off-chain points to be on-chain. For this, the user needs to interact with the Oracle and verify that they have points to deposit.
+        Users that want to sell points need to deposit their offchain points to be onchain. For this, the user needs to interact with the Deposit contract and verify that they have points to deposit.
       
-        When a user deposits points, they receive a non-transferable NFT that represents the deposit on-chain. This NFT becomes a record for users that they have on-chain points to trade.
+        When a user deposits points, they receive a non-transferable NFT that represents the deposit onchain. This NFT becomes a record for users that they have onchain points to trade.
       
         A user needs to have enough available points to be able to make an offer.
 
@@ -65,7 +65,7 @@ The market part of the exchange is a decentralized orderbook where users can eit
         * **Price of the points sold**
         * **Collateral backing the sell offer**
 
-        The collateral amount is separate from the price and acts as a security deposit. When creating an offer, users must provide USDC collateral upfront. This collateral is held in escrow until settlement.
+        The collateral amount is separate from the price and acts as a security deposit. When creating an offer, users must provide collateral upfront. This collateral is held in escrow until settlement.
 
         **Offer Status**
 
@@ -97,9 +97,7 @@ The market part of the exchange is a decentralized orderbook where users can eit
         * Settlement is triggered when a protocol's token launches
         * No new offers can be created once settlement is active
         * Your existing offers must be settled according to their terms
-        
-        <Info>Offers in the Created status receive allocated collateral minus Fees</Info>
-       
+               
         **Settlement Process for Sellers**
 
         * You must transfer the protocol tokens to the settlement contract

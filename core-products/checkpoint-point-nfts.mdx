@@ -81,21 +81,33 @@ Each Point NFT contains:
 
 ```json
 {
-  "name": "Checkpoint Points - [Project Name]",
-  "description": "Soulbound NFT representing [amount] points from [project]",
-  "image": "https://api.checkpoint.exchange/nft/[tokenId].png",
+  "name": "Checkpoint Deposit Receipt for [Project Name]",
+  "description": "The Checkpoint Deposit Receipt tracks your points on the blockchain and allows you to sell and trade them on https://checkpoint.exchange",
+  "image": "https://metadata.checkpoint.exchange/[chainId]/[pointsId]/[tokenId].png",
   "attributes": [
     {
-      "trait_type": "Points Amount",
-      "value": "1000"
+      "trait_type": "Chain",
+      "value": "1"
     },
     {
-      "trait_type": "Project",
-      "value": "Project Name"
+      "trait_type": "Points ID",
+      "value": "1"
     },
     {
-      "trait_type": "Deposit Date",
-      "value": "2024-01-15"
+      "trait_type": "Points",
+      "value": "1337"
+    },
+    {
+      "trait_type": "Rank",
+      "value": "420"
+    },
+    {
+      "trait_type": "Protocol",
+      "value": "[Project Name]"
+    },
+    {
+      "trait_type": "Address",
+      "value": "0x1234.."
     }
   ]
 }
@@ -109,16 +121,12 @@ Point NFTs are implemented as:
 
 - **ERC-721 Compliant**: Standard NFT interface for maximum compatibility
 - **Soulbound Extension**: Custom logic preventing transfers
-- **Upgradeable**: Can be upgraded to add new features
-- **Gas Optimized**: Efficient storage and operations
 
 ### Storage and Retrieval
 
 - **Onchain Data**: Core data stored directly onchain
-- **IPFS Integration**: Additional metadata stored on IPFS for decentralization
-- **Query Optimization**: Efficient indexing for fast lookups
 - **Historical Preservation**: All historical data is permanently preserved
-
+- **Queryable**: Data is queryable onchain via the NFT
 
 ## Getting Started
 
