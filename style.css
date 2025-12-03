@@ -1,5 +1,29 @@
 /* Custom CSS per Mintlify guide: https://www.mintlify.com/docs/customize/custom-scripts#custom-css */
 
+/* Fix horizontal scroll bar in navigation footer */
+#footer, .footer, [data-identifier="footer"] {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Ensure sidebar content doesn't cause horizontal overflow */
+#sidebar-content, [data-identifier="sidebar-content"] {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix header layout in sidebar to prevent overflow */
+.sidebar-header, [data-selector="sidebar-header"] {
+  width: 100%;
+  justify-content: flex-start !important;
+}
+
+/* Ensure navigation items don't overflow */
+#navigation-items, [data-identifier="navigation-items"] {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 /* Light mode (default) */
 html {
   --cp-accent: #32CDCD;

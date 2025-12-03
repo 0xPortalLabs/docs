@@ -57,6 +57,13 @@
         "group": "Points API Reference",
         "openapi": "spec/points.yaml",
         "pages": ["api/points-api"]
+      },
+      {
+        "group": "Legal",
+        "pages": [
+          "legal/privacy-policy",
+          "legal/terms-of-use"
+        ]
       }
     ]
   },
