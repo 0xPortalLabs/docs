@@ -106,8 +106,9 @@ html.dark, html[data-theme="dark"] {
   --cp-code-text: #e7e7e7;
 
   /* Tables */
-  --cp-table-header-bg: #111827;
-  --cp-table-row-alt-bg: #0e141b;
+  /* Neutral, refined table surfaces (avoid blue-tinted slate) */
+  --cp-table-header-bg: #111111;
+  --cp-table-row-alt-bg: #161616;
 
   /* Callouts */
   --cp-info: #60a5fa;
@@ -272,6 +273,20 @@ table tbody tr:nth-child(even) { background-color: var(--cp-table-row-alt-bg); }
 
 .dark .hover-image:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Brand Guidelines: "About Logo Usage" */
+.cp-logo-usage-square {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.cp-logo-usage-square img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 

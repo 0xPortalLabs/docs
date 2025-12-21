@@ -59,6 +59,12 @@
         "pages": ["api/points-api"]
       },
       {
+        "group": "Brand",
+        "pages": [
+          "brand/index"
+        ]
+      },
+      {
         "group": "Legal",
         "pages": [
           "legal/privacy-policy",
