@@ -7,7 +7,7 @@ info:
     name: Portal Labs
     url: https://0xportal.io
 servers:
-  - url: https://points.0xportal.io/api/v1
+  - url: https://checkpoint.exchange/api/v1
     description: Production server
 
 components:
@@ -133,5 +133,5 @@ paths:
 
 tags:
   - name: Points
-    description: Endpoints for retrieving points data for a specific address across one or more protocols
-
+    description:
+      Endpoints for retrieving points data for a specific address across one or more protocols
