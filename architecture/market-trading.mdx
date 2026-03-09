@@ -5,28 +5,37 @@ description: "Architecture for buying and selling points before TGE"
 
 # Market Trading
 
-The Market contract is a decentralized order book for buying and selling escrow tokens (tokenized
-points) before TGE. It also handles the conversion of escrow tokens to actual tokens after TGE.
+The Market contract is a decentralized order book for buying and selling tokenized points before
+TGE. It handles offer creation, collateral validation, escrow minting, and routing filled offers
+into settlement.
 
 ## How Offers Work
 
 ### What is an Offer?
 
-An offer is a binding commitment to trade points at a specific price with collateral backing.
+An offer is a binding commitment to trade points at a specific price with optional or required USDC
+collateral backing, depending on the market configuration.
 
 **Example**: "I'll sell you 500 of my points for 50 USDC, and I'm putting up 50 USDC as collateral
 to guarantee this deal."
 
-Of course we are not limited to using collateral as a guarantee, we can use offchain agreements
-(legal contracts) or credit scores as well, this is totally up to the discretion of the seller.
-
 ### Collateral
 
-There are many different types of collateral that can be used to back an offer. We will discuss
-liquid tokens such as USDC from now. However, sellers are not limited to using collateral tokens and
-can use offchain agreements or credit scores as well. When creating an offer, the seller puts up a
-configurable amount of collateral. This collateral is held in escrow until the offer is settled, or
-the offer is cancelled.
+Collateral is posted in USDC and held by the market until the offer is settled, cancelled, or moved
+into overdue settlement.
+
+Markets that cannot directly escrow or custody the underlying points can use
+collateral-weighted minting to reduce seller default risk. Those markets can define:
+
+- whether collateral is enforced
+- a minimum collateral weight an offer must satisfy
+- an ideal USDC collateral per point target
+
+On those markets, the ideal collateral target drives weighted minting of `chXXX` on fill. Higher
+collateral generally means a higher mint weight, subject to the escrow token's cap.
+
+On markets where Checkpoint can escrow the underlying points directly, buyers mint `chXXX` 1:1 with
+the filled points amount as usual.
 
 ### Offer Status
 
@@ -38,7 +47,7 @@ the offer is cancelled.
 | OFFER_SETTLED              | The offer has been settled with tokens provided to the Settlement contract for buyers to claim.    |
 | OFFER_SETTLED_WITH_VESTING | The offer has been settled but has a vesting schedule. Tokens unlock gradually over time.          |
 | OFFER_CANCELLED            | The offer was cancelled by the maker before any fills, and collateral was returned.                |
-| OFFER_OVERDUE_SETTLED      | The settlement deadline passed without the seller settling. Buyers claimed refunds and collateral. |
+| OFFER_OVERDUE_SETTLED      | The settlement deadline passed without the seller settling. The offer's filled USDC and collateral were moved into the program-wide settlement pool. |
 
 ### Creating a Sell Offer
 
@@ -50,13 +59,13 @@ the offer is cancelled.
 
   Maker->>Market: Creates offer
   Market-->>Deposit Receipt: Verifies maker has enough available points
-  Maker->>Market: Takes tokens as collateral
+  Maker->>Market: Posts USDC collateral
   Market-->>Deposit Receipt: Puts a hold on the points selling
 ```
 
-All offers include the the amount of points to sell, the price, the collateral token, and the
-collateral amount. And all offers are able to be cancelled with the collateral returned (minus a
-cancellation fee if defined), as long as there are no existing fills yet.
+All offers include the amount of points to sell, the price in USDC, and the collateral amount in
+USDC. Offers can be cancelled with collateral returned minus any configured cancellation fee, as
+long as they have no existing fills.
 
 <Note>
   {" "}
@@ -76,10 +85,22 @@ graph LR
   A --> B --> C --> D
 ```
 
-To fill an offer, you need USDC equal to the offer price. When you fill an offer, you send the USDC
-to the `Market.sol` contract. You instantly receive escrow tokens minted 1:1 to the points. The
-seller doesn't receive the USDC until settlement when they provide the escrow tokens. The seller's
-collateral is only returned upon successful settlement.
+To fill an offer, you send USDC to the `Market.sol` contract. The escrow mint path depends on the
+market type:
+
+- on standard escrowable markets, buyers mint `chXXX` 1:1 with the filled points amount
+- on non-custodial markets, buyers mint from the offer's **collateral weight**
+
+At a high level:
+
+- the market either mints 1:1 or computes a weight from the offer's collateral versus the market's
+  ideal collateral per point
+- on weighted markets, the escrow token uses that weight to mint a discounted, neutral, or bonused
+  amount of `chXXX`
+- the protocol may also mint additional escrow tokens to the treasury via `fillExtra`
+
+The seller does not receive the buyer's USDC until settlement. Their collateral is only returned on
+successful settlement, or after vesting completes for vesting offers.
 
 <Danger>Once an offer is filled, both the maker and filler cannot cancel or reverse it.</Danger>
 
@@ -132,13 +153,13 @@ they may not have enough points to fulfill all their offers. In this case, fille
 
 1. Seller deposits 500 points
 2. Seller creates an offer for 500 points at 100 USDC
-3. Filler fills the offer, paying 100 USDC and receiving 500 escrow tokens
+3. Filler fills the offer, paying 100 USDC and receiving the escrow amount minted for that market
 4. Seller's points drop to 300 (due to an external points program update)
 5. Filler calls `settlePointsChange()` to settle with the new points balance
 
 **What happens:**
 
-- Filler's escrow tokens are burned completely
+- Filler must return the full escrow amount minted from that fill, which is then burned by the market
 - Filler receives their USDC back in full
 - Seller's held points are released
 - The filler is able to fill the offer again with the new points balance
@@ -171,10 +192,14 @@ sequenceDiagram
 ```
 
 When TGE happens and the actual token launches, the seller calls `settleOffer()` to finalize the
-deal. The Market validates that the settlement hasn't passed the deadline, takes the seller's
-tokens, deposits them to the `Settlement.sol` contract, and sends the USDC proceeds to the seller
-(minus the settlement fee if defined). The seller also gets their collateral back, and the filler
-can now claim their tokens from the `Settlement.sol` contract.
+deal. The market validates that the settlement has not passed the deadline, takes the seller's
+tokens, deposits them to `Settlement.sol`, and sends the filled USDC proceeds to the seller minus
+the configured settlement fee. The seller also gets their collateral back unless the offer is under
+vesting settlement.
+
+Importantly, buyer claims are settled against the **program-wide settlement distribution**, not
+directly against a single offer. Each settled offer contributes inventory into that shared
+distribution.
 
 ### Crosschain Settlement
 
@@ -200,8 +225,8 @@ $$\text{tokensToSend} = \left\lfloor \frac{\text{tokenAmount} \times \text{fille
 **Example:**
 
 - Offer: 1000 points for 100 USDC
-- Buyers fill 600 USDC total (60% of the offer)
-- Seller only needs to provide 600 tokens (60% of 1000, assuming 1 point = 1 token)
+- Buyers fill 60 USDC total (60% of the offer)
+- Seller only needs to provide 60% of the final token amount assigned to that offer
 
 Each buyer receives their proportional share when they claim from `Settlement.sol` or
 `RemoteSettlement.sol`.
@@ -253,16 +278,17 @@ through the entire vesting period until all tokens have been vested and delivere
 
 ### Overdue Settlement
 
-When a seller fails to settle by the deadline, fillers can recover their funds and receive
-compensation from the seller's collateral.
+When a seller fails to settle by the deadline, the overdue offer is not resolved buyer-by-buyer.
+Instead, its filled USDC plus seller collateral is moved into the settlement contract as a
+**program-wide USDC pool** for that points market.
 
 ```mermaid
 graph LR
   A["Settlement deadline<br/>passes"]
   B["Seller hasn't settled<br/>the offer"]
   C["Buyer calls<br/>settleOverdueOffer()"]
-  D["Buyer gets USDC refund<br/>and collateral share"]
-  E["Fee goes to<br/>protocol"]
+  D["Filled USDC + collateral<br/>move to settlement pool"]
+  E["Pool is redistributed<br/>pro-rata at distribution"]
 
   A --> B --> C --> D
   C --> E
@@ -272,65 +298,22 @@ graph LR
 
 When `settleOverdueOffer()` is called after the deadline:
 
-1. Each buyer gets back their exact USDC amount they provided
-2. The seller's collateral is split proportionally among all fillers
-3. A configurable fee is deducted from the collateral pool before distribution (if defined)
+1. The offer's filled USDC and seller collateral are deposited into `Settlement.sol`
+2. That amount increases the USDC pool tracked for the entire points program
+3. Escrow holders later claim a pro-rata share of that pooled USDC during distribution
+4. There is no separate overdue fee in the current settlement flow
 
-The settlement distributes the seller's collateral proportionally based on each filler's
-contribution.
-
-**Each filler receives:**
-
-$$
-C_i = \left\lfloor \frac{U_i}{U_{total}} \times C_{distributable} \right\rfloor
-$$
-
-where
-
-- $C_i$ = collateral for filler $i$
-- $U_i$ = USDC amount provided by filler $i$
-- $U_{total}$ = sum of all USDC amounts (total filled)
-- $C_{distributable}$ = collateral available after protocol fee
-
-#### Example
-
-If an offer has:
-
-- Total collateral: 1000 USDC
-- Overdue fee: 2% (200 bps)
-- Total filled: 500 USDC by two fillers (250 USDC each = 25% each, 50% total)
-
-Then,
-
-- Fee: 1000 × 0.02 = 20 USDC
-- Distributable: 1000 - 20 = 980 USDC
-
-**Each filler receives:**
-
-- USDC refund: 250 USDC (their original payment)
-- Collateral share: (250 / 500) × 980 = 490 USDC
-- Total per filler: 250 + 490 = 740 USDC
-
-**Protocol receives:**
-
-- 20 USDC (remaining collateral = fee + any rounding dust)
-
-<Note>
-  The seller forfeits **all** collateral, including any unused portion if there are partial fills.
-  They receive nothing from the settlement.
-</Note>
+The redistribution is global to the market's points program. It is based on escrow balances at
+distribution time, not on a direct per-offer refund path.
 
 ## Fee Structure
 
-| Action           | Fee     | Current Fee |
-| ---------------- | ------- | ----------- |
-| Offer Creation   | 0 bps   | 0%          |
-| Settlement       | 100 bps | 1%          |
-| Cancellation     | 250 bps | 2.5%        |
-| Overdue Handling | 500 bps | 5%          |
+The market currently exposes three main fee levers:
 
-<Note>
-  {" "}
-  Fees are governance parameters and can be updated via the DAO. The fees listed above reflect the current
-  values as of October 24th 2025.{" "}
-</Note>
+- **Settlement fee**: taken from seller proceeds when `settleOffer()` or `settleOfferViaOracle()`
+  succeeds
+- **Cancellation fee**: taken from seller collateral when cancelling an unfilled offer
+- **Fill extra**: extra escrow tokens minted to the fee recipient on every fill
+
+`fillExtra` is a small inflation at the escrow-token layer used for seeding liquidity.
+It increases total escrow supply rather than deducting USDC from the buyer or seller.

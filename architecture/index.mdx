@@ -23,11 +23,11 @@ Checkpoint is a decentralized protocol that bridges offchain loyalty points with
   </Card>
 
   <Card title="Market" icon="chart-line">
-    Decentralized order book for pre-TGE trading. Users buy and sell points with collateral backing.
+    Decentralized order book for pre-TGE trading with 1:1 or collateral-weighted escrow minting depending on market design.
   </Card>
 
   <Card title="Settlement" icon="handshake">
-    Distributes real tokens post-TGE at a 1:1 ratio. Supports crosschain transfers via LayerZero.
+    Distributes real tokens and any defaulted seller USDC collateral post-TGE using program-wide settlement ratios.
   </Card>
 </CardGroup>
 
@@ -39,7 +39,7 @@ You sign your points claim offchain with the oracle, then submit a deposit trans
 
 ### Phase 2: Trade
 
-Before TGE, you can trade your points with other users on the [Market contract](/architecture/market-trading). All trades are collateral-backed for safety.
+Before TGE, you can trade your points with other users on the [Market contract](/architecture/market-trading). Buyers mint escrow tokens either 1:1 or through collateral weighting depending on the market.
 
 ### Phase 3: Settlement
 
@@ -50,15 +50,15 @@ Once the real token launches, you redeem your [escrow tokens](/architecture/poin
 | Concept | Description |
 |---------|-------------|
 | **Soulbound NFT** | Non-transferable receipt proving your point deposit and tracking history |
-| **Escrow Tokens** | Your tradeable claim on future tokens (exists pre-TGE only) |
+| **Escrow Tokens** | A program-wide settlement claim minted either 1:1 or via collateral weighting depending on the market |
 | **Oracle Verification** | Cryptographic validation that your offchain points exist |
-| **Settlement** | Conversion of escrow tokens to real tokens post-TGE |
+| **Settlement** | Program-wide distribution of tokens and overdue USDC post-TGE |
 
 ## Pre-TGE vs Post-TGE
 
 | Aspect                 | Pre-TGE                            | Post-TGE                    |
 | ---------------------- | ---------------------------------- | --------------------------- |
-| **Your Tokens**        | Escrow tokens (1:1 representation) | Actual project tokens       |
+| **Your Tokens**        | Escrow tokens                      | Actual project tokens and any defaulted USDC |
 | **Can Trade?**         | Yes, via Market contract           | No, you own the real tokens |
 | **Collateral Needed?** | Yes, trades require backing        | No, direct ownership        |
 | **Where?**             | Checkpoint Market                  | Any DEX/exchange            |
@@ -70,4 +70,4 @@ For projects launching on multiple chains, LayerZero integration enables:
 
 - Escrow tokens on multiple chains before TGE
 - Crosschain settlement after token launch
-- Consistent 1:1 ratios across all chains
+- Consistent settlement accounting across chains

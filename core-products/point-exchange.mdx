@@ -20,7 +20,9 @@ description: "Trade points before they become tokens with collateral-backed secu
 
 # Checkpoint Exchange
 
-The **Points Exchange** is Checkpoint's core trading platform where users can buy and sell points before they become official tokens. All trades are secured with collateral to ensure both sellers and buyers fulfill their obligations on **settlement**.
+The **Points Exchange** is Checkpoint's core trading platform where users can buy and sell points
+before they become official tokens. Some markets mint escrow tokens 1:1 against points, while
+non-custodial markets use USDC collateral to determine weighted minting on fill.
 
 <Note>Checkpoint Exchange is running at the moment on testnet</Note>
 
@@ -37,7 +39,10 @@ The **Points Exchange** is Checkpoint's core trading platform where users can bu
   alt="Checkpoint Exchange alpha version application screenshot, dark theme"
 />
 
-An important part of Checkpoint is that all trades are secured with collateral. This gives the points deposited trading value. The collateral is kept in an **escrow** contract until settlement. The collateral is typically a stablecoin like USDC, but can be any whitelisted token.
+An important part of Checkpoint is that trades can be secured with collateral. The collateral is
+held in escrow until settlement, cancellation, or overdue handling. In practice this is USDC, and
+non-custodial markets can define an ideal USDC collateral-per-point target that influences weighted
+minting.
 
 <Card title="Market Trading" icon="code" href="/architecture/market-trading" horizontal>
   Learn more about the Exchange inner workings.
@@ -65,7 +70,10 @@ The market part of the exchange is a decentralized orderbook where users can eit
         * **Price of the points sold**
         * **Collateral backing the sell offer**
 
-        The collateral amount is separate from the price and acts as a security deposit. When creating an offer, users must provide collateral upfront. This collateral is held in escrow until settlement.
+        The collateral amount is separate from the price and acts as a security deposit. On
+        non-custodial markets it also influences the escrow mint weight buyers receive when filling
+        the offer. Those markets can enforce a minimum weight and define an ideal
+        collateral-per-point target.
 
         **Offer Status**
 
@@ -105,7 +113,7 @@ The market part of the exchange is a decentralized orderbook where users can eit
         * You receive payment for the points you sold
         * A settlement fee is deducted from your payment
 
-        <Danger>Overdue settlement result in additional fees and partial or total loss of the collateral</Danger>
+        <Danger>If you miss the settlement deadline, your pending USDC and collateral are redistributed to escrow token holders.</Danger>
         [Learn more about settlement →](/architecture/program-settlement)
       </Step>
     </Steps>
@@ -125,7 +133,9 @@ The market part of the exchange is a decentralized orderbook where users can eit
       
       </Step>
       <Step title="Choosing Fill Type">
-        After choosing an offer, you will be able to fill partially or the entire offer. This is based on how much USDC you are committing to fill. A 50% fill will also warrant 50% of the escrow tokens associated to the offer selected.
+        After choosing an offer, you will be able to fill partially or the entire offer. This is
+        based on how much USDC you are committing to fill. A 50% fill warrants 50% of that offer's
+        escrow issuance, whether that market mints 1:1 or uses collateral weighting.
         
         This system allows for flexible trading where you can buy exactly the amount of points you want, regardless of the offer size.
 
@@ -133,15 +143,21 @@ The market part of the exchange is a decentralized orderbook where users can eit
 
       </Step>
       <Step title="What you receive">
-        After filling an offer, the seller's NFT will mint escrow tokens (chXXX) proportional to the amount filled. These escrow tokens are a 1:1 on the points the seller has deposited. However, this is not a 1:1 on tokens to be received on settlement.
+        After filling an offer, the market mints escrow tokens (`chXXX`). On escrowable markets the
+        mint is 1:1 with points. On non-custodial markets the mint amount depends on the offer's
+        collateral weight.
         
         **Escrow tokens are not TGE Tokens**
 
-         The escrow tokens (chXXX) are not representative of the tokens issued on TGE by the protocol, but the proportion of the user's claim to their TGE tokens.
+         `chXXX` represents a user's escrow-side share in the market, not a guaranteed 1:1 amount
+         of future TGE tokens.
 
-         <Danger>The escrow tokens (chXXX) are not representative to the tokens issued on TGE by the protocol, but the proportion of the user claim to their TGE tokens</Danger>
+         The protocol can also mint `fillExtra` to the treasury on every fill. This is
+         a small inflation at the escrow layer and is used for seeding secondary market liquidity.
+
+         <Danger>`chXXX` can mint 1:1 or via collateral weighting depending on the market, but it is never a fixed promise of an equal number of TGE tokens.</Danger>
          
-         [Learn more about escrow settlement convertion →](/architecture/points-tokenization#2-escrow-token-chxxx-tokens)
+         [Learn more about escrow settlement conversion →](/architecture/points-tokenization#2-escrow-token-chxxx-tokens)
 
       </Step>
       <Step title="Buyer Settlement">
@@ -150,14 +166,14 @@ The market part of the exchange is a decentralized orderbook where users can eit
         **Settlement Process for Buyers**
 
         * You can claim your protocol tokens using your escrow tokens
-        * The system calculates your share based on your escrow token balance
-        * You receive the actual protocol tokens (not more escrow tokens)
-        * Your escrow tokens are burned in the process
+        * The system calculates your share from the global settlement snapshot for that market
+        * You receive the actual protocol tokens and may also receive a pro-rata share of any pooled USDC from overdue offers
+        * Your escrow tokens are transferred into settlement as part of the claim flow
 
         **Overdue Settlement**
 
-        * If a seller fails to provide their protocol tokens during settlement, they enter the "overdue" stage
-        * In this case, a buyer can claim partial or total collateral of the seller minus protocol fees
+        * If a seller fails to provide their protocol tokens during settlement, the offer enters the overdue stage
+        * The offer's filled USDC and collateral are added to the program-wide USDC pool
         
         **Cross-Chain Settlement**
 

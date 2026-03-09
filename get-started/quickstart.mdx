@@ -79,8 +79,8 @@ The process differs slightly depending on the action being taken.
     purchase and press **buy** to initiate the transaction.
   </Card>
   <Card title="Selling Points" icon="store">
-    First deposit your points. Once deposited, set the price, quantity of chXXX tokens, and
-    collateral, then press **sell** to initiate listing your offer.
+    First deposit your points. Once deposited, set the price, points amount, and collateral, then
+    press **sell** to initiate listing your offer.
   </Card>
 </CardGroup>
 
@@ -96,7 +96,9 @@ The process differs slightly depending on the action being taken.
     <Steps>
 
   <Step title="Navigate to market">
-    Visit any supported market to view active offers. Offers with a higher collateralization rate are generally preferred.
+    Visit any supported market to view active offers. On standard escrowable markets, fills mint
+    `chXXX` 1:1 with points. On non-custodial markets, stronger collateral backing can mint more
+    `chXXX` for the same points amount.
   </Step>
   <Step title="Select an offer">
     Select an offer you wish to fill, this will prompt the trade panel to interact with it.
@@ -109,14 +111,21 @@ The process differs slightly depending on the action being taken.
     When ready, press **buy** to initiate the fill.
   </Step>
     <Step title="Receive tokenized points">
-    Shortly after, your chXXX points will arrive. These tokens follow the LayerZero Omnichain Fungible Token (OFT) standard, allowing you to bridge them across supported chains.
+    Shortly after, your `chXXX` escrow tokens will arrive. These tokens follow the LayerZero
+    Omnichain Fungible Token (OFT) standard, allowing you to bridge them across supported chains.
+    On standard escrowable markets, the mint is 1:1 with the filled points amount. On
+    non-custodial markets, the amount you receive depends on the offer's collateral weight.
     <Warning>Checkpoint does currently not have a secondary market for chXXX</Warning>
   </Step>
 </Steps>
     ### Settlement for Buyers
-    The funds you used to fill the order are held in an escrow smart contract. They are released to the seller only after the seller initiates a settlement. Once settlement begins, the seller transfers the tokens directly to the buyer on the chain where the TGE has occurred.
+    The funds you used to fill the order are held in an escrow smart contract. They are released to
+    the seller only after the seller initiates a valid settlement.
 
-    Settlement is not a 1:1 conversion between points and chXXX tokens. Protocols may distribute more, fewer, or equal tokens compared to the issued chXXX tokens. Final settlement is calculated pro-rata to the points a user has received from the specific protocol market.
+    Settlement is not a 1:1 conversion between points and `chXXX` tokens. Final settlement is
+    calculated pro-rata across the full market for that points program. If some sellers fail to
+    settle on time, their filled USDC and collateral are pooled and redistributed globally to escrow
+    holders.
 
   </Tab>
   <Tab title="Selling Points" icon="store">
@@ -136,7 +145,10 @@ When creating a sell offer, you will need to define several parameters, includin
     If you have not yet deposited points, or your balance has increased, visit the Deposit Points section to deposit your updated amount.
   </Step>
   <Step title="Input sell parameters">
-    Return to the trading panel and open the Sell tab. Enter your sell parameters, including price, quantity, and required collateral to back your offer.
+    Return to the trading panel and open the Sell tab. Enter your sell parameters, including price,
+    points amount, and collateral. On non-custodial markets, each market can define an ideal USDC
+    collateral-per-point target, and your collateral level affects how much `chXXX` buyers mint
+    when they fill the offer.
     <Note>Committed collateral remains locked in the escrow smart contract until settlement or other parameters have been triggered.</Note>
   </Step>
     <Step title="Sell points">
@@ -151,7 +163,8 @@ You can cancel an open offer (subject to a cancellation fee) if it has not been 
 have been partially filled cannot be cancelled.
 
 Buyers may reverse an escrow if the oracle detects irregularities in point allocations. Failure to
-settle or late settlement may result in the loss of your collateral.
+settle by the deadline moves your filled USDC and collateral into the market-wide redistribution
+pool for that points program.
 
   </Tab>
 </Tabs>
