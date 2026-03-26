@@ -37,7 +37,7 @@ html {
   /* Surfaces */
   --cp-surface: #f7f7f7;
   --cp-surface-1: #f7f7f7;
-  --cp-surface-2: #;
+  --cp-surface-2: transparent;
   --cp-surface-3: #eaeef3;
   --cp-surface-1-rgb: 247 247 247;
   --cp-surface-bg: var(--cp-surface-1);
@@ -85,7 +85,7 @@ html.dark, html[data-theme="dark"] {
   /* Surfaces */
   --cp-surface: #101010;
   --cp-surface-1: #101010;
-  --cp-surface-2: #;
+  --cp-surface-2: transparent;
   --cp-surface-3: #111827;
   --cp-surface-1-rgb: 32 34 34;
   --cp-surface-bg: var(--cp-surface-1);
@@ -128,6 +128,18 @@ html, body {
 
 a { color: var(--cp-link); }
  a:hover { color: var(--cp-link-hover); }
+
+html.dark a,
+html[data-theme="dark"] a {
+  color: var(--cp-link);
+}
+
+html.dark a:hover,
+html.dark a:focus-visible,
+html[data-theme="dark"] a:hover,
+html[data-theme="dark"] a:focus-visible {
+  color: var(--cp-link-hover) !important;
+}
 
 /* Headings and text */
 h1, h2, h3, h4, h5, h6 { color: var(--cp-heading); }
@@ -242,9 +254,54 @@ table tbody tr:nth-child(even) { background-color: var(--cp-table-row-alt-bg); }
   color: var(--cp-link);
 }
 
+/* Tighten dark-mode footer and pagination surfaces */
+html.dark #sidebar > ul.left-0.right-0.bottom-0,
+html[data-theme="dark"] #sidebar > ul.left-0.right-0.bottom-0 {
+  background-color: var(--cp-sidebar-bg) !important;
+  border-top-color: var(--cp-sidebar-border) !important;
+}
+
+html.dark #pagination,
+html.dark .pagination,
+html[data-theme="dark"] #pagination,
+html[data-theme="dark"] .pagination {
+  background-color: var(--cp-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+html.dark #pagination > *,
+html.dark .pagination > *,
+html[data-theme="dark"] #pagination > *,
+html[data-theme="dark"] .pagination > * {
+  background-color: transparent !important;
+}
+
+html.dark #pagination a > div,
+html.dark .pagination a > div,
+html[data-theme="dark"] #pagination a > div,
+html[data-theme="dark"] .pagination a > div {
+  background-color: transparent !important;
+}
+
 /* Anchors */
 .nav-anchors, [data-selector="nav-anchors"] { background: transparent; }
 .nav-anchor, [data-selector="nav-anchor"] { color: var(--cp-link); }
+
+/* Light-mode TOC links should be neutral by default */
+html:not(.dark) #table-of-contents a,
+html:not(.dark) .nav-anchor,
+html:not(.dark) [data-selector="nav-anchor"] {
+  color: var(--cp-text) !important;
+}
+
+html:not(.dark) #table-of-contents a:hover,
+html:not(.dark) #table-of-contents a[aria-current="true"],
+html:not(.dark) .nav-anchor:hover,
+html:not(.dark) .nav-anchor[aria-current="true"],
+html:not(.dark) [data-selector="nav-anchor"]:hover,
+html:not(.dark) [data-selector="nav-anchor"][aria-current="true"] {
+  color: var(--cp-link) !important;
+}
 
 /* Callouts */
 .callout, [data-selector="callout"] {
