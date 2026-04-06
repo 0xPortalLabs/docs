@@ -15,33 +15,33 @@ onchain assets.
     actor User as Alice
     participant Oracle as Oracle Service
     participant Deposit as Deposit Contract
-    participant Oracle Contract
-    participant NFT as Soulbound NFT
+    participant OracleContract as Oracle Contract
+    participant Receipt as Deposit Receipt
 
     User->>Oracle: I have X points in program Y
     Oracle->>Oracle: Verifies claim offchain
     Oracle-->>User: Return signature
     User->>Deposit: Submit signature + amount
-    Deposit->>Oracle Contract: Validate signature
-    Oracle Contract-->>Deposit: Return success
-    Deposit->>NFT: Mint NFT
-    NFT->>NFT: Record X points
-    NFT-->>User: Return NFT
+    Deposit->>OracleContract: Validate signature
+    OracleContract-->>Deposit: Return success
+    Deposit->>Receipt: Mint receipt
+    Receipt->>Receipt: Record X points
+    Receipt-->>User: Return receipt
 ```
 
 ## Dual-Token Model
 
-When you deposit points, you receive a **Soulbound NFT** that represents your points. Later, when
+When you deposit points, you receive a **deposit receipt** that represents your points. Later, when
 your offer is filled on the market, **ERC20 tokens** are minted. This two-stage design creates
 security and efficiency:
 
-### 1. Soulbound NFT (chXXX-R tokens)
+### 1. Deposit Receipt (chXXX-R tokens)
 
 Minted immediately at deposit. A non-transferable receipt that proves you deposited X amount of
-points and tracks changes to your points amount over time. This NFT is your proof of deposit and is
-required to create offers on the market.
+points and tracks changes to your points amount over time. This receipt is your proof of deposit
+and is required to create offers on the market.
 
-Referenced as the `DepositReceipt.sol` contract.
+Referenced as the `DepositReceipt` contract.
 
 **onchain points data**:
 
@@ -50,53 +50,43 @@ Point balance changes are tracked onchain via the
 [OpenZeppelin's Checkpoints](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/structs/Checkpoints.sol)
 library to maintain an immutable record of all balance updates.
 
-This data is queryable onchain via the Soulbound NFT (DepositReceipt.sol)
+This data is queryable onchain via the deposit receipt.
 
 <CodeGroup>
 
-```solidity getUserData
-function getUserData(address user)
+```solidity getAccountData
+function getAccountData(bytes calldata account)
     external
     view
     returns (
         uint256 depositedAmount,
         uint256 heldAmount,
         uint256 latestPointsAmount,
-        uint256 latestClaimTime
+        uint48 latestClaimTime,
+        address operator,
+        bytes memory account
     );
 ```
 
-```solidity getUserCumulativeDelta
-/// @dev This function returns checkpoint values at the boundaries of a time range.
-///      - `lower` uses `lowerLookup(start)` which finds the checkpoint at or after `start` (key >= start)
-///      - `upper` uses `upperLookup(end)` which finds the checkpoint at or before `end` (key <= end)
-///
-///      IMPORTANT: When the time range [start, end] contains no checkpoints, `lower` will be from
-///      a checkpoint AFTER the range, while `upper` will be from a checkpoint BEFORE the range.
-///      This causes `lower` > `upper`, which may be counterintuitive.
-///
-///      Example: Given checkpoints at timestamps (50, value=100) and (60, value=200)
-///      - Query with start=51, end=59 returns:
-///        - lower = 200 (from checkpoint at t=60, the first checkpoint >= 51)
-///        - upper = 100 (from checkpoint at t=50, the last checkpoint <= 59)
-function getUserCumulativeDelta(address user, uint256 start, uint256 end)
+```solidity getAccountCumulativeDelta
+function getAccountCumulativeDelta(bytes calldata account, uint48 start, uint48 end)
     external
     view
     returns (uint256 upper, uint256 lower);
 ```
 
-```solidity getUserHistoricalPoints
-function getUserHistoricalPoints(address user)
+```solidity getAccountHistoricalPoints
+function getAccountHistoricalPoints(bytes calldata account)
     external
     view
-    returns (Checkpoints.Checkpoint256[] memory res);
+    returns (Checkpoints.Checkpoint208[] memory res);
 ```
 
 </CodeGroup>
 
 ### 2. Escrow Token (chXXX tokens)
 
-Minted when someone fills your offer on `Market.sol`.
+Minted when someone fills your offer on `Market`.
 
 There are two minting paths:
 
@@ -117,7 +107,7 @@ This means two offers for the same number of points can mint different amounts o
 non-custodial markets depending on how much collateral backs each offer. As a result this
 promotes sellers to back the offers with more collateral, win-win.
 
-Referenced as the `EscrowToken.sol` contract.
+Referenced as the `EscrowToken` contract.
 
 **Fill extra**
 
@@ -195,7 +185,7 @@ xychart-beta
 **On Protocol Token Generation Event (TGE)**:
 
 - The escrow tokens are redeemable for the real tokens at a given ratio determined by
-  `Settlement.sol`
+  `Settlement`
 
 The redemption ratio is calculated as:
 

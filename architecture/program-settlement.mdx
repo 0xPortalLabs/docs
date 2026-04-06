@@ -36,7 +36,7 @@ Settlement is the process that happens after TGE (Token Generation Event) where:
 ## Settlement
 
 Settlement is **global per points program**, not a direct 1:1 or per-offer redemption flow.
-`Settlement.sol` tracks a shared distribution snapshot for each `pointsId` containing:
+`Settlement` tracks a shared distribution snapshot for each `pointsId` containing:
 
 - total token amount deposited for the program
 - total USDC accumulated from overdue/defaulted offers
@@ -47,12 +47,12 @@ Once the distribution is settled, claims are calculated pro-rata from that share
 
 ### Same-chain settlement
 
-For programs launching on the same chain as `Settlement.sol`, users claim through
+For programs launching on the same chain as `Settlement`, users claim through
 `claimDistribution(pointsId)`.
 
 On claim:
 
-1. The claimant transfers their escrow tokens into `Settlement.sol`
+1. The claimant transfers their escrow tokens into `Settlement`
 2. The contract calculates their token share from the program's `tokenRatio`
 3. The contract also calculates their share of the pooled USDC from overdue/defaulted offers
 4. Both amounts are sent to the claimant
@@ -63,10 +63,10 @@ Users can either claim directly or wait for any announced distribution process b
 
 ### Settlement on another chain
 
-For projects launching on a different chain, users must interact with the `RemoteSettlement.sol`
+For projects launching on a different chain, users must interact with the `RemoteSettlement`
 contract on that relevant chain.
 
-Checkpoint stores the program distribution snapshot on `Settlement.sol`. Anyone can then relay the
+Checkpoint stores the program distribution snapshot on `Settlement`. Anyone can then relay the
 settlement data to the remote settlement contract with `sendSettlementMessage()`.
 
 Just like with the same chain settlement, users can either claim the distribution directly via

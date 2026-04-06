@@ -15,7 +15,7 @@ Checkpoint is a decentralized protocol that bridges offchain loyalty points with
   </Card>
 
   <Card title="Deposit" icon="inbox">
-    Tokenizes offchain points. Users submit offchain points with an oracle signature and receive a soulbound NFT.
+    Tokenizes offchain points. Users submit offchain points with an oracle signature and receive a deposit receipt.
   </Card>
 
   <Card title="Oracle" icon="certificate">
@@ -31,11 +31,22 @@ Checkpoint is a decentralized protocol that bridges offchain loyalty points with
   </Card>
 </CardGroup>
 
+<Note>
+  Each points program also has a deposit receipt (`chXXX-R`) and an escrow token (`chXXX`).
+</Note>
+
+## Account Model
+
+Checkpoint does not treat the transaction sender as the only user identity.
+
+- `account` is an [ERC-7930](https://eips.ethereum.org/EIPS/eip-7930) representation of the underlying points holder, such as an EOA
+- `operator` is the smart wallet currently allowed to act for that account onchain
+
 ## How It Works
 
 ### Phase 1: Deposit Points
 
-You sign your points claim offchain with the oracle, then submit a deposit transaction. You receive a [**Soulbound NFT**](/core-products/checkpoint-point-nfts) that proves ownership and tracks your history.
+You sign your points claim offchain with the oracle, then submit a deposit transaction. You receive a [**deposit receipt**](/core-products/checkpoint-point-nfts) that proves the deposit and tracks your points history.
 
 ### Phase 2: Trade
 
@@ -49,7 +60,7 @@ Once the real token launches, you redeem your [escrow tokens](/architecture/poin
 
 | Concept | Description |
 |---------|-------------|
-| **Soulbound NFT** | Non-transferable receipt proving your point deposit and tracking history |
+| **Deposit Receipt** | Non-transferable receipt proving your point deposit and tracking history |
 | **Escrow Tokens** | A program-wide settlement claim minted either 1:1 or via collateral weighting depending on the market |
 | **Oracle Verification** | Cryptographic validation that your offchain points exist |
 | **Settlement** | Program-wide distribution of tokens and overdue USDC post-TGE |

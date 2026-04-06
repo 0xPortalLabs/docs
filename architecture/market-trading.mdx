@@ -69,7 +69,7 @@ long as they have no existing fills.
 
 <Note>
   {" "}
-  You must have a valid deposit receipt NFT with enough available points to create an offer.{" "}
+  You must have a valid deposit receipt with enough available points to create an offer.{" "}
 </Note>
 
 ### Filling an Offer
@@ -85,7 +85,7 @@ graph LR
   A --> B --> C --> D
 ```
 
-To fill an offer, you send USDC to the `Market.sol` contract. The escrow mint path depends on the
+To fill an offer, you send USDC to the `Market` contract. The escrow mint path depends on the
 market type:
 
 - on standard escrowable markets, buyers mint `chXXX` 1:1 with the filled points amount
@@ -193,7 +193,7 @@ sequenceDiagram
 
 When TGE happens and the actual token launches, the seller calls `settleOffer()` to finalize the
 deal. The market validates that the settlement has not passed the deadline, takes the seller's
-tokens, deposits them to `Settlement.sol`, and sends the filled USDC proceeds to the seller minus
+tokens, deposits them to `Settlement`, and sends the filled USDC proceeds to the seller minus
 the configured settlement fee. The seller also gets their collateral back unless the offer is under
 vesting settlement.
 
@@ -206,12 +206,12 @@ distribution.
 This is useful when the points program is on a different chain than the Market. Create an offer on
 one chain, the buyer fills it, but the token launches on another chain. To settle:
 
-1. Provide tokens to the `RemoteSettlement.sol` contract on the token's chain
-2. Call `settleOfferViaOracle()` on `Market.sol` with the chain ID, transaction hash, and Oracle
+1. Provide tokens to the `RemoteSettlement` contract on the token's chain
+2. Call `settleOfferViaOracle()` on `Market` with the chain ID, transaction hash, and Oracle
    signature
 3. The oracle verifies the settlement, and the Market sends you USDC and collateral back
 
-The filler can then claim their tokens from `RemoteSettlement.sol` just like standard settlement.
+The filler can then claim their tokens from `RemoteSettlement` just like standard settlement.
 
 ### Partial Fills
 
@@ -228,8 +228,8 @@ $$\text{tokensToSend} = \left\lfloor \frac{\text{tokenAmount} \times \text{fille
 - Buyers fill 60 USDC total (60% of the offer)
 - Seller only needs to provide 60% of the final token amount assigned to that offer
 
-Each buyer receives their proportional share when they claim from `Settlement.sol` or
-`RemoteSettlement.sol`.
+Each buyer receives their proportional share when they claim from `Settlement` or
+`RemoteSettlement`.
 
 ### Vesting Settlement
 
@@ -298,7 +298,7 @@ graph LR
 
 When `settleOverdueOffer()` is called after the deadline:
 
-1. The offer's filled USDC and seller collateral are deposited into `Settlement.sol`
+1. The offer's filled USDC and seller collateral are deposited into `Settlement`
 2. That amount increases the USDC pool tracked for the entire points program
 3. Escrow holders later claim a pro-rata share of that pooled USDC during distribution
 4. There is no separate overdue fee in the current settlement flow
