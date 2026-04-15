@@ -16,10 +16,50 @@
     }
   ],
   "paths": {
+    "/claim/deposit/authorization": {
+      "post": {
+        "summary": "Get Deposit Authorization",
+        "description": "Resolve the points holder account and return the typed data that must be signed before requesting a deposit claim",
+        "operationId": "getDepositAuthorization",
+        "tags": ["Claims"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositAuthorizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful authorization payload generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositAuthorizationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/claim/deposit": {
       "post": {
         "summary": "Get Deposit Claim",
-        "description": "Verify a user's current points and get a signature for a deposit transaction",
+        "description": "Verify a signed deposit authorization, fetch the latest points balance, and return the oracle signature for a deposit transaction",
         "operationId": "getDepositClaim",
         "tags": ["Claims"],
         "requestBody": {
@@ -52,6 +92,16 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Invalid account authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -59,7 +109,7 @@
     "/claim/settlement": {
       "post": {
         "summary": "Get Settlement Claim",
-        "description": "Verify that an offer was properly settled onchain and get a signature for a crosschain settlement transaction",
+        "description": "Verify that an offer was properly settled onchain and get a signature for a settlement transaction",
         "operationId": "getSettlementClaim",
         "tags": ["Claims"],
         "requestBody": {
@@ -109,46 +159,187 @@
   },
   "components": {
     "schemas": {
-      "DepositClaimRequest": {
+      "DepositAuthorizationRequest": {
         "type": "object",
         "properties": {
-          "address": {
+          "account": {
             "type": "string",
-            "description": "The user's wallet address",
+            "description": "Hex-encoded ERC-7930 account for the underlying points holder, or a raw EVM address that the oracle can resolve",
+            "example": "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045"
+          },
+          "operator": {
+            "type": "string",
+            "description": "The EVM wallet that will submit the onchain deposit transaction",
             "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
           },
           "pointsId": {
             "oneOf": [{ "type": "string" }, { "type": "integer" }],
-            "description": "The points protocol ID as a string or integer",
-            "example": 1
+            "description": "The points program ID",
+            "example": "4"
           }
         },
-        "required": ["address", "pointsId"]
+        "required": ["account", "operator", "pointsId"]
+      },
+      "DepositAuthorizationPayload": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "description": "Canonical ERC-7930 account used for signing and onchain verification",
+            "example": "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045"
+          },
+          "signer": {
+            "type": "string",
+            "description": "Address expected to sign the authorization",
+            "example": "0xd8da6bf26964af9d7eed9e03e53415d37aa96045"
+          },
+          "accountType": {
+            "type": "string",
+            "description": "Resolved account namespace",
+            "example": "evm"
+          },
+          "operator": {
+            "type": "string",
+            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
+          },
+          "pointsId": {
+            "type": "string",
+            "example": "4"
+          },
+          "nonce": {
+            "type": "string",
+            "example": "0"
+          },
+          "expiry": {
+            "type": "string",
+            "example": "1760896448"
+          },
+          "typedData": {
+            "type": "object",
+            "description": "EIP-712 payload to sign exactly as returned by the API",
+            "additionalProperties": true,
+            "example": {
+              "domain": {
+                "chainId": 421614
+              },
+              "primaryType": "DepositAuth",
+              "types": {},
+              "message": {
+                "account": "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045",
+                "operator": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6",
+                "pointsId": "4",
+                "nonce": "0",
+                "expiry": "1760896448"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable message describing the authorization being signed",
+            "example": "Authorize a Checkpoint deposit claim for pointsId 4"
+          }
+        },
+        "required": [
+          "account",
+          "signer",
+          "accountType",
+          "operator",
+          "pointsId",
+          "nonce",
+          "expiry",
+          "typedData",
+          "message"
+        ]
+      },
+      "DepositAuthorizationResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "authorization": {
+            "$ref": "#/components/schemas/DepositAuthorizationPayload"
+          }
+        },
+        "required": ["success", "authorization"]
+      },
+      "DepositClaimRequest": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "description": "Hex-encoded ERC-7930 account for the underlying points holder",
+            "example": "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045"
+          },
+          "operator": {
+            "type": "string",
+            "description": "The EVM wallet that will submit the onchain deposit transaction",
+            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
+          },
+          "pointsId": {
+            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "description": "The points program ID",
+            "example": "4"
+          },
+          "authorization": {
+            "$ref": "#/components/schemas/DepositSignatureAuthorization"
+          }
+        },
+        "required": ["account", "operator", "pointsId", "authorization"]
+      },
+      "DepositSignatureAuthorization": {
+        "type": "object",
+        "properties": {
+          "nonce": {
+            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "example": "0"
+          },
+          "expiry": {
+            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "example": "1760896448"
+          },
+          "signature": {
+            "type": "string",
+            "description": "Account-signed authorization signature",
+            "example": "0xabc123def456..."
+          }
+        },
+        "required": ["nonce", "expiry", "signature"]
       },
       "DepositClaim": {
         "type": "object",
         "properties": {
-          "address": {
+          "chainId": {
+            "type": "string",
+            "example": "421614"
+          },
+          "pointsId": {
+            "type": "string",
+            "example": "4"
+          },
+          "account": {
+            "type": "string",
+            "example": "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045"
+          },
+          "operator": {
             "type": "string",
             "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
           },
-          "protocol": {
-            "type": "string",
-            "example": "Jumper Exchange"
-          },
           "amount": {
             "type": "string",
-            "example": "1000"
+            "example": "5314000000000000000000"
           },
           "expiry": {
             "type": "string",
-            "example": "1697654400"
+            "example": "1760896448"
           },
           "nonce": {
             "type": "string",
-            "example": "5"
+            "example": "0"
           }
-        }
+        },
+        "required": ["chainId", "pointsId", "account", "operator", "amount", "expiry", "nonce"]
       },
       "DepositClaimResponse": {
         "type": "object",
@@ -162,68 +353,76 @@
           },
           "signature": {
             "type": "string",
-            "example": "0xabc123def456..."
+            "nullable": true,
+            "example": "0xd1ede18892adf865739b755a274ae470fc293344b1787564d711b541ca53db827b3cfec75afd1c2b70d1ca3b08ffa5d159bc9df3a4359df84ae99dd8deb2c4ca1b"
           }
-        }
+        },
+        "required": ["success", "claim", "signature"]
       },
       "SettlementClaimRequest": {
         "type": "object",
         "properties": {
-          "address": {
-            "type": "string",
-            "description": "The user's wallet address",
-            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
-          },
           "chainId": {
             "type": "integer",
-            "description": "The chain ID where transaction occurred",
-            "example": 1
+            "description": "The chain ID where the settlement transaction occurred",
+            "example": 42161
           },
           "evm_tx": {
             "type": "string",
             "description": "The transaction hash of the settlement transaction",
-            "example": "0xabc123def456..."
+            "example": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
           },
           "offerId": {
-            "type": "string",
-            "description": "The offer ID as a string",
+            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "description": "The offer ID",
             "example": "123"
           }
         },
-        "required": ["address", "chainId", "evm_tx", "offerId"]
+        "required": ["chainId", "evm_tx", "offerId"]
       },
       "SettlementClaim": {
         "type": "object",
         "properties": {
           "nonce": {
-            "type": "integer",
-            "example": 1
+            "type": "string",
+            "example": "0"
           },
           "expiry": {
-            "type": "integer",
-            "example": 1697654400
+            "type": "string",
+            "example": "1760896448"
           },
           "chainId": {
-            "type": "integer",
-            "example": 1
+            "type": "string",
+            "description": "Oracle verification chain ID",
+            "example": "421614"
           },
           "settlementChainId": {
-            "type": "integer",
-            "example": 42161
-          },
-          "user": {
             "type": "string",
-            "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
+            "description": "Chain ID where the settlement transaction occurred",
+            "example": "42161"
+          },
+          "account": {
+            "type": "string",
+            "example": "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045"
           },
           "offerId": {
-            "type": "integer",
-            "example": 123
+            "type": "string",
+            "example": "123"
           },
           "txhash": {
             "type": "string",
-            "example": "0xabc123def456..."
+            "example": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
           }
-        }
+        },
+        "required": [
+          "nonce",
+          "expiry",
+          "chainId",
+          "settlementChainId",
+          "account",
+          "offerId",
+          "txhash"
+        ]
       },
       "SettlementClaimResponse": {
         "type": "object",
@@ -237,9 +436,10 @@
           },
           "signature": {
             "type": "string",
-            "example": "0xefgh5678ijkl..."
+            "example": "0xdef4567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
           }
-        }
+        },
+        "required": ["success", "claim", "signature"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -252,7 +452,8 @@
             "type": "string",
             "example": "Invalid request"
           }
-        }
+        },
+        "required": ["success", "error"]
       }
     }
   },

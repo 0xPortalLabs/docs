@@ -2,40 +2,55 @@
 title: "Points Oracle"
 description: "Cryptographic verification system for offchain points"
 ---
-<img 
-  className="block dark:hidden rounded-lg" 
-  src="/images/Oracle_Title_Light.png" 
+
+<img
+  className="block dark:hidden rounded-lg"
+  src="/images/Oracle_Title_Light.png"
   alt="Checkpoint Oracle title image, light theme"
   draggable="false"
-  style={{ pointerEvents: 'none' }}
+  style={{ pointerEvents: "none" }}
 />
 
-<img 
-  className="hidden dark:block rounded-lg" 
-  src="/images/Oracle_Title_Dark.png" 
+<img
+  className="hidden dark:block rounded-lg"
+  src="/images/Oracle_Title_Dark.png"
   alt="Checkpoint Oracle title image, dark theme"
   draggable="false"
-  style={{ pointerEvents: 'none' }}
+  style={{ pointerEvents: "none" }}
 />
 
 # Checkpoint Oracle
 
-The **Points Oracle** is Checkpoint's verification layer. It fetches points data from offchain sources and signs it with cryptographic signatures, making the data verifiable onchain.
+The **Points Oracle** is Checkpoint's verification layer. It fetches points data from offchain
+sources and signs it with cryptographic signatures, making the data verifiable onchain.
 
-The Oracle is a core component of Checkpoint and is responsible for writing points data to the blockchain, verifying claims and settlement among other things.
+The Oracle is a core component of Checkpoint and is responsible for writing points data to the
+blockchain, verifying claims and settlement among other things.
 
 <CardGroup cols={2}>
-  <Card title="Checkpoint NFT" icon="camera-retro" iconType="solid" href="/core-products/checkpoint-point-nfts">
+  <Card
+    title="Checkpoint NFT"
+    icon="camera-retro"
+    iconType="solid"
+    href="/core-products/checkpoint-point-nfts"
+  >
     Checkpoint Points receipt
   </Card>
-  <Card title="Oracle Systems" icon="certificate" iconType="solid" href="/architecture/oracle-system">
+  <Card
+    title="Oracle Systems"
+    icon="certificate"
+    iconType="solid"
+    href="/architecture/oracle-system"
+  >
     Checkpoint verification layer
   </Card>
 </CardGroup>
 
 ## Oracle Functionalities
 
-The Oracle serves two major functions: verifying off-chain point deposits before they go on-chain, and confirming settlement claims when protocols TGE. Fundamentally, these translate to various programmatic features: 
+The Oracle serves two major functions: verifying offchain point deposits before they go onchain, and
+confirming settlement claims when protocols TGE. Fundamentally, these translate to various
+programmatic features:
 
 <CardGroup cols={2}>
   <Card title="Signature Verification" icon="pen-nib">
@@ -59,14 +74,17 @@ The Oracle components can be further viewed more granularly by examining the Ora
 <Steps titleSize="h2">
  <Step title="Signature Verification">
     <Steps>
-      <Step title="Points Deposit Claim">
-        Users submit points deposit claims with cryptographic signatures
+      <Step title="Deposit Authorization">
+        Users request a short-lived authorization payload and sign it as the underlying points
+        account owner
       </Step>
-      <Step title="Signature Validation">
-        Oracle verifies signatures were created by the Oracle's authorized signer
+      <Step title="Oracle Claim Generation">
+        The Oracle verifies that authorization, fetches the latest points balance, and signs the
+        deposit claim
       </Step>
-      <Step title="Balance Confirmation">
-        Confirmed balances are recorded onchain for trading eligibility
+      <Step title="Onchain Deposit">
+        The operator submits the Oracle-signed claim onchain so the confirmed balance becomes
+        tradable
       </Step>
     </Steps>
     <Check>After verification, users should receive a Soulbound [Checkpoint NFT](/core-products/checkpoint-point-nfts)</Check>
@@ -98,23 +116,7 @@ The Oracle components can be further viewed more granularly by examining the Ora
   </Step>
 </Steps>
 
-## Oracle Cryptographic Security
-
-<CardGroup cols={2}>
-  <Card title="Signature Validation" icon="shield-check">
-    Uses industry-standard ECDSA signatures for point claim verification
-  </Card>
-  <Card title="Nonce Protection" icon="lock">
-    Implements nonce-based replay protection to prevent duplicate claims
-  </Card>
-  <Card title="Temporal Validation" icon="hourglass-half">
-    Enforces time-based expiry on signatures to prevent stale data usage
-  </Card>
-  <Card title="Balance Verification" icon="users">
-    Cross-references claimed balances with protocol data for verification
-  </Card>
-</CardGroup>
-
 <Note>
-**Need Help?** Check out our [API documentation](/api/oracle-api) for detailed integration guides and examples.
+  **Need Help?** Check out our [API documentation](/api/oracle-api) for detailed integration guides
+  and examples.
 </Note>

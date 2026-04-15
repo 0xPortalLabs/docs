@@ -1,14 +1,78 @@
 ---
 title: "Introduction"
-description: "Verify user claims for onchain consumption"
+description: "Verify offchain points balances and settlement claims for onchain use"
 ---
 
 ## Endpoints
 
-- [Get Deposit Claim](/api-reference/claims/get-deposit-claim): Verify a user's current points and
-  get a signature for a deposit transaction
+- [Get Deposit Authorization](/api-reference/claims/get-deposit-authorization): Resolve the points
+  holder account, build the typed data to sign, and return the nonce and expiry for a deposit
+  authorization
+- [Get Deposit Claim](/api-reference/claims/get-deposit-claim): Verify the signed deposit
+  authorization and return the oracle signature for `Deposit.deposit(...)`
 - [Get Settlement Claim](/api-reference/claims/get-settlement-claim): Verify that an offer was
-  properly settled onchain and get a signature for a crosschain settlement transaction
+  properly settled onchain and return the oracle signature for settlement
+
+## Deposit Flow
+
+<Steps>
+  <Step title="Request authorization payload">
+    Call `POST /claim/deposit/authorization` with `pointsId`, `account`, and `operator`.
+  </Step>
+  <Step title="Sign as the account owner">
+    Use the returned authorization fields to build the EIP-712 payload your client expects, then
+    sign it with the signer that controls the underlying points account.
+  </Step>
+  <Step title="Request the oracle claim">
+    Call `POST /claim/deposit` with the signed authorization. The response contains the claim and
+    oracle signature to pass into `Deposit.deposit(...)`.
+  </Step>
+</Steps>
+
+<Info>
+  `account` is the hex-encoded ERC-7930 account for the underlying points holder. `operator` is the
+  EVM wallet that will submit the onchain deposit transaction.
+</Info>
+
+```ts
+const authRes = await fetch("https://oracle.checkpoint.exchange/claim/deposit/authorization", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    pointsId: "1",
+    account: "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045",
+    operator: "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6",
+  }),
+});
+
+const body = await authRes.json();
+const signature = await accountSigner.signTypedData({
+  ...authBody.authorization.typedData,
+  message: {
+    ...authBody.authorization.typedData.message,
+    pointsId: BigInt(authBody.authorization.pointsId),
+    nonce: BigInt(authBody.authorization.nonce),
+    expiry: BigInt(authBody.authorization.expiry),
+  },
+});
+
+const claimRes = await fetch("https://oracle.checkpoint.exchange/claim/deposit", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    pointsId: "1",
+    account: authBody.authorization.account,
+    operator: authBody.authorization.operator,
+    authorization: {
+      nonce: authBody.authorization.nonce,
+      expiry: authBody.authorization.expiry,
+      signature,
+    },
+  }),
+});
+
+const { claim, signature } = await claimRes.json();
+```
 
 ## Rate Limiting
 
