@@ -23,7 +23,8 @@
         "pages": [
           "index",
           "get-started/quickstart",
-          "get-started/about-checkpoint"
+          "get-started/about-checkpoint",
+          "get-started/faq"
         ]
       },
       {
