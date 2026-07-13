@@ -126,19 +126,44 @@ html, body {
   color: var(--cp-text);
 }
 
-a { color: var(--cp-link); }
- a:hover { color: var(--cp-link-hover); }
-
-html.dark a,
-html[data-theme="dark"] a {
+/* Content links only — avoid coloring sidebar, TOC, or navbar links */
+#content-area a,
+#content a,
+.mdx-content a {
   color: var(--cp-link);
 }
 
-html.dark a:hover,
-html.dark a:focus-visible,
-html[data-theme="dark"] a:hover,
-html[data-theme="dark"] a:focus-visible {
-  color: var(--cp-link-hover) !important;
+#content-area a:hover,
+#content a:hover,
+.mdx-content a:hover,
+#content-area a:focus-visible,
+#content a:focus-visible,
+.mdx-content a:focus-visible {
+  color: var(--cp-link-hover);
+}
+
+html.dark #content-area a,
+html.dark #content a,
+html.dark .mdx-content a,
+html[data-theme="dark"] #content-area a,
+html[data-theme="dark"] #content a,
+html[data-theme="dark"] .mdx-content a {
+  color: var(--cp-link);
+}
+
+html.dark #content-area a:hover,
+html.dark #content a:hover,
+html.dark .mdx-content a:hover,
+html.dark #content-area a:focus-visible,
+html.dark #content a:focus-visible,
+html.dark .mdx-content a:focus-visible,
+html[data-theme="dark"] #content-area a:hover,
+html[data-theme="dark"] #content a:hover,
+html[data-theme="dark"] .mdx-content a:hover,
+html[data-theme="dark"] #content-area a:focus-visible,
+html[data-theme="dark"] #content a:focus-visible,
+html[data-theme="dark"] .mdx-content a:focus-visible {
+  color: var(--cp-link-hover);
 }
 
 /* Headings and text */
@@ -283,24 +308,35 @@ html[data-theme="dark"] .pagination a > div {
   background-color: transparent !important;
 }
 
-/* Anchors */
-.nav-anchors, [data-selector="nav-anchors"] { background: transparent; }
-.nav-anchor, [data-selector="nav-anchor"] { color: var(--cp-link); }
-
-/* Light-mode TOC links should be neutral by default */
-html:not(.dark) #table-of-contents a,
-html:not(.dark) .nav-anchor,
-html:not(.dark) [data-selector="nav-anchor"] {
-  color: var(--cp-text) !important;
+/* Sidebar + TOC navigation links (Mintlify data-active hooks) */
+#sidebar-content li a,
+#mobile-nav-content li a,
+#table-of-contents a,
+toc-item a {
+  color: var(--cp-text-muted);
 }
 
-html:not(.dark) #table-of-contents a:hover,
-html:not(.dark) #table-of-contents a[aria-current="true"],
-html:not(.dark) .nav-anchor:hover,
-html:not(.dark) .nav-anchor[aria-current="true"],
-html:not(.dark) [data-selector="nav-anchor"]:hover,
-html:not(.dark) [data-selector="nav-anchor"][aria-current="true"] {
-  color: var(--cp-link) !important;
+#sidebar-content li a:hover,
+#mobile-nav-content li a:hover,
+#table-of-contents a:hover,
+toc-item a:hover {
+  color: var(--cp-text);
+}
+
+#sidebar-content li[data-active] a,
+#sidebar-content li a.text-primary,
+#table-of-contents a.text-primary,
+toc-item[data-active-deepest] a {
+  color: var(--cp-link);
+}
+
+.nav-anchors, [data-selector="nav-anchors"] { background: transparent; }
+.nav-anchor, [data-selector="nav-anchor"] { color: var(--cp-text-muted); }
+.nav-anchor:hover,
+[data-selector="nav-anchor"]:hover,
+.nav-anchor[aria-current="true"],
+[data-selector="nav-anchor"][aria-current="true"] {
+  color: var(--cp-link);
 }
 
 /* Callouts */
