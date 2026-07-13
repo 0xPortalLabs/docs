@@ -317,10 +317,14 @@ toc-item a {
 }
 
 #sidebar-content li a:hover,
+#sidebar-content li a:focus-visible,
 #mobile-nav-content li a:hover,
+#mobile-nav-content li a:focus-visible,
 #table-of-contents a:hover,
-toc-item a:hover {
-  color: var(--cp-text);
+#table-of-contents a:focus-visible,
+toc-item a:hover,
+toc-item a:focus-visible {
+  color: var(--cp-link);
 }
 
 #sidebar-content li[data-active] a,
