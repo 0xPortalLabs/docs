@@ -1,0 +1,188 @@
+---
+title: "Partner Fee and Settlement Policy WIP"
+description: "Working proposal for protocol partnerships, settlement responsibilities, and fee sharing ahead of mainnet."
+---
+
+<Warning>
+**Work in progress — discussion draft, 21 October 2026.**
+
+This proposal is open for review by prospective partners, contributors, and the
+community. It is intended to inform the mainnet policy and subsequent signed
+partner agreements. Publication does not activate these terms, create a fee
+entitlement, or confirm that a proposed integration is implemented. An adopted
+version and its effective date will be published before partners participate
+under that policy.
+</Warning>
+
+## Purpose
+
+Checkpoint proposes sharing eligible market fees with the protocols whose points
+are traded on Checkpoint. The purpose is to support a continuing economic
+relationship in which those protocols honour agreed verification, points
+recognition, and settlement obligations.
+
+The fee share complements a written agreement. It does not guarantee that points
+will receive an allocation, that a token generation event (TGE) will occur, or that
+buyers and sellers will avoid losses.
+
+## Two settlement models
+
+The proposed percentages below divide **eligible fees**, not users' points,
+purchase proceeds, or token allocations. Checkpoint is listed first in each split.
+
+| Model | Integration and delivery responsibility | Checkpoint share | Participating protocol share |
+| --- | --- | --- | --- |
+| Protocol-delivered settlement | Authorised read and write access moves sold points into designated escrow. The partner makes the associated allocation available to the settlement contracts so Checkpoint can execute settlement for users. | 50% | 50% |
+| Seller-delivered settlement | Read-only access supports verification. Points remain with the seller, who is responsible for delivering the associated allocation into settlement. | 70% | 30% |
+
+These are proposed fixed categories, not negotiation bands. Eligibility depends
+on the settlement capability and commitments provided, rather than access
+credentials alone.
+
+### Protocol-delivered settlement
+
+Under this model, sold points are transferred from the seller's account to a
+designated escrow address in the participating protocol's points system. The
+partner must recognise that transfer and the agreed distribution entitlement
+associated with those points.
+
+At TGE or the agreed distribution event, the partner must make the corresponding
+assets available to the settlement contracts. This may involve direct delivery
+or a compatible claim mechanism. The integration must specify and validate the
+route before the market opens.
+
+**Moving points into escrow is not final settlement.** Settlement still depends
+on the relevant distribution and delivery of its assets. If those assets are
+distributed only to the original sellers, Checkpoint cannot settle on their
+behalf without a further delivery step.
+
+The market terms must explain how partial sales, wallet eligibility, multipliers,
+bonuses, and allocation caps affect escrowed points. Pooling points into an
+address must not silently change the agreed entitlement. The method for
+preserving and reconciling that entitlement remains an open design decision.
+
+### Seller-delivered settlement
+
+Under this model, Checkpoint verifies points through read-only access and sellers
+remain responsible for delivering the associated allocation into settlement.
+The partner's proposed commitments concern reliable verification, recognition
+of traded points under the agreed program rules, and cooperation with settlement.
+
+Seller delivery risk remains. The relevant market's deadlines, collateral, and
+default rules must be disclosed. Partner fee sharing is not insurance against
+seller default.
+
+See [Program Settlement](/architecture/program-settlement) for the currently
+documented distribution mechanics. Those mechanics pool the program's delivered
+assets and applicable default proceeds for pro-rata claims by escrow-token
+holders. This proposal does not establish a separate claim by each buyer against
+a particular seller's airdrop.
+
+## Revenue included in the proposal
+
+The proposed starting fee base is **primary settlement fees collected in USDC
+from the participating protocol's own market, net of applicable refunds**. The
+exact eligible contract events and accounting treatment must be finalised before
+adoption. No deduction for general Checkpoint overhead is proposed.
+
+| Revenue or asset | Proposed treatment |
+| --- | --- |
+| Eligible primary settlement fees from a partner market | Shared according to the applicable 50/50 or 70/30 model |
+| Revenue from Checkpoint's own points markets | Retained by Checkpoint; no external partner entitlement |
+| `fillExtra` escrow-token accrual | Retained by Checkpoint; excluded from partner sharing |
+| Portfolio and API subscriptions | Retained by Checkpoint |
+| An eventual points-deposit fee | Retained by Checkpoint if introduced |
+| Cancellation fees | Open decision; exclusion from partner sharing is proposed |
+| Secondary-market trading fees | Separate policy required; user fee and LP, Checkpoint, and partner allocations remain undecided |
+
+Neither primary settlement model includes an LP deduction merely because
+settlement occurs. Secondary trades that use liquidity pools require their own
+fee schedule. The primary splits do not automatically apply to secondary fees.
+
+For illustration, if a market collects **10,000 USDC in eligible settlement
+fees**, the protocol-delivered model allocates 5,000 USDC to each party. The
+seller-delivered model allocates 7,000 USDC to Checkpoint and 3,000 USDC to the
+participating protocol. These examples do not set the fee charged to traders.
+
+## Written commitments and payment
+
+The proposal requires a written agreement for partner status and fee entitlement
+under either model. A market listing or technical adapter alone does not establish
+that the points issuer is a partner or has accepted obligations.
+
+A standard agreement, accompanied by a schedule identifying the market or season,
+should cover:
+
+- The parties, their authority, and the points program covered.
+- The settlement model, integration responsibilities, and allocation rights
+  associated with sold points.
+- Whether any allocation is committed or remains discretionary.
+- Recognition of traded or escrowed points, legitimate corrections, notice of
+  material changes, and continuity of verification.
+- The applicable fee policy, calculation base, earning conditions, payment
+  recipient, and payout schedule.
+- Delivery deadlines, reconciliation, disputes, termination, and treatment of
+  existing positions if cooperation ends.
+
+The proposed payment condition is successful fulfilment of the relevant
+settlement obligations. A TGE announcement or token launch alone would not
+qualify. How this condition applies to partial settlement, undisputed amounts,
+and individual seller defaults must be resolved before adoption. The payout
+interval and verification authority also remain open.
+
+Whether Checkpoint permits markets without a signed issuer agreement is a
+separate listing-policy decision. This draft does not establish a fee entitlement
+for unsigned issuers.
+
+## Allocation risk and failures
+
+The agreement must distinguish an allocation commitment from a commitment to
+treat equivalent points consistently. If an allocation remains discretionary,
+points may receive nothing even when the partner honours its commitments.
+Excluding Checkpoint positions from a distribution made to otherwise equivalent
+points, or failing to deliver an agreed allocation, raises different questions.
+
+The proposed baseline is no adverse treatment solely because points were traded
+or moved into authorised escrow. Exact treatment, permitted corrections, and
+exceptions must be defined in the market schedule.
+
+Failure procedures must address technical interruptions, incorrect allocations,
+payment to the wrong destination, delayed or absent distributions, and disputed
+performance. No automatic forfeiture, reimbursement, or compensation entitlement
+is established by this draft. Withheld fees cannot replace assets that were never
+delivered, and a failed market may generate no settlement fees to fund recovery.
+
+## Administration and future governance
+
+The proposed operating structure is for the Checkpoint Foundation to approve and
+oversee the policy, with its operating company administering partner agreements
+and fee payments. The contracting entity, approval authority, and delegated
+responsibilities must be confirmed against the entities' governing documents.
+
+The launch policy would be adopted through the authorised governance arrangements
+in place at that time. A future DAO transition would need to define which powers
+transfer and how existing agreements continue to be administered.
+
+The proposed change rule is prospective: new policy versions apply to new markets
+or seasons. Existing markets retain their agreed terms for the agreed period,
+subject to their documented amendment and emergency provisions. Fee splits,
+recipients, and release conditions should be recorded transparently; which rules
+will be enforced by smart contracts remains an implementation decision.
+
+## Decisions required before adoption
+
+1. Confirm the eligible fee events, refund treatment, and cancellation-fee policy.
+2. Define the allocation associated with sold points and how escrow preserves it.
+3. Validate partner delivery and claim routes, including relevant chains.
+4. Set payment timing, verification authority, partial-settlement treatment, and
+   the dispute process.
+5. Set failure, termination, emergency, and any recovery-funding rules.
+6. Decide the policy for unsigned issuers and finalise secondary fees before any
+   secondary-market feature using those fees is activated.
+7. Confirm the contracting entity, adopt the policy, and complete legal and
+   technical alignment with the existing user terms and settlement implementation.
+
+Feedback from partners, contributors, and the community should inform these
+decisions. Once adopted, the public policy and each signed market schedule should
+identify the applicable version and effective date so all parties know the terms
+before the market opens.
