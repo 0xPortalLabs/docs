@@ -50,12 +50,6 @@
         ]
       },
       {
-        "group": "Protocol Partnerships",
-        "pages": [
-          "partners/fee-and-settlement-policy"
-        ]
-      },
-      {
         "group": "Oracle API Reference",
         "openapi": "spec/oracle.json",
         "pages": ["api/oracle-api"]
