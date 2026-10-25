@@ -6,14 +6,17 @@ description: "Cryptographic verification of offchain points"
 # Oracle System
 
 The Oracle is Checkpoint's verification layer. It queries offchain points APIs, generates
-cryptographic signatures to prove the data is legitimate, and the blockchain verifies these
-signatures trustlessly.
+cryptographic signatures for accepted observations, and the blockchain verifies that an authorized
+oracle signer issued each claim. Source accuracy and oracle operation remain trust assumptions.
 
 For deposits, the flow is now split into two steps:
 
 1. The account owner signs a short-lived authorization for a specific `pointsId` and `operator`.
 2. The oracle verifies that authorization, fetches the latest points balance, and signs the deposit
-   claim that the `Deposit` contract checks onchain.
+   claim that the `Deposit` contract checks onchain, subject to available capacity and review.
+
+Authorization and claims are short-lived. Use the returned `expiry` timestamps, request fresh
+authorization when needed, and submit signed claims promptly.
 
 This keeps the points holder account and the EVM wallet submitting the transaction explicitly
 separate.
@@ -29,8 +32,8 @@ infrastructure?
 - **Option 3: Query existing APIs**: The oracle uses the project's existing API and signs the
   verified result
 
-Even though the data comes directly from the project's own API, verification is fully trustless. The
-contracts verify the oracle signature before a deposit or settlement can proceed.
+The contracts verify the oracle signature before a deposit or settlement can proceed. The oracle
+checks balances, deposit limits, and market availability before issuing a claim.
 
 ## How It Works
 
@@ -49,9 +52,15 @@ sequenceDiagram
     Owner->>Oracle: POST /claim/deposit
     Oracle->>PointsAPI: Fetch latest points balance
     PointsAPI-->>Oracle: Points balance
-    Oracle-->>Owner: claim + oracle signature
-    Operator->>Deposit: deposit(pointsId, account, amount, expiry, signature)
-    Deposit->>OracleContract: verifyDepositClaim(...)
+    Oracle->>Oracle: Check market, capacity, and review
+    Oracle-->>Owner: claim + signature, or review_required
+    alt Claim ready
+        Operator->>Deposit: deposit(pointsId, account, amount, expiry, signature)
+        Deposit->>OracleContract: verifyDepositClaim(...)
+    else Review required
+        Owner->>Oracle: GET /deposits?account=...
+        Oracle-->>Owner: Review status
+    end
 ```
 
 ## Account Model
@@ -130,7 +139,9 @@ curl -X POST "https://oracle.checkpoint.exchange/claim/deposit/authorization" \
 
 - Verify the signed deposit authorization
 - Fetch the latest points balance
-- Return the oracle claim and signature to pass into `Deposit.deposit(...)`
+- Apply first-deposit capacity limits and review any delayed amount
+- Return `ready` with a signature, or `review_required` with a zero claim and null signature
+- Submit the claim to `Deposit.deposit(...)` when its status is `ready`
 - [Full documentation →](/api-reference/claims/get-deposit-claim)
 
 ```bash Example Request
@@ -156,13 +167,20 @@ curl -X POST "https://oracle.checkpoint.exchange/claim/deposit" \
     "pointsId": "1",
     "account": "0x000100000014d8da6bf26964af9d7eed9e03e53415d37aa96045",
     "operator": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6",
-    "amount": "5314000000000000000000",
+    "amount": "1000000000000000000000",
     "expiry": "1760896448",
     "nonce": "0"
   },
-  "signature": "0xd1ede18.."
+  "signature": "0xd1ede18..",
+  "observedAmount": "5314000000000000000000",
+  "delayedAmount": "4314000000000000000000",
+  "availableCapacity": "49000000000000000000000",
+  "status": "ready"
 }
 ```
+
+This illustrative partial deposit signs 1,000 points of a 5,314-point observation. Capacity is a
+snapshot, not a guarantee for the next request.
 
 ### 3. Settlement
 
@@ -198,14 +216,33 @@ curl -X POST "https://oracle.checkpoint.exchange/claim/settlement" \
 }
 ```
 
+## Deposit Capacity and Review
+
+First deposits may be fully available, partially available, or require review. Read
+`GET /ratelimits` for current limits and capacity, and `GET /markets` for market availability.
+
+Use `GET /deposits?account=...` to follow review progress without signing again. When ready, request
+fresh authorization and a claim, then submit it promptly. If you already deposited the available
+portion, the oracle reviews and updates the remainder automatically.
+
+Review times can vary. Use the returned status and timestamps rather than a fixed waiting period.
+
 ## Tracking Historical Changes
 
-When your points balance changes, the oracle records this onchain via `changePoints()`.
+The oracle periodically checks deposited accounts and submits approved balance changes through
+`changePoints()`. Updates are subject to review and may not appear immediately. `GET /signatures`
+reports review status; clients do not need to submit points-change signatures themselves.
 
-<Info> This usually happens every 24 hours but there is no strong guarantee. </Info>
-
-Learn how to query the data
+Learn how to query receipt history
 [here](/architecture/points-tokenization#1-deposit-receipt-chxxx-r-tokens).
+
+## Market Availability
+
+Points-source interruptions or unusual balance changes can delay reviews or pause oracle updates.
+Check `GET /markets` for availability and `GET /deposits` for your deposit's status.
+
+An oracle pause affects claim issuance and balance updates; it does not necessarily pause other
+onchain activity.
 
 ## API Reference
 
