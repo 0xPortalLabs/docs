@@ -54,10 +54,10 @@ programmatic features:
 
 <CardGroup cols={2}>
   <Card title="Signature Verification" icon="pen-nib">
-    Validates cryptographic signatures from protocols to verify point claims
+    Checks account-owner authorization and signs verified points balances
   </Card>
   <Card title="Tracks Points Changes" icon="receipt">
-    Keeps your point balances updated automatically across all supported protocols
+    Reviews balance changes before updating supported points programs onchain
   </Card>
   <Card title="Settlement Verification" icon="handshake">
     Confirms that offers were settled correctly on-chain, on supported chains
@@ -66,6 +66,18 @@ programmatic features:
     Provides vesting status checks and claimable amount calculations for settlement
   </Card>
 </CardGroup>
+
+## Deposit Reviews
+
+A first deposit can be available immediately, partially available, or placed under review, depending
+on the program's account limit and shared capacity. Delayed deposits need matching observations, a
+review period, and a fresh balance check. Follow the reported deposit status for progress; scans,
+backlogs, or pauses can extend the wait.
+
+You can follow progress without signing repeatedly. When a deposit is ready, authorize it again and
+submit the short-lived claim. If you already deposited the available portion, the oracle reviews and
+updates the remainder automatically. Unusual balance changes or source outages can pause oracle
+updates while they are checked.
 
 ## Oracle Process Breakdown
 
@@ -80,7 +92,7 @@ The Oracle components can be further viewed more granularly by examining the Ora
       </Step>
       <Step title="Oracle Claim Generation">
         The Oracle verifies that authorization, fetches the latest points balance, and signs the
-        deposit claim
+        deposit claim, subject to capacity limits and review
       </Step>
       <Step title="Onchain Deposit">
         The operator submits the Oracle-signed claim onchain so the confirmed balance becomes
@@ -89,13 +101,13 @@ The Oracle components can be further viewed more granularly by examining the Ora
     </Steps>
     <Check>After verification, users should receive a Soulbound [Checkpoint NFT](/core-products/checkpoint-point-nfts)</Check>
   </Step>
- <Step title="Real-time Monitoring">
+ <Step title="Balance Monitoring">
     <Steps>
       <Step title="Automatic Points Balance Change">
-        Point balance changes across protocols automatically
+        The oracle checks supported programs periodically for points balance changes
       </Step>
       <Step title="Balance Confirmation">
-        Crosschain settlement requirements
+        Matching observations and a review period are required before balance updates are released
       </Step>
     </Steps>
   <Warning>Balance change can trigger a [Shortfall Event](/architecture/market-trading#shortfall-of-points), enabling buyers to cancel offers within a time frame</Warning>

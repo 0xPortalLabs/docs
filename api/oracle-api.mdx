@@ -13,6 +13,12 @@ description: "Verify offchain points balances and settlement claims for onchain 
 - [Get Settlement Claim](/api-reference/claims/get-settlement-claim): Verify that an offer was
   properly settled onchain and return the oracle signature for settlement
 
+- `GET /deposits?account=...`: Read first-deposit status without authorization or writes
+- `GET /signatures?account=...`: Read paginated points-change reviews; no signatures are exposed
+- `GET /markets`: Check market availability
+- `GET /ratelimits`: Read first-deposit caps and available capacity
+- `GET /config`: Read adapter mappings and contract addresses
+
 ## Deposit Flow
 
 <Steps>
@@ -25,7 +31,8 @@ description: "Verify offchain points balances and settlement claims for onchain 
   </Step>
   <Step title="Request the oracle claim">
     Call `POST /claim/deposit` with the signed authorization. The response contains the claim and
-    oracle signature to pass into `Deposit.deposit(...)`.
+    oracle signature when the deposit is ready. Submit when `status` is `ready`. The claim may cover
+    only part of the observed balance; `delayedAmount` reports the remainder.
   </Step>
 </Steps>
 
@@ -45,8 +52,10 @@ const authRes = await fetch("https://oracle.checkpoint.exchange/claim/deposit/au
   }),
 });
 
-const body = await authRes.json();
-const signature = await accountSigner.signTypedData({
+if (!authRes.ok) throw new Error("Authorization request failed");
+
+const authBody = await authRes.json();
+const authSignature = await accountSigner.signTypedData({
   ...authBody.authorization.typedData,
   message: {
     ...authBody.authorization.typedData.message,
@@ -66,15 +75,48 @@ const claimRes = await fetch("https://oracle.checkpoint.exchange/claim/deposit",
     authorization: {
       nonce: authBody.authorization.nonce,
       expiry: authBody.authorization.expiry,
-      signature,
+      signature: authSignature,
     },
   }),
 });
 
-const { claim, signature } = await claimRes.json();
+if (!claimRes.ok) throw new Error("Deposit claim request failed");
+
+const result = await claimRes.json();
+if (result.status === "ready") {
+  // Pass result.claim and result.signature to Deposit.deposit(...).
+} else {
+  // Show review progress from GET /deposits?account=...; do not submit a zero claim.
+}
 ```
 
-## Rate Limiting
+## Following a Review
 
-The Oracle API implements rate limiting to ensure fair access for everyone. If you require higher
-limits, please reach out to us.
+Poll `GET /deposits?account=...` while the deposit panel is open, and refresh on mount or focus. Do
+not poll `POST /claim/deposit`: it can reserve capacity or change review state. Waiting does not
+require repeated wallet signatures. Authorization and claims are short-lived. Use the returned
+`expiry` timestamps, request fresh authorization when needed, and submit signed claims promptly.
+
+Use the returned `status` to determine whether a deposit is ready. Timestamps such as `maturesAt`
+and `nextCheckAt` help show progress but do not guarantee completion. `requiresAuthorization`
+indicates when a new signature is needed, and `resetReason` explains why a review restarted.
+
+Once the onchain deposit is confirmed, use `/signatures` to follow any remaining points reviews.
+
+`/signatures` accepts optional `account`, `limit`, and `offset` query parameters. Follow
+`pagination.nextOffset` while `hasMore` is true. Maturity is not a promise of immediate release; use
+the reported status to follow progress.
+
+## Capacity and Market Health
+
+`GET /ratelimits` reports whole-point decimal strings in fields ending in `Pts`. Claim and deposit
+status amounts use 18-decimal onchain units. All timestamps use Unix seconds.
+
+Use `accountCapPts`, `globalCapPts`, and `immediateCapacityPts` for current deposit limits and
+availability. Capacity can change before a claim is requested. These limits apply to deposits, not
+HTTP requests.
+
+Use `GET /markets` to check whether a market is active or paused. If it is paused, deposits and
+oracle updates may be unavailable until service resumes.
+
+See [Oracle System](/architecture/oracle-system) for the review process and market availability.

@@ -19,7 +19,7 @@
     "/claim/deposit/authorization": {
       "post": {
         "summary": "Get Deposit Authorization",
-        "description": "Resolve the points holder account and return the typed data that must be signed before requesting a deposit claim",
+        "description": "Resolve the points holder account and return the typed data that must be signed before requesting a deposit claim. Authorization is short-lived; use its returned expiry and obtain fresh authorization when needed.",
         "operationId": "getDepositAuthorization",
         "tags": ["Claims"],
         "requestBody": {
@@ -59,7 +59,7 @@
     "/claim/deposit": {
       "post": {
         "summary": "Get Deposit Claim",
-        "description": "Verify a signed deposit authorization, fetch the latest points balance, and return the oracle signature for a deposit transaction",
+        "description": "Verify account authorization and apply first-deposit capacity and review policy. A successful response can be partially ready or require review. Poll GET /deposits for status; do not poll this mutation endpoint. Issued claims are short-lived; use the returned claim.expiry and submit promptly.",
         "operationId": "getDepositClaim",
         "tags": ["Claims"],
         "requestBody": {
@@ -94,7 +94,17 @@
             }
           },
           "401": {
-            "description": "Invalid account authorization",
+            "description": "Invalid or expired account authorization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Oracle market paused or capacity unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -152,6 +162,216 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Oracle market paused or unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deposits": {
+      "get": {
+        "summary": "Get Deposit Status",
+        "description": "Read first-deposit status and review progress without authorization. Use status to determine readiness; returned timestamps are not completion guarantees.",
+        "operationId": "getDeposits",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "Successful read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDepositsResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status unavailable; do not interpret as an empty result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "account",
+            "in": "query",
+            "required": true,
+            "description": "Canonical ERC-7930 points-holder account.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/markets": {
+      "get": {
+        "summary": "Get Market Health",
+        "description": "Read oracle market status and availability.",
+        "operationId": "getMarkets",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "Successful read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMarketsResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status unavailable; do not interpret as an empty result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ratelimits": {
+      "get": {
+        "summary": "Get Deposit Capacity",
+        "description": "Read current first-deposit limits and available capacity. Availability can change before a claim is requested. These limits apply to deposits, not HTTP requests.",
+        "operationId": "getRateLimits",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "Successful read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRateLimitsResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status unavailable; do not interpret as an empty result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/signatures": {
+      "get": {
+        "summary": "Get Points Change Reviews",
+        "description": "Read paginated points-change review status. Clients do not need to submit points-change signatures themselves.",
+        "operationId": "getReviewStatuses",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "Successful read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetReviewStatusesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid account or pagination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "account",
+            "in": "query",
+            "required": false,
+            "description": "Canonical ERC-7930 points-holder account.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ]
+      }
+    },
+    "/config": {
+      "get": {
+        "summary": "Get Oracle Configuration",
+        "operationId": "getConfig",
+        "tags": ["Status"],
+        "description": "Adapter mappings and contract addresses. Does not include capacity policies. Supports ETag; follow the returned Cache-Control header for cache freshness.",
+        "responses": {
+          "200": {
+            "description": "Oracle configuration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigResponse"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified"
           }
         }
       }
@@ -173,7 +393,14 @@
             "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
           },
           "pointsId": {
-            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
             "description": "The points program ID",
             "example": "4"
           }
@@ -278,7 +505,14 @@
             "example": "0x69155e7ca2e688ccdc247f6c4ddf374b3ae77bd6"
           },
           "pointsId": {
-            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
             "description": "The points program ID",
             "example": "4"
           },
@@ -292,11 +526,25 @@
         "type": "object",
         "properties": {
           "nonce": {
-            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
             "example": "0"
           },
           "expiry": {
-            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
             "example": "1760896448"
           },
           "signature": {
@@ -354,10 +602,36 @@
           "signature": {
             "type": "string",
             "nullable": true,
-            "example": "0xd1ede18892adf865739b755a274ae470fc293344b1787564d711b541ca53db827b3cfec75afd1c2b70d1ca3b08ffa5d159bc9df3a4359df84ae99dd8deb2c4ca1b"
+            "example": "0xd1ede18892adf865739b755a274ae470fc293344b1787564d711b541ca53db827b3cfec75afd1c2b70d1ca3b08ffa5d159bc9df3a4359df84ae99dd8deb2c4ca1b",
+            "description": "Null when the signed amount would be zero. Submit only positive claims with a non-null signature."
+          },
+          "observedAmount": {
+            "type": "string",
+            "description": "Decimal string in 18-decimal onchain units."
+          },
+          "delayedAmount": {
+            "type": "string",
+            "description": "Decimal string in 18-decimal onchain units."
+          },
+          "availableCapacity": {
+            "type": "string",
+            "description": "Current global deposit capacity in 18-decimal units. This is a snapshot, not a reservation."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ready", "review_required"],
+            "description": "ready may cover only part of observedAmount. review_required has a zero claim and null signature."
           }
         },
-        "required": ["success", "claim", "signature"]
+        "required": [
+          "success",
+          "claim",
+          "signature",
+          "observedAmount",
+          "delayedAmount",
+          "availableCapacity",
+          "status"
+        ]
       },
       "SettlementClaimRequest": {
         "type": "object",
@@ -373,7 +647,14 @@
             "example": "0xabc123def4567890abc123def4567890abc123def4567890abc123def4567890"
           },
           "offerId": {
-            "oneOf": [{ "type": "string" }, { "type": "integer" }],
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
             "description": "The offer ID",
             "example": "123"
           }
@@ -451,6 +732,445 @@
           "error": {
             "type": "string",
             "example": "Invalid request"
+          }
+        },
+        "required": ["success", "error"]
+      },
+      "DepositStatus": {
+        "type": "object",
+        "properties": {
+          "pointsId": {
+            "type": "integer"
+          },
+          "account": {
+            "type": "string"
+          },
+          "operator": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "awaiting_confirmation",
+              "under_review",
+              "ready",
+              "awaiting_points",
+              "expired",
+              "paused",
+              "deposited"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "awaiting_confirmation",
+              "under_review",
+              "ready",
+              "awaiting_points",
+              "expired",
+              "deposited"
+            ]
+          },
+          "observedAmount": {
+            "type": "string",
+            "description": "Decimal string in 18-decimal onchain units."
+          },
+          "immediateAmount": {
+            "type": "string",
+            "description": "Decimal string in 18-decimal onchain units."
+          },
+          "firstObservedAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds."
+          },
+          "lastObservedAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds."
+          },
+          "asOf": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds."
+          },
+          "committedAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds.",
+            "nullable": true
+          },
+          "maturesAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds.",
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds.",
+            "nullable": true
+          },
+          "nextCheckAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds.",
+            "nullable": true
+          },
+          "resetReason": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["balance_changed", "operator_changed", "review_expired", null]
+          },
+          "requiresAuthorization": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "pointsId",
+          "account",
+          "operator",
+          "status",
+          "stage",
+          "observedAmount",
+          "immediateAmount",
+          "firstObservedAt",
+          "lastObservedAt",
+          "asOf",
+          "committedAt",
+          "maturesAt",
+          "expiresAt",
+          "nextCheckAt",
+          "resetReason",
+          "requiresAuthorization"
+        ]
+      },
+      "GetDepositsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DepositStatus"
+            }
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "MarketHealth": {
+        "type": "object",
+        "properties": {
+          "pointsId": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused"]
+          },
+          "pauseReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "policyVersion": {
+            "type": "integer"
+          },
+          "lastCompletedScanAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds.",
+            "nullable": true
+          },
+          "openIncidents": {
+            "type": "object",
+            "properties": {
+              "info": {
+                "type": "integer"
+              },
+              "quarantine": {
+                "type": "integer"
+              },
+              "critical": {
+                "type": "integer"
+              }
+            },
+            "required": ["info", "quarantine", "critical"]
+          },
+          "reviewBacklog": {
+            "type": "object",
+            "properties": {
+              "observed": {
+                "type": "integer"
+              },
+              "committed": {
+                "type": "integer"
+              },
+              "quarantined": {
+                "type": "integer"
+              },
+              "ready": {
+                "type": "integer"
+              }
+            },
+            "required": ["observed", "committed", "quarantined", "ready"]
+          },
+          "asOf": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds."
+          }
+        },
+        "required": [
+          "pointsId",
+          "name",
+          "status",
+          "pauseReason",
+          "policyVersion",
+          "lastCompletedScanAt",
+          "openIncidents",
+          "reviewBacklog",
+          "asOf"
+        ]
+      },
+      "GetMarketsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketHealth"
+            }
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "MarketCapacity": {
+        "type": "object",
+        "properties": {
+          "pointsId": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused"]
+          },
+          "accountCapPts": {
+            "type": "string",
+            "description": "Whole-point decimal string."
+          },
+          "globalCapPts": {
+            "type": "string",
+            "description": "Whole-point decimal string."
+          },
+          "availableCapacityPts": {
+            "type": "string",
+            "description": "Whole-point decimal string."
+          },
+          "depletedCapacityPts": {
+            "type": "string",
+            "description": "Whole-point decimal string."
+          },
+          "immediateCapacityPts": {
+            "type": "string",
+            "description": "Whole-point decimal string."
+          },
+          "refillPeriodSeconds": {
+            "type": "integer"
+          },
+          "secondsUntilFull": {
+            "type": "integer",
+            "description": "Assumes no further reservations or policy changes."
+          },
+          "asOf": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds."
+          }
+        },
+        "required": [
+          "pointsId",
+          "status",
+          "accountCapPts",
+          "globalCapPts",
+          "availableCapacityPts",
+          "depletedCapacityPts",
+          "immediateCapacityPts",
+          "refillPeriodSeconds",
+          "secondsUntilFull",
+          "asOf"
+        ]
+      },
+      "GetRateLimitsResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketCapacity"
+            }
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "PointsReview": {
+        "type": "object",
+        "properties": {
+          "commitmentId": {
+            "type": "string"
+          },
+          "pointsId": {
+            "type": "integer"
+          },
+          "chainId": {
+            "type": "integer"
+          },
+          "account": {
+            "type": "string"
+          },
+          "oldAmount": {
+            "type": "string",
+            "description": "Decimal string in 18-decimal onchain units."
+          },
+          "newAmount": {
+            "type": "string",
+            "description": "Decimal string in 18-decimal onchain units."
+          },
+          "status": {
+            "type": "string"
+          },
+          "committedAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds.",
+            "nullable": true
+          },
+          "maturesAt": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds.",
+            "nullable": true
+          },
+          "evidence": {
+            "type": "object",
+            "properties": {
+              "observations": {
+                "type": "integer"
+              },
+              "firstObservedAt": {
+                "type": "integer",
+                "description": "Unix timestamp in seconds."
+              },
+              "lastObservedAt": {
+                "type": "integer",
+                "description": "Unix timestamp in seconds."
+              }
+            },
+            "required": ["observations", "firstObservedAt", "lastObservedAt"]
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "policyVersion": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "commitmentId",
+          "pointsId",
+          "chainId",
+          "account",
+          "oldAmount",
+          "newAmount",
+          "status",
+          "committedAt",
+          "maturesAt",
+          "evidence",
+          "reason",
+          "policyVersion"
+        ]
+      },
+      "GetReviewStatusesResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PointsReview"
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer"
+              },
+              "offset": {
+                "type": "integer"
+              },
+              "nextOffset": {
+                "type": "integer",
+                "nullable": true
+              },
+              "hasMore": {
+                "type": "boolean"
+              }
+            },
+            "required": ["limit", "offset", "nextOffset", "hasMore"]
+          }
+        },
+        "required": ["success", "data", "pagination"]
+      },
+      "ConfigResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "POINT_ID_TO_ADAPTER": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "registry": {
+                "type": "string"
+              },
+              "oracle": {
+                "type": "string"
+              },
+              "market": {
+                "type": "string"
+              }
+            },
+            "required": ["POINT_ID_TO_ADAPTER", "registry", "oracle", "market"]
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "RequestErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "description": "Request validation details."
+              }
+            ]
           }
         },
         "required": ["success", "error"]
