@@ -1,0 +1,62 @@
+---
+title: "Settlement"
+description: "Seller settlement and oracle escrow settlement for points markets."
+---
+
+<Info>
+Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
+</Info>
+
+Settlement brings each points market to completion, allowing users to claim their share of tokens and any funds from missed settlements.
+
+The settlement type determines whether allocations are delivered by sellers or through points escrow.
+
+| Settlement type | Points access | Allocation delivery |
+| --- | --- | --- |
+| Seller settlement | Read-only | Sellers deliver their allocations. |
+| Oracle escrow settlement | Read and write | Allocation delivered through escrow. |
+
+<Info>
+The settlement type also determines the project fee share. See [Fees & Revenue](/partners/fees-and-revenue) for the fee structure.
+</Info>
+
+## Seller settlement
+
+Checkpoint verifies points balances through the adapter. Sold points remain in the seller's account within the project's points system.
+
+When settlement becomes available, sellers must deliver the required allocation within the settlement window. Overdue offers enter the market's default process.
+
+This is the standard settlement type and does not require project participation to open a market.
+
+## Oracle escrow settlement
+
+The required access covers reading points balances and transferring sold points from users' accounts to a designated oracle escrow address. These transfers take place within the project's points system.
+
+Oracle escrow markets do not require seller collateral, reducing upfront capital requirements and simplifying the user experience.
+
+The project must preserve allocation eligibility for escrowed points and make the resulting allocation available to the settlement contracts. See [Project Commitments](/partners/commitments) for the detailed obligations.
+
+This allows the allocation to be delivered without requiring each seller to settle individually. The arrangement must be established before the market opens.
+
+<Note>
+Moving points into escrow does not complete settlement. The associated allocation must still become available and reach the settlement contracts.
+</Note>
+
+## Claims and fee distribution
+
+### User claims
+
+Once the program’s distribution is finalized, users can claim their share of the collected tokens and any funds from missed settlements. Claims are based on their escrow token holdings.
+
+See [Program Settlement](/architecture/program-settlement) for the claim process.
+
+### Project fee claims
+
+Eligible projects can claim their fee share after markets settle, under the applicable conditions and schedule. A signed [standard agreement](/partners/commitments) and fulfillment of the applicable TGE and allocation-delivery commitments are required to receive fees.
+
+The fee split is fixed on market open and cannot be changed afterward.
+
+<CardGroup cols={2}>
+  <Card horizontal title="Fees & Revenue" icon="coins" iconType="solid" href="/partners/fees-and-revenue">View fee shares and payouts.</Card>
+  <Card horizontal title="Project Commitments" icon="file-signature" iconType="solid" href="/partners/commitments">Review project obligations.</Card>
+</CardGroup>

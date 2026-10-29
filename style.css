@@ -118,7 +118,7 @@ html.dark, html[data-theme="dark"] {
 
   /* Map/override Mintlify rgb(var(--background-dark)) consumers */
   --background: var(--cp-bg-rgb);
-  --background-dark: var(--cp-surface-1-rgb);
+  --background-dark: var(--cp-bg-rgb);
 }
 
 html, body {
@@ -252,7 +252,28 @@ img.h-4.w-4.dark\:bg-gray-500.bg-transparent {
   background-color: var(--cp-surface-1);
   border: 1px solid var(--cp-border);
 }
+/* Card-only dark surfaces: preserve page, section, panel, and artwork backgrounds. */
+html.dark :is(.card, [data-selector="card"]),
+html[data-theme="dark"] :is(.card, [data-selector="card"]) {
+  background-color: #161818;
+  border-color: #303232;
+}
+html.dark :is(.card, [data-selector="card"]):is(:hover, :focus-within),
+html[data-theme="dark"] :is(.card, [data-selector="card"]):is(:hover, :focus-within) {
+  background-color: #1e2020;
+}
+
 .card-group, [data-selector="card-group"] { background-color: var(--cp-surface-2); }
+
+/* Match accordion surfaces to cards without changing section backgrounds. */
+html.dark .accordion,
+html[data-theme="dark"] .accordion {
+  background-color: #161818;
+}
+html.dark .accordion > summary:is(:hover, :focus-visible),
+html[data-theme="dark"] .accordion > summary:is(:hover, :focus-visible) {
+  background-color: #1e2020;
+}
 
 /* Code */
 pre, code, .code-block, [data-selector="code-block"] {
@@ -269,9 +290,66 @@ input, textarea, select, .search-input, #search-input, [data-identifier="search-
 }
 input::placeholder, textarea::placeholder { color: var(--cp-text-muted); }
 
-/* Tables */
-table thead th { background-color: var(--cp-table-header-bg); color: var(--cp-heading); }
-table tbody tr:nth-child(even) { background-color: var(--cp-table-row-alt-bg); }
+/* Shared Markdown table surfaces and responsive layout. */
+[data-table-wrapper] {
+  --page-padding: 0px;
+  --cp-table-bg: var(--cp-surface-1);
+  --cp-table-header: #f7f7f7;
+  --cp-table-border: var(--cp-border);
+  width: 100%;
+  margin: 24px 0;
+  padding: 0;
+  border: 1px solid var(--cp-table-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--cp-table-bg);
+}
+html.dark [data-table-wrapper],
+html[data-theme="dark"] [data-table-wrapper] {
+  --cp-table-bg: #161818;
+  --cp-table-header: #1e2020;
+  --cp-table-border: #303232;
+}
+/* Mintlify provides a scroll area; let table text wrap instead. */
+[data-table-wrapper] [data-component-part="scroll-area-viewport"] {
+  overflow: visible !important;
+}
+[data-table-wrapper] [data-component-part="scroll-area-content"] {
+  min-width: 0 !important;
+  width: 100%;
+}
+[data-table-wrapper] table {
+  width: 100%;
+  table-layout: fixed;
+  margin: 0;
+  border-collapse: collapse;
+}
+[data-table-wrapper] :is(th, td) {
+  min-width: 0;
+  padding: 14px 18px;
+  text-align: left;
+  vertical-align: top;
+  border: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+[data-table-wrapper] thead th {
+  background-color: var(--cp-table-header);
+  color: var(--cp-heading);
+  font-weight: 600;
+}
+[data-table-wrapper] tbody tr {
+  background-color: var(--cp-table-bg);
+  border-top: 1px solid var(--cp-table-border);
+}
+[data-table-wrapper] td {
+  color: var(--cp-text);
+}
+@media (max-width: 640px) {
+  [data-table-wrapper] :is(th, td) {
+    padding: 10px 8px;
+  }
+}
 
 /* Pagination */
 .pagination, [data-identifier="pagination"] { color: var(--cp-text); }
