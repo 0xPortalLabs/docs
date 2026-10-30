@@ -38,15 +38,15 @@ Charged on the filled trade amount in the market's USD-denominated stablecoin an
 Charged when cancelling an offer with no active fills:
 
 - **With collateral:** calculated on locked collateral and deducted from the seller's refund.
-- **Without collateral:** calculated on the listed USDC price and collected from the seller's wallet, requiring sufficient balance and approval.
+- **Without collateral:** calculated on the listed stablecoin price and collected from the seller's wallet, requiring sufficient balance and approval.
 
-The project share applies to the combined USDC fees collected from both sources.
+The project share applies to the combined stablecoin fees collected from both sources.
 
 ## Excluded fees
 
 The following remain with Checkpoint:
 
-- **`fillExtra`:** additional escrow tokens minted on each fill to fund AMM pools. Calculated on the buyer's actual escrow mint; it increases supply without deducting USDC or tokens from the buyer.
+- **Mint fee:** additional escrow tokens minted on each fill to fund AMM pools. Calculated on the buyer's actual escrow mint; it increases supply without deducting the payment token or escrow tokens from the buyer.
 - **Deposit fees:** excluded if enabled in future.
 - **Other fees:** API and Pro subscriptions, fees from other projects’ markets and any fees not explicitly included in the project’s fee share.
 

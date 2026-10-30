@@ -290,6 +290,111 @@ input, textarea, select, .search-input, #search-input, [data-identifier="search-
 }
 input::placeholder, textarea::placeholder { color: var(--cp-text-muted); }
 
+/* Revenue comparison uses the documentation card palette. */
+.cp-revenue-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--cp-border);
+  border-radius: 12px;
+  background-color: var(--cp-surface-1);
+}
+html.dark .cp-revenue-card,
+html[data-theme="dark"] .cp-revenue-card {
+  background-color: #161818;
+  border-color: #303232;
+}
+
+/* Settlement choices keep both labels visible in each theme. */
+.cp-settlement-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--cp-border);
+  border-radius: 10px;
+  background-color: var(--cp-surface-1);
+  cursor: pointer;
+}
+html.dark .cp-settlement-option,
+html[data-theme="dark"] .cp-settlement-option {
+  background-color: #161818;
+  border-color: #303232;
+}
+html .cp-settlement-option[data-selected="true"] {
+  border-color: var(--cp-accent);
+  background-color: rgb(50 205 205 / 8%);
+}
+html .cp-settlement-option:hover {
+  border-color: var(--cp-accent);
+}
+.cp-settlement-option:focus-within {
+  outline: 2px solid var(--cp-accent);
+  outline-offset: 3px;
+}
+
+/* Exact chart values are available on hover and keyboard focus. */
+.cp-volume-point {
+  position: relative;
+  min-width: 0;
+  text-align: center;
+  border-radius: 6px;
+}
+.cp-volume-point:focus-visible {
+  outline: 2px solid var(--cp-accent);
+  outline-offset: 4px;
+}
+.cp-volume-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: max-content;
+  max-width: min(240px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  background-color: var(--cp-surface-1);
+  color: var(--cp-text);
+  text-align: left;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+.cp-chart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.cp-chart-tooltip-row strong {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.cp-chart-tooltip-total {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid var(--cp-border);
+}
+html.dark .cp-volume-tooltip,
+html[data-theme="dark"] .cp-volume-tooltip {
+  background-color: #161818;
+  border-color: #303232;
+}
+.cp-volume-point:is(:hover, :focus) .cp-volume-tooltip {
+  display: block;
+}
+.cp-volume-point:first-child .cp-volume-tooltip {
+  left: 0;
+  transform: none;
+}
+.cp-volume-point:last-child .cp-volume-tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
 /* Shared Markdown table surfaces and responsive layout. */
 [data-table-wrapper] {
   --page-padding: 0px;

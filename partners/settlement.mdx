@@ -14,7 +14,7 @@ The settlement type determines whether allocations are delivered by sellers or t
 | Settlement type | Points access | Allocation delivery |
 | --- | --- | --- |
 | Seller settlement | Read-only | Sellers deliver their allocations. |
-| Oracle escrow settlement | Read and write | Allocation delivered through escrow. |
+| Oracle escrow settlement | Read access and points transfers | Allocation delivered through escrow. |
 
 <Info>
 The settlement type also determines the project fee share. See [Fees & Revenue](/partners/fees-and-revenue) for the fee structure.
@@ -30,7 +30,7 @@ This is the standard settlement type and does not require project participation 
 
 ## Oracle escrow settlement
 
-The required access covers reading points balances and transferring sold points from users' accounts to a designated oracle escrow address. These transfers take place within the project's points system.
+The adapter provides read access to points balances. Oracle escrow settlement also requires a method to transfer sold points from users' accounts to the designated oracle address within the project's points system. General backend write access is not required.
 
 Oracle escrow markets do not require seller collateral, reducing upfront capital requirements and simplifying the user experience.
 
