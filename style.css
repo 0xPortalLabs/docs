@@ -118,7 +118,7 @@ html.dark, html[data-theme="dark"] {
 
   /* Map/override Mintlify rgb(var(--background-dark)) consumers */
   --background: var(--cp-bg-rgb);
-  --background-dark: var(--cp-surface-1-rgb);
+  --background-dark: var(--cp-bg-rgb);
 }
 
 html, body {
@@ -252,7 +252,28 @@ img.h-4.w-4.dark\:bg-gray-500.bg-transparent {
   background-color: var(--cp-surface-1);
   border: 1px solid var(--cp-border);
 }
+/* Card-only dark surfaces: preserve page, section, panel, and artwork backgrounds. */
+html.dark :is(.card, [data-selector="card"]),
+html[data-theme="dark"] :is(.card, [data-selector="card"]) {
+  background-color: #161818;
+  border-color: #303232;
+}
+html.dark :is(.card, [data-selector="card"]):is(:hover, :focus-within),
+html[data-theme="dark"] :is(.card, [data-selector="card"]):is(:hover, :focus-within) {
+  background-color: #1e2020;
+}
+
 .card-group, [data-selector="card-group"] { background-color: var(--cp-surface-2); }
+
+/* Match accordion surfaces to cards without changing section backgrounds. */
+html.dark .accordion,
+html[data-theme="dark"] .accordion {
+  background-color: #161818;
+}
+html.dark .accordion > summary:is(:hover, :focus-visible),
+html[data-theme="dark"] .accordion > summary:is(:hover, :focus-visible) {
+  background-color: #1e2020;
+}
 
 /* Code */
 pre, code, .code-block, [data-selector="code-block"] {
@@ -269,9 +290,171 @@ input, textarea, select, .search-input, #search-input, [data-identifier="search-
 }
 input::placeholder, textarea::placeholder { color: var(--cp-text-muted); }
 
-/* Tables */
-table thead th { background-color: var(--cp-table-header-bg); color: var(--cp-heading); }
-table tbody tr:nth-child(even) { background-color: var(--cp-table-row-alt-bg); }
+/* Revenue comparison uses the documentation card palette. */
+.cp-revenue-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--cp-border);
+  border-radius: 12px;
+  background-color: var(--cp-surface-1);
+}
+html.dark .cp-revenue-card,
+html[data-theme="dark"] .cp-revenue-card {
+  background-color: #161818;
+  border-color: #303232;
+}
+
+/* Settlement choices keep both labels visible in each theme. */
+.cp-settlement-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--cp-border);
+  border-radius: 10px;
+  background-color: var(--cp-surface-1);
+  cursor: pointer;
+}
+html.dark .cp-settlement-option,
+html[data-theme="dark"] .cp-settlement-option {
+  background-color: #161818;
+  border-color: #303232;
+}
+html .cp-settlement-option[data-selected="true"] {
+  border-color: var(--cp-accent);
+  background-color: rgb(50 205 205 / 8%);
+}
+html .cp-settlement-option:hover {
+  border-color: var(--cp-accent);
+}
+.cp-settlement-option:focus-within {
+  outline: 2px solid var(--cp-accent);
+  outline-offset: 3px;
+}
+
+/* Exact chart values are available on hover and keyboard focus. */
+.cp-volume-point {
+  position: relative;
+  min-width: 0;
+  text-align: center;
+  border-radius: 6px;
+}
+.cp-volume-point:focus-visible {
+  outline: 2px solid var(--cp-accent);
+  outline-offset: 4px;
+}
+.cp-volume-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: max-content;
+  max-width: min(240px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  background-color: var(--cp-surface-1);
+  color: var(--cp-text);
+  text-align: left;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+.cp-chart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.cp-chart-tooltip-row strong {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.cp-chart-tooltip-total {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid var(--cp-border);
+}
+html.dark .cp-volume-tooltip,
+html[data-theme="dark"] .cp-volume-tooltip {
+  background-color: #161818;
+  border-color: #303232;
+}
+.cp-volume-point:is(:hover, :focus) .cp-volume-tooltip {
+  display: block;
+}
+.cp-volume-point:first-child .cp-volume-tooltip {
+  left: 0;
+  transform: none;
+}
+.cp-volume-point:last-child .cp-volume-tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+/* Shared Markdown table surfaces and responsive layout. */
+[data-table-wrapper] {
+  --page-padding: 0px;
+  --cp-table-bg: var(--cp-surface-1);
+  --cp-table-header: #f7f7f7;
+  --cp-table-border: var(--cp-border);
+  width: 100%;
+  margin: 24px 0;
+  padding: 0;
+  border: 1px solid var(--cp-table-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--cp-table-bg);
+}
+html.dark [data-table-wrapper],
+html[data-theme="dark"] [data-table-wrapper] {
+  --cp-table-bg: #161818;
+  --cp-table-header: #1e2020;
+  --cp-table-border: #303232;
+}
+/* Mintlify provides a scroll area; let table text wrap instead. */
+[data-table-wrapper] [data-component-part="scroll-area-viewport"] {
+  overflow: visible !important;
+}
+[data-table-wrapper] [data-component-part="scroll-area-content"] {
+  min-width: 0 !important;
+  width: 100%;
+}
+[data-table-wrapper] table {
+  width: 100%;
+  table-layout: fixed;
+  margin: 0;
+  border-collapse: collapse;
+}
+[data-table-wrapper] :is(th, td) {
+  min-width: 0;
+  padding: 14px 18px;
+  text-align: left;
+  vertical-align: top;
+  border: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+[data-table-wrapper] thead th {
+  background-color: var(--cp-table-header);
+  color: var(--cp-heading);
+  font-weight: 600;
+}
+[data-table-wrapper] tbody tr {
+  background-color: var(--cp-table-bg);
+  border-top: 1px solid var(--cp-table-border);
+}
+[data-table-wrapper] td {
+  color: var(--cp-text);
+}
+@media (max-width: 640px) {
+  [data-table-wrapper] :is(th, td) {
+    padding: 10px 8px;
+  }
+}
 
 /* Pagination */
 .pagination, [data-identifier="pagination"] { color: var(--cp-text); }

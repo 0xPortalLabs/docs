@@ -1,0 +1,72 @@
+---
+title: "Fees & Revenue"
+description: "Project fee shares, eligible market fees and payment conditions."
+---
+
+import { ProjectRevenue } from "/snippets/project-revenue.jsx"
+
+<Info>
+Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
+</Info>
+
+A project's share covers trading and cancellation fees collected from its points markets, paid in the market's payment token.
+
+## Fee split
+
+The standard project share is 30%. Oracle escrow settlement must be arranged before market opening to qualify for 50%. Compare [settlement types](/partners/settlement).
+
+| Settlement type | Project | Checkpoint |
+| --- | --- | --- |
+| Seller settlement | 30% | 70% |
+| Oracle escrow settlement | 50% | 50% |
+
+<Warning>
+The fee split is fixed on market open and cannot be changed afterward.
+</Warning>
+
+## Included fees
+
+### Trading fee
+
+Charged on the filled trade amount in the market's USD-denominated stablecoin and deducted from seller proceeds. Called `settlementFee` in the contract, it is collected once:
+
+- **Seller settlement:** when the offer successfully settles.
+- **Oracle escrow settlement:** when each trade is filled.
+
+### Cancellation fee
+
+Charged when cancelling an offer with no active fills:
+
+- **With collateral:** calculated on locked collateral and deducted from the seller's refund.
+- **Without collateral:** calculated on the listed stablecoin price and collected from the seller's wallet, requiring sufficient balance and approval.
+
+The project share applies to the combined stablecoin fees collected from both sources.
+
+## Excluded fees
+
+The following remain with Checkpoint:
+
+- **Mint fee:** additional escrow tokens minted on each fill to fund AMM pools. Calculated on the buyer's actual escrow mint; it increases supply without deducting the payment token or escrow tokens from the buyer.
+- **Deposit fees:** excluded if enabled in future.
+- **Other fees:** API and Pro subscriptions, fees from other projects’ markets and any fees not explicitly included in the project’s fee share.
+
+AMM trading fees support liquidity providers and potentially Checkpoint. They are currently excluded from the project fee split.
+
+## Claiming project fees
+
+Eligible projects can claim after markets settle, under the applicable conditions and schedule. Receiving fees requires a signed [standard agreement](/partners/commitments) and fulfillment of the applicable TGE and allocation-delivery commitments.
+
+Projects can sign after market opening for the default fee share. Any unclaimed share goes to the Checkpoint treasury after settlement.
+
+## Revenue calculator
+
+Estimate trading fees using fee-bearing volume and add collected cancellation fees. Excluded revenue is not included in the calculation.
+
+<ProjectRevenue />
+
+## Decisions to finalize
+
+- Payment timing, fee adjustments and partial or failed settlement.
+- Signing and claim deadlines, including how late signing interacts with non-retroactivity.
+- Project payout mechanics: the Market currently routes fees to one recipient and does not distribute project shares itself.
+- Secondary-market fee sharing.

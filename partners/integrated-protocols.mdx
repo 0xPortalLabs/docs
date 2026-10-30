@@ -1,0 +1,58 @@
+---
+title: "Overview"
+description: "Adapter requirements, settlement and fee sharing for points markets on Checkpoint."
+---
+
+<Info>
+Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
+</Info>
+
+## In a nutshell
+
+**Checkpoint provides markets for trading points, with a share of eligible market smart contract fees reserved for the project issuing those points.**
+
+To get started, [submit an adapter PR](https://github.com/0xPortalLabs/points-adapters) for the Checkpoint Aggregator. Once the adapter proves reliable, the next stage is opening a market.
+
+Project participation is optional. Checkpoint can open a market independently and reserve the standard project fee share.
+
+- **Seller settlement:** sellers deliver their allocations. **30% of eligible market smart contract fees is reserved for the project**.
+- **Oracle escrow settlement:** arranged before the market opens. The project enables points transfers to oracle escrow, supports allocation delivery and receives **50% of eligible market smart contract fees**.
+
+<Warning>
+The fee split is fixed on market open and cannot be changed afterward.
+</Warning>
+
+Claiming the project fee share requires a signed standard agreement and fulfillment of the market's TGE and allocation-delivery commitments. Any unclaimed share goes to the Checkpoint treasury after settlement.
+
+<Card horizontal title="Fees & Revenue" icon="coins" iconType="solid" href="/partners/fees-and-revenue">
+View fee shares and payouts.
+</Card>
+
+## Integration flow
+
+<Steps>
+  <Step title="Add your points program">
+    [Submit an adapter PR](https://github.com/0xPortalLabs/points-adapters) for the Checkpoint Aggregator. Include your project details and reach out to Checkpoint core contributors.
+  </Step>
+  <Step title="Choose settlement type">
+    Decide between seller settlement or oracle escrow settlement. Compare the [two settlement models](/partners/settlement).
+  </Step>
+  <Step title="Supply market and oracle parameters">
+    Provide the market and oracle parameters required to open the market.
+  </Step>
+  <Step title="Sign the standard agreement">
+    Sign Checkpoint’s [standard agreement](/partners/commitments) to receive fees. Projects can sign after market opening for the default fee share.
+  </Step>
+  <Step title="Settlement and fee distribution">
+    Once settlement is available and markets have settled, eligible projects can claim their fee share under the applicable conditions and schedule.
+  </Step>
+</Steps>
+
+## Explore more
+
+<CardGroup cols={2}>
+  <Card horizontal title="Adapters" icon="code" iconType="solid" href="/partners/adapters">Add your points adapter.</Card>
+  <Card horizontal title="Settlement" icon="handshake" iconType="solid" href="/partners/settlement">Compare settlement types.</Card>
+  <Card horizontal title="Fees & Revenue" icon="coins" iconType="solid" href="/partners/fees-and-revenue">View fee shares and payouts.</Card>
+  <Card horizontal title="Project Commitments" icon="file-signature" iconType="solid" href="/partners/commitments">Review project obligations.</Card>
+</CardGroup>

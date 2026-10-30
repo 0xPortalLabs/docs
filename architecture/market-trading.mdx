@@ -64,8 +64,7 @@ the filled points amount as usual.
 ```
 
 All offers include the amount of points to sell, the price in USDC, and the collateral amount in
-USDC. Offers can be cancelled with collateral returned minus any configured cancellation fee, as
-long as they have no existing fills.
+USDC. Offers with no existing fills can be cancelled. Any configured cancellation fee is deducted from locked collateral, or collected from the seller in USDC based on the offer price when there is no collateral.
 
 <Note>
   {" "}
@@ -99,8 +98,9 @@ At a high level:
   amount of `chXXX`
 - the protocol may also mint additional escrow tokens to the treasury via `fillExtra`
 
-The seller does not receive the buyer's USDC until settlement. Their collateral is only returned on
-successful settlement, or after vesting completes for vesting offers.
+On custodied markets, sellers receive the filled USDC minus the settlement fee as each fill occurs.
+On non-custodied markets, those proceeds remain locked until successful settlement. Collateral is
+returned on successful settlement, or after vesting completes for vesting offers.
 
 <Danger>Once an offer is filled, both the maker and filler cannot cancel or reverse it.</Danger>
 
@@ -140,8 +140,9 @@ When you cancel an offer, your held points return to available so you can use th
 collateral is returned to you, and the offer becomes inactive.
 
 You can only cancel an offer if it hasn't been filled at all. Once someone fills even part of it,
-you can't cancel anymore. If there's a cancellation fee configured, it will be deducted from your
-returned collateral.
+you can't cancel anymore. If a cancellation fee is configured, it is deducted from locked collateral. For a zero-collateral
+offer, the fee is calculated on the listed USDC price and collected from the seller's wallet,
+requiring sufficient balance and approval.
 
 ### Shortfall of Points
 
@@ -194,7 +195,9 @@ sequenceDiagram
 When TGE happens and the actual token launches, the seller calls `settleOffer()` to finalize the
 deal. The market validates that the settlement has not passed the deadline, takes the seller's
 tokens, deposits them to `Settlement`, and sends the filled USDC proceeds to the seller minus
-the configured settlement fee. The seller also gets their collateral back unless the offer is under
+the configured settlement fee on non-custodied markets. Custodied markets already released the
+proceeds and collected that fee at fill, so settlement does not charge it again. The seller also
+gets their collateral back unless the offer is under
 vesting settlement.
 
 Importantly, buyer claims are settled against the **program-wide settlement distribution**, not
@@ -308,12 +311,12 @@ distribution time, not on a direct per-offer refund path.
 
 ## Fee Structure
 
-The market currently exposes three main fee levers:
+The Market contract exposes three fee settings:
 
-- **Settlement fee**: taken from seller proceeds when `settleOffer()` or `settleOfferViaOracle()`
-  succeeds
-- **Cancellation fee**: taken from seller collateral when cancelling an unfilled offer
-- **Fill extra**: extra escrow tokens minted to the fee recipient on every fill
+- **Settlement fee:** calculated on filled USDC value and deducted from seller proceeds. Collected at fill for custodied markets or successful settlement for non-custodied markets, including oracle-verified settlement. It is not collected twice.
+- **Cancellation fee:** deducted from locked collateral. If the offer has no collateral, it is calculated on the listed USDC price and collected from the seller's wallet instead.
+- **Fill extra:** additional escrow tokens minted to the fee recipient on each fill, calculated on the buyer's actual escrow mint. It increases escrow supply without an additional USDC charge.
 
-`fillExtra` is a small inflation at the escrow-token layer used for seeding liquidity.
-It increases total escrow supply rather than deducting USDC from the buyer or seller.
+Overdue settlement and points-change recovery do not collect an additional fee. Configured fee calculations round up to the smallest token unit.
+
+See [Fees & Revenue](/partners/fees-and-revenue) for the fee breakdown and project fee-sharing policy.

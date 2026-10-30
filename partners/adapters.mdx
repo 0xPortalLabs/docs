@@ -1,0 +1,49 @@
+---
+title: "Adapters"
+description: "Add a points program to the Checkpoint Aggregator and prepare it for a market."
+---
+
+<Info>
+Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
+</Info>
+
+An adapter retrieves points data from a project's endpoint and returns it in a format the Checkpoint Aggregator can use. Once the adapter proves reliable, the next stage is opening a market.
+
+## Add your points program
+
+[Submit an adapter PR](https://github.com/0xPortalLabs/points-adapters) for the Checkpoint Aggregator. Include your project details and reach out to Checkpoint core contributors.
+
+The repository's [getting started guide](https://github.com/0xPortalLabs/points-adapters#getting-started) covers adapter implementation and contribution requirements.
+
+## Adapter requirements
+
+The adapter must:
+
+- Return accurate points balances for the correct account and program.
+- Distinguish seasons or balances with different allocation rules.
+- Report endpoint errors and unavailable data without returning them as valid balances.
+- Remain compatible with changes to the project's points system.
+
+The underlying endpoint must remain reliable so Checkpoint can consistently verify points balances.
+
+<Warning>
+Frequent adapter failures can result in markets being paused until reliable points verification is restored.
+</Warning>
+
+See the [Points API](/core-products/point-api) and [Oracle System](/architecture/oracle-system) for how adapter data is used.
+
+## Points program considerations
+
+Predictable points issuance helps market participants assess dilution and compare balances. A defined supply cap or issuance schedule, clear season boundaries and visibility into total points issued can support this.
+
+Where points determine a future allocation, clarity on how additional issuance and program changes affect eligibility is also useful.
+
+## From aggregator to market
+
+Adding an adapter to the aggregator does not automatically open a market. Once it proves reliable, Checkpoint core contributors can progress to market configuration and opening.
+
+Project participation is optional. An adapter does not itself establish eligibility to receive fees; the requirements are covered under [Project Commitments](/partners/commitments).
+
+<Card horizontal title="Settlement" icon="handshake" iconType="solid" href="/partners/settlement">
+Compare settlement types.
+</Card>
