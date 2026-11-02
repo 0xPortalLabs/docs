@@ -1,5 +1,5 @@
 ---
-title: "Fees & Revenue"
+title: "Project Fees"
 description: "Project fee shares, eligible market fees and payment conditions."
 ---
 
@@ -54,19 +54,27 @@ AMM trading fees support liquidity providers and potentially Checkpoint. They ar
 
 ## Claiming project fees
 
-Eligible projects can claim after markets settle, under the applicable conditions and schedule. Receiving fees requires a signed [standard agreement](/partners/commitments) and fulfillment of the applicable TGE and allocation-delivery commitments.
+Receiving project fees requires a signed [standard agreement](/partners/commitments). To receive the standard 30% share of eligible market fees, projects must sign and claim no later than one month after successful settlement. Eligible fees include those collected before signing.
 
-Projects can sign after market opening for the default fee share. Any unclaimed share goes to the Checkpoint treasury after settlement.
+### Release conditions
 
-## Revenue calculator
+Project fees are held until successful settlement and fulfillment of the applicable TGE and allocation-delivery commitments. Ending trading does not make these fees claimable. If settlement never completes, these fees remain withheld from the project.
 
-Estimate trading fees using fee-bearing volume and add collected cancellation fees. Excluded revenue is not included in the calculation.
+An oracle escrow agreement may permit early release of up to 20 percentage points of eligible market fees, out of the project's 50% share. Early release is not automatic. The remaining project share, at least 30 percentage points, stays withheld until successful settlement and fulfillment of the applicable commitments. Early release is subject to the [repayment conditions](/partners/commitments#early-fee-release) in the agreement.
+
+### Unclaimed fees
+
+For both settlement models, any project fees unclaimed one month after successful settlement are transferred to the Checkpoint treasury. Once transferred, they are no longer claimable by the project.
+
+Their use follows Checkpoint’s treasury governance, including DAO governance once active. These funds may be used for governance-approved spending, including payments under ongoing DAO-approved commitments.
+
+## Project fee calculator
+
+Estimate project fees using fee-bearing volume and collected cancellation fees. Claim timing follows the release conditions above.
 
 <ProjectRevenue />
 
 ## Decisions to finalize
 
-- Payment timing, fee adjustments and partial or failed settlement.
-- Signing and claim deadlines, including how late signing interacts with non-retroactivity.
-- Project payout mechanics: the Market currently routes fees to one recipient and does not distribute project shares itself.
-- Secondary-market fee sharing.
+- Finalize early-release approval, verification and payout schedules.
+- Define the separate mechanism for distributing project fees.
