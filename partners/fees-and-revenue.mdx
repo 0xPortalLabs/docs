@@ -13,12 +13,12 @@ A project's share covers trading and cancellation fees collected from its points
 
 ## Fee split
 
-The standard project share is 30%. Oracle escrow settlement must be arranged before market opening to qualify for 50%. Compare [settlement types](/partners/settlement).
+The standard project share is 30%. An oracle integration must be arranged before market opening to qualify for 50%. Compare [integration requirements](/partners/settlement).
 
-| Settlement type | Project | Checkpoint |
+| Integration type | Project | Checkpoint |
 | --- | --- | --- |
 | Seller settlement | 30% | 70% |
-| Oracle escrow settlement | 50% | 50% |
+| Oracle integration | 50% | 50% |
 
 <Warning>
 The fee split is fixed on market open and cannot be changed afterward.
@@ -54,27 +54,28 @@ AMM trading fees support liquidity providers and potentially Checkpoint. They ar
 
 ## Claiming project fees
 
-Receiving project fees requires a signed [standard agreement](/partners/commitments). To receive the standard 30% share of eligible market fees, projects must sign and claim no later than one month after successful settlement. Eligible fees include those collected before signing.
+Receiving project fees requires a signed [standard agreement](/partners/commitments). For markets requiring allocation delivery, projects must sign and claim the standard 30% share of eligible market fees no later than one month after settlement has ended. Eligible fees include those collected before signing.
 
 ### Release conditions
 
-Project fees are held until successful settlement and fulfillment of the applicable TGE and allocation-delivery commitments. Ending trading does not make these fees claimable. If settlement never completes, these fees remain withheld from the project.
+For allocation-based markets, project fees remain withheld until successful settlement and fulfillment of the applicable TGE and allocation-delivery commitments.
 
-An oracle escrow agreement may permit early release of up to 20 percentage points of eligible market fees, out of the project's 50% share. Early release is not automatic. The remaining project share, at least 30 percentage points, stays withheld until successful settlement and fulfillment of the applicable commitments. Early release is subject to the [repayment conditions](/partners/commitments#early-fee-release) in the agreement.
+An oracle escrow agreement may permit early release of up to 20 percentage points of eligible market fees from the project’s 50% share. At least 30 percentage points remain withheld until those conditions are met.
+
+The agreement must specify approval and verification requirements, payment schedules and [repayment conditions](/partners/commitments#early-fee-release).
+
+### Ongoing redemption
+
+Redemption requires read and write access to the project’s points system. Eligible project fees become claimable as they are collected, under the conditions of the signed agreement.
 
 ### Unclaimed fees
 
-For both settlement models, any project fees unclaimed one month after successful settlement are transferred to the Checkpoint treasury. Once transferred, they are no longer claimable by the project.
+For allocation-based markets under either settlement model, project fees unclaimed one month after settlement has ended are transferred to the Checkpoint treasury. Once transferred, they are no longer claimable by the project.
 
 Their use follows Checkpoint’s treasury governance, including DAO governance once active. These funds may be used for governance-approved spending, including payments under ongoing DAO-approved commitments.
 
 ## Project fee calculator
 
-Estimate project fees using fee-bearing volume and collected cancellation fees. Claim timing follows the release conditions above.
+Estimate project fees for allocation-based settlement markets using fee-bearing volume and collected cancellation fees. Claim timing follows the release conditions above.
 
 <ProjectRevenue />
-
-## Decisions to finalize
-
-- Finalize early-release approval, verification and payout schedules.
-- Define the separate mechanism for distributing project fees.

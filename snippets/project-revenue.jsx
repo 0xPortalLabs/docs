@@ -3,7 +3,7 @@ export const ProjectRevenue = () => {
   const [rate, setRate] = useState(1);
   const [cancellationFees, setCancellationFees] = useState(0);
   const [model, setModel] = useState('read');
-  const valid = volume !== '' && rate !== '' && Number.isFinite(Number(volume)) && Number.isFinite(Number(rate)) && Number(volume) >= 0 && Number(rate) >= 0 && Number(rate) <= 100 && cancellationFees !== '' && Number.isFinite(Number(cancellationFees)) && Number(cancellationFees) >= 0;
+  const valid = volume !== '' && rate !== '' && Number.isFinite(Number(volume)) && Number.isFinite(Number(rate)) && Number(volume) >= 0 && Number(rate) >= 0 && Number(rate) <= 100 && Number.isFinite(Number(cancellationFees)) && Number(cancellationFees) >= 0;
   const tradeFees = valid ? Number(volume) * Number(rate) / 100 : 0;
   const fees = valid ? tradeFees + Number(cancellationFees) : 0;
   const share = model === 'write' ? 0.5 : 0.3;
@@ -66,7 +66,7 @@ export const ProjectRevenue = () => {
         </fieldset>
       </div>
       <div aria-live="polite" aria-atomic="true" style={{ marginTop: 32 }}>
-        {!valid ? <p role="alert">Enter non-negative volume and cancellation fees, and a trade fee rate between 0% and 100%.</p> : (
+        {!valid ? <p role="alert">Volume and cancellation fees must be zero or greater. The trade fee rate must be between 0% and 100%.</p> : (
           <div>
             <section aria-label="Your project fees" style={{ borderTop: '1px solid #80808050', paddingTop: 24 }}>
               <h3 style={{ fontWeight: 700, fontSize: 20 }}>2. Your project's fees</h3>

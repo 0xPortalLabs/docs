@@ -109,11 +109,13 @@ Any balances, points, prices, eligibility indicators, leaderboards, rankings, es
 
 The Protocol and Services may display or interact with points, scores or other metrics associated with third-party projects and their programs (collectively, “Programs”). The rules governing these Programs, including points issuance, eligibility, redemption and token allocations, are determined by the relevant project. Checkpoint cannot compel a project to honor, redeem, convert or tokenize points.
 
+Some Programs support redemption of points for project-defined benefits without a planned token launch or token allocation.
+
 Adding a project to the Checkpoint Aggregator, opening a market for its points or making it available through other Checkpoint infrastructure does not constitute an endorsement, recommendation or approval of the project, its team, points program or associated assets. Inclusion does not imply that the project participates in Checkpoint or has entered into an agreement with Checkpoint.
 
 Points markets are highly speculative. Checkpoint cannot guarantee that a project will launch a token, allocate tokens to points holders, honor its commitments or provide points with any future value. Projects may change or discontinue their Programs. Market prices and liquidity may change rapidly. Users participating in a market may lose their entire purchase amount or collateral.
 
-Any recovery depends on the applicable market mechanisms and assets available. Settlement distributions are proportional to users’ escrow-token holdings, rather than their individual purchase prices or collateral contributions. Users may therefore receive less than they paid or contributed, or nothing at all.
+Any recovery depends on the applicable market mechanisms and assets available. Where settlement distributions apply, they are proportional to users’ escrow-token holdings, rather than their individual purchase prices or collateral contributions. Users may therefore receive less than they paid or contributed, or nothing at all.
 
 ### 4.12 Checkpoint Points
 
@@ -149,12 +151,14 @@ If any enhanced feature is offered for a fee, fees, billing terms, renewal terms
 
 The Services provide infrastructure for trading points and interacting with offers, escrow tokens, collateral and settlement contracts. Market payments and collateral are held and released through the applicable smart contracts. Points verification and settlement may also depend on off-chain project systems, oracle services and authorized operational actions.
 
-The settlement type affects when sellers receive payment and how allocations are delivered:
+Markets supporting ongoing redemption may not require a token allocation or allocation-based settlement event. They may operate without a scheduled closing date, subject to the applicable market mechanisms and Program rules. Where no allocation-based settlement is required, the absence of such an event does not constitute a settlement default.
+
+For markets requiring allocation delivery, the settlement type affects when sellers receive payment and how allocations are delivered:
 
 - **Seller settlement:** payment for filled offers remains in the market contract pending settlement or another applicable release mechanism. Sellers must deliver the required allocation within the settlement window. Collateral, where required, is subject to the market’s settlement and default rules.
 - **Oracle escrow settlement:** sellers receive payment, less applicable fees, when trades are filled. Buyers receive escrow tokens before the project delivers its allocation. Where sold points are transferred into escrow within the project’s points system, that transfer does not itself deliver or fund a future token allocation.
 
-Receiving escrow tokens or completing a trade does not mean that allocation delivery or the program’s final distribution has occurred. Claims depend on the assets collected and the applicable distribution process, as described in section 4.11.
+Where allocation-based settlement applies, receiving escrow tokens or completing a trade does not mean that allocation delivery or the program’s final distribution has occurred. Claims under that distribution depend on the assets collected and the applicable distribution process, as described in section 4.11.
 
 Default handling and any recovery depend on the applicable market mechanisms, configuration and assets available. A project’s failure to deliver does not itself guarantee a distribution or release of funds. Payments, collateral or allocations may remain unavailable until the applicable conditions and required actions are satisfied.
 

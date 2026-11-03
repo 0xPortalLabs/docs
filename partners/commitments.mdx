@@ -1,6 +1,6 @@
 ---
 title: "Project Commitments"
-description: "Written agreements, allocation responsibilities, and policy changes."
+description: "Written agreements, delivery commitments and policy changes."
 ---
 
 <Info>
@@ -9,20 +9,28 @@ Discussion draft — these terms are proposed and must be finalized before mainn
 
 ## Written agreement
 
-Under this proposal, participating-protocol status and fee sharing require a written agreement under either settlement model. That agreement should identify the parties and their authority, the covered programs and seasons, and their responsibilities for:
+Project fee sharing requires a written agreement covering allocation delivery or ongoing redemption, as applicable. That agreement must identify the parties and their authority, the covered programs and seasons and their responsibilities for:
 
 - Maintaining data access and notifying Checkpoint of material changes.
-- Recognizing sold or escrowed points under the agreed allocation rules.
-- Handling partial sales, bonuses, multipliers, eligibility requirements, and allocation caps.
-- Delivering or enabling claims for the allocation under the selected settlement model.
-- Calculating, verifying, and paying the fee share.
-- Handling interruptions, disputes, delays, and failure to deliver.
+- Recognizing sold or escrowed points under the applicable allocation or redemption rules.
+- Handling partial sales, bonuses, multipliers, eligibility requirements and allocation or redemption limits.
+- Delivering the applicable allocation or honoring redemption commitments.
+- Calculating, verifying and paying the fee share.
+- Handling interruptions, disputes, delays and failure to deliver.
 
-## Allocation commitments
+## Delivery commitments
 
-The agreement and market disclosures must distinguish any committed allocation from a discretionary reward. An integration must not imply a guaranteed token launch, allocation, or value where none has been committed.
+The agreement and market disclosures must identify whether the program involves allocation delivery, ongoing redemption or both. Any committed allocation or redemption benefit must be distinguished from a discretionary reward. An integration must not imply a guaranteed token launch, allocation, redemption benefit or value where none has been committed.
 
-If no allocation occurs, the response depends on those commitments and the disclosed market rules. The agreement must define the applicable process, including any available user recovery measures, before trading begins.
+### Allocation delivery
+
+Where allocation delivery is required, the agreement must define the response if no allocation occurs, including any available user recovery measures, before trading begins.
+
+### Ongoing redemption
+
+Redemption programs may operate without a TGE, allocation-based settlement event or scheduled market closure. The agreement must define the applicable redemption commitments and conditions. The absence of an allocation or settlement event is not a failure to deliver where neither is required.
+
+Redemption requires read and write access to the project’s points system. The points-transfer destination, redemption flow and technical integration requirements remain to be finalized.
 
 ## Early fee release
 
@@ -30,7 +38,7 @@ Early fee release is conditional on the project fulfilling its commitments under
 
 ## Points-trading exclusivity
 
-Separate trading systems can allow the same points to be sold more than once, creating competing claims to the same allocation. Exclusivity helps reduce this risk by keeping project-supported trading within Checkpoint infrastructure.
+Separate trading systems can allow the same points to be sold more than once, creating competing claims to the same allocation or redemption benefits. Exclusivity helps reduce this risk by keeping project-supported trading within Checkpoint infrastructure.
 
 For the covered points programs, the project must use Checkpoint as its exclusive official points-trading integration during the exclusivity period. The project must not integrate with, provide trading-specific support to or promote competing points-trading venues for those programs.
 
@@ -44,15 +52,16 @@ Terms should identify the policy version that applies to each program. Changes f
 
 ## Escrow configuration to confirm
 
-For oracle escrow settlement, confirm the designated oracle address, the points-transfer method and how transfers are recorded, including partial sales and adjustments. Define how escrowed points retain allocation eligibility and how the resulting allocation reaches the settlement contracts.
+For oracle escrow settlement, confirm the designated oracle address, the points-transfer method and how transfers are recorded, including partial sales and adjustments. Define how escrowed points retain the applicable allocation or redemption eligibility. Where an allocation is required, specify how it reaches the settlement contracts.
 
 These details need technical review before they become agreement requirements.
 
 ## Decisions to finalize
 
-- The process for delays, changed program rules, or no allocation.
+- The process for delays, changed program rules, missed allocations or interrupted redemption.
+- The technical integration and delivery conditions for ongoing redemption.
 - Available user recovery measures and how disputes are handled.
 - Which entity signs and administers agreements, and who approves future policy changes.
 - The exclusivity period and treatment of existing trading arrangements.
 
-The agreement should reference the selected [settlement model](/partners/settlement) and [fee terms](/partners/fees-and-revenue).
+The agreement should reference the applicable [settlement or redemption requirements](/partners/settlement) and [fee terms](/partners/fees-and-revenue).
