@@ -54,7 +54,7 @@ AMM trading fees support liquidity providers and potentially Checkpoint. They ar
 
 ## Claiming project fees
 
-Receiving project fees requires a signed [standard agreement](/partners/commitments). For markets requiring allocation delivery, projects must sign and claim the standard 30% share of eligible market fees no later than one month after settlement has ended. Eligible fees include those collected before signing.
+Receiving project fees requires a signed [standard agreement](/partners/commitments). For markets requiring allocation delivery, projects must sign and claim the standard 30% share of eligible market fees before the claim deadline, 90 days after settlement has ended. Eligible fees include those collected before signing.
 
 ### Release conditions
 
@@ -66,11 +66,13 @@ The agreement must specify approval and verification requirements, payment sched
 
 ### Ongoing redemption
 
-Redemption requires read and write access to the project’s points system. Eligible project fees become claimable as they are collected, under the conditions of the signed agreement.
+Redemption requires read and write access to the project’s points system. Eligible project fees become claimable as they are collected, under the conditions of the signed agreement. The settlement-based claim deadline does not apply to these markets.
 
 ### Unclaimed fees
 
-For allocation-based markets under either settlement model, project fees unclaimed one month after settlement has ended are transferred to the Checkpoint treasury. Once transferred, they are no longer claimable by the project.
+For allocation-based markets under either settlement model, unclaimed project fees become payable to the Checkpoint treasury 90 days after settlement has ended. The project’s claim expires at that deadline. The transfer requires a transaction.
+
+An unsigned agreement or missing receiving wallet does not extend the deadline.
 
 Their use follows Checkpoint’s treasury governance, including DAO governance once active. These funds may be used for governance-approved spending, including payments under ongoing DAO-approved commitments.
 
