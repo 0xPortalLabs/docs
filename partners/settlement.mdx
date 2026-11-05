@@ -21,15 +21,15 @@ The integration type also determines the project fee share. See [Project Fees](/
 
 ## Market models
 
-For markets requiring allocation delivery, settlement allows users to claim their share of tokens and any funds from missed settlements.
+The market model determines how sold points are handled and how buyers receive token allocations or redeem points for benefits.
 
 ### Seller settlement
 
-Checkpoint verifies points balances through the adapter. Sold points remain in the seller's account within the project's points system.
+Checkpoint verifies points balances through the adapter. Sold points remain in the seller’s account and sellers are responsible for delivering the allocation for their filled offers.
 
-When settlement becomes available, sellers must deliver the required allocation within the settlement window. Overdue offers enter the market's default process.
+Buyer payments remain locked until the seller settles. Sellers must deliver the required allocation within the settlement window to receive payment. If they miss the deadline, the held payment and any posted collateral enter the program-wide distribution pool.
 
-This is the standard settlement type and does not require project participation to open a market.
+This is the standard model and does not require project participation to open a market.
 
 ### Oracle escrow settlement
 
