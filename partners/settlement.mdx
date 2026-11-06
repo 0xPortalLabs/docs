@@ -7,16 +7,16 @@ description: "Seller settlement, oracle escrow settlement and ongoing redemption
 Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
 </Info>
 
-Markets can use seller settlement or an oracle integration. Oracle integrations cover allocation-based settlement or ongoing redemption, depending on the points program.
+Markets can use Seller settlement or an oracle integration. Oracle integrations cover Oracle escrow settlement or Ongoing redemption, depending on the points program.
 
 | Market model | Points access | Delivery |
 | --- | --- | --- |
 | Seller settlement | Read-only | Sellers deliver their allocations. |
-| Oracle escrow settlement | Read access and points transfers | Allocation delivered through escrow. |
+| Oracle escrow settlement | Read and write access | Project delivers allocation to the oracle address for distribution to buyers. |
 | Ongoing redemption | Read and write access | Redemption flow developed with the project. |
 
 <Info>
-The integration type also determines the project fee share. See [Project Fees](/partners/fees-and-revenue) for the fee structure.
+The market model also determines the project fee share. See [Project Fees](/partners/fees-and-revenue) for the fee structure.
 </Info>
 
 ## Market models
@@ -33,21 +33,17 @@ This is the standard model and does not require project participation to open a 
 
 ### Oracle escrow settlement
 
-The adapter provides read access to points balances. Oracle escrow settlement also requires a method to transfer sold points from users' accounts to the designated oracle address within the project's points system. General backend write access is not required.
+The project provides Checkpoint with read and write access to its points program. Checkpoint removes sold points from sellers’ accounts and credits them to the oracle contract address within the project’s points system.
 
-Oracle escrow markets do not require seller collateral, reducing upfront capital requirements and simplifying the user experience.
+Sellers receive payment when trades are filled and do not need to post collateral.
 
-The project must preserve allocation eligibility for escrowed points and make the resulting allocation available to the settlement contracts. See [Project Commitments](/partners/commitments) for the detailed obligations.
+The project must preserve allocation eligibility for escrowed points and deliver the resulting allocation to the oracle address for distribution to buyers, without requiring sellers to settle individually.
 
-This allows the allocation to be delivered without requiring each seller to settle individually. The arrangement must be established before the market opens.
-
-<Note>
-Moving points into escrow does not complete settlement. The associated allocation must still become available and reach the settlement contracts.
-</Note>
+This integration must be arranged before the market opens. See [Project Commitments](/partners/commitments) for the delivery requirements.
 
 ### Ongoing redemption
 
-Some points programs support redemption for project-defined benefits without a planned token launch or allocation. These markets may operate without an allocation-based settlement event or scheduled closing date. Where no such settlement is required, its absence is not a settlement default.
+This model supports points programs where points can be redeemed for project-defined benefits without a planned token launch or allocation. Markets may operate without a final settlement event or scheduled closing date.
 
 Redemption requires read and write access to the project’s points system. Checkpoint works with the project to develop the redemption flow.
 
@@ -55,12 +51,12 @@ See [Project Commitments](/partners/commitments#ongoing-redemption) for the appl
 
 ## Claim
 
-Eligible projects can claim their fee share under the [release conditions and schedule](/partners/fees-and-revenue#claiming-project-fees). Receiving fees requires a signed [standard agreement](/partners/commitments).
+Eligible projects can claim their fee share under the [release conditions and schedule](/partners/fees-and-revenue#claiming-project-fees). Receiving fees requires a signed [fee-sharing agreement](/partners/commitments).
 
 The fee split is fixed on market open and cannot be changed afterward.
 
 <Info>
-For allocation-based markets, users claim distributions according to their escrow-token holdings once distribution is finalized. See [Program Settlement](/architecture/program-settlement) for the claim process.
+Once settlement is finalized, buyers can claim their share of available tokens and funds based on their escrow-token holdings. See [Program Settlement](/architecture/program-settlement) for the claim process.
 </Info>
 
 <CardGroup cols={2}>

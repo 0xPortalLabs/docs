@@ -145,16 +145,16 @@ export const ProjectRevenue = () => {
                 ))}
               </div>
               <div style={{ borderLeft: '3px solid #32cdcd', paddingLeft: 16, marginTop: 24 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>Additional project fees with oracle escrow</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Additional project fees with Oracle escrow settlement</div>
                 <div style={{ fontSize: 32, fontWeight: 700, marginTop: 6, overflowWrap: 'anywhere' }}>+{money(fees * 0.2)}</div>
-                {fees > 0 && <div style={{ fontSize: 14, marginTop: 4 }}>66.7% more than seller settlement at the same volume and fees.</div>}
+                {fees > 0 && <div style={{ fontSize: 14, marginTop: 4 }}>66.7% more than Seller settlement at the same volume and fees.</div>}
               </div>
-              <p style={{ display: 'block', fontSize: 13, marginTop: 16 }}>Oracle escrow requires a points-transfer method and allocation delivery.</p>
+              <p style={{ display: 'block', fontSize: 13, marginTop: 16 }}>Oracle escrow settlement requires read and write access to the project’s points system and allocation delivery.</p>
             </section>
           </div>
         )}
       </div>
-      <p style={{ fontSize: 12, marginTop: 18 }}>Calculation: (fee-bearing trade volume × assumed trade fee rate + collected cancellation fees) × project share. Use only volume on which the trade fee is collected. Excludes mint fees, deposit fees, secondary-market fees and per-transaction rounding. Estimates remain subject to the final fee policy, settlement and payout conditions.</p>
+      <p style={{ fontSize: 12, marginTop: 18 }}>Calculation: (fee-bearing trade volume × assumed trade fee rate + collected cancellation fees) × project share. Estimates are illustrative and exclude per-transaction rounding.</p>
     </section>
   );
 };
