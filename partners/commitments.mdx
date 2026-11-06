@@ -1,0 +1,77 @@
+---
+title: "Project Commitments"
+description: "Fee-sharing agreement, delivery commitments and policy changes."
+---
+
+<Info>
+Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
+</Info>
+
+## Fee-sharing agreement
+
+Receiving project fees requires signing the fee-sharing agreement with Checkpoint Exchange. The commitments below apply to projects under their signed fee-sharing agreement.
+
+The agreement identifies the parties and their authority, the covered points programs, seasons and markets and their responsibilities for:
+
+- Maintaining data access and notifying Checkpoint of material changes.
+- Accounting for partial sales, ensuring points and associated benefits are not counted more than once.
+- Preserving the bonuses, multipliers, eligibility requirements and allocation or redemption limits applicable when points are sold. The project must not retroactively weaken those terms for sold or escrowed points.
+- Defining and honoring allocation or redemption commitments, distinguishing optional rewards and avoiding implied guarantees beyond those commitments.
+- Meeting the conditions for receiving the [project fee share](/partners/fees-and-revenue).
+- Handling interruptions, disputes, changed program rules, delays and failure to deliver, including any available user recovery measures.
+- Defining how access withdrawal, program discontinuation or termination of the agreement affects outstanding trades, sold or escrowed points and accrued fees.
+
+These protections apply consistently to all participating projects. Any permitted corrections, such as verified fraud or calculation errors, must be defined in the fee-sharing agreement and apply without project-specific carve-outs.
+
+If a market has already opened, a project can still sign the fee-sharing agreement to claim the default 30% share of eligible fees before the [claim deadline](/partners/fees-and-revenue#claiming-project-fees).
+
+## Delivery commitments
+
+The project’s delivery commitments depend on the market model and are defined in the fee-sharing agreement.
+
+### Seller settlement
+
+- Sold points remain in sellers’ accounts and sellers are responsible for delivering the allocation for their filled offers.
+- The agreement defines the project’s applicable program and allocation commitments.
+
+### Oracle escrow settlement
+
+The project provides Checkpoint with read and write access to its points program so sold points can be removed from sellers’ accounts and credited to the designated oracle address.
+
+- The project must preserve allocation eligibility for escrowed points and deliver the resulting allocation to the oracle address for distribution to buyers.
+- The agreement records the designated oracle address, the points-transfer method and how transfers are recorded, including partial sales and balance adjustments.
+- This integration must be arranged before the market opens.
+
+### Ongoing redemption
+
+The project provides Checkpoint with read and write access to its points system so users can redeem points themselves.
+
+- The agreement defines the redemption benefits, eligibility, limits and conditions.
+- Ongoing redemption may operate without a token launch, final settlement event or scheduled market closure.
+- The absence of an allocation or settlement event is not a failure to deliver where neither is required.
+
+## Early fee release
+
+- Any early fee release for Oracle escrow settlement must be permitted by the agreement and follow the applicable [release conditions](/partners/fees-and-revenue#release-conditions).
+- If the project materially breaches the agreement, Checkpoint may exercise its contractual rights to withhold unpaid project fees and require repayment of fees released early.
+
+## Points-trading exclusivity
+
+Separate trading systems can allow the same points to be sold more than once, creating competing claims to the same allocation or redemption benefits. Exclusivity helps reduce this risk by keeping project-supported trading within Checkpoint infrastructure.
+
+- For the covered points programs, the project must use Checkpoint as its exclusive official points-trading integration during the exclusivity period.
+- The project must not integrate with, provide trading-specific support to or promote competing points-trading venues for those programs.
+- Under the applicable agreement, projects and apps can integrate Checkpoint’s trading infrastructure into their own sites.
+- Independent third-party listings do not by themselves constitute a project breach.
+
+The fee-sharing agreement must define the covered programs, exclusivity period and treatment of existing trading arrangements.
+
+## Policy changes and authority
+
+The agreement identifies the policy version that applies to each covered program.
+
+- Changes for future integrations follow a documented approval process.
+- Changes affecting existing obligations must follow the applicable agreement.
+- The fee split remains fixed at market opening.
+
+The agreement references the applicable versions of the [settlement or redemption requirements](/partners/settlement) and [fee terms](/partners/fees-and-revenue).
