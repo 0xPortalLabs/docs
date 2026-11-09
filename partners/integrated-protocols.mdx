@@ -3,15 +3,11 @@ title: "Overview"
 description: "Adapter requirements, delivery and fee sharing for points markets on Checkpoint."
 ---
 
-<Info>
-Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
-</Info>
-
 ## In a nutshell
 
-**Checkpoint provides markets for trading points, with a share of eligible market smart contract fees reserved for the project issuing those points.**
+**Checkpoint provides markets for trading points, with a share of eligible fees collected by the market smart contract reserved for the project issuing those points.**
 
-Project participation is optional. Checkpoint can open a market independently and reserve the standard project fee share.
+Checkpoint can open a market without project participation and reserve the standard 30% project fee share. A 50% share requires read and write access to the project’s points system, arranged before the market opens:
 
 - **Seller settlement:** sellers deliver their allocations and **30% of eligible market smart contract fees is reserved for the project**.
 - **Oracle integration:** arranged before a market opens. The project enables points transfers and honors allocation or redemption commitments. **50% of eligible market smart contract fees is reserved for the project**.

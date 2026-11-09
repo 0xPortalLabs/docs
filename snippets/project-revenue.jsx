@@ -48,11 +48,11 @@ export const ProjectRevenue = () => {
           </div>
         </div>
         <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-          <legend style={{ fontWeight: 600, marginBottom: 10 }}>Settlement type</legend>
+          <legend style={{ fontWeight: 600, marginBottom: 10 }}>Market model</legend>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
             {[
               ['read', 'Seller settlement', 30],
-              ['write', 'Oracle escrow settlement', 50],
+              ['write', 'Oracle integration', 50],
             ].map(([value, label, percentage]) => (
               <label className="cp-settlement-option" data-selected={model === value ? 'true' : 'false'} key={value}>
                 <input type="radio" name="project-settlement-type" value={value} checked={model === value} onChange={() => setModel(value)} style={{ accentColor: '#32cdcd', width: 18, height: 18, margin: 0, flexShrink: 0 }} />
@@ -70,7 +70,7 @@ export const ProjectRevenue = () => {
           <div>
             <section aria-label="Your project fees" style={{ borderTop: '1px solid #80808050', paddingTop: 24 }}>
               <h3 style={{ fontWeight: 700, fontSize: 20 }}>2. Your project's fees</h3>
-              <div style={{ display: 'block', fontSize: 14, marginTop: 12 }}>{model === 'write' ? 'Oracle escrow settlement' : 'Seller settlement'} · {share * 100}% project fee share</div>
+              <div style={{ display: 'block', fontSize: 14, marginTop: 12 }}>{model === 'write' ? 'Oracle integration' : 'Seller settlement'} · {share * 100}% project fee share</div>
               <div style={{ fontSize: 40, fontWeight: 700, margin: '12px 0 24px', overflowWrap: 'anywhere' }}>{money(fees * share)}</div>
               {fees > 0 ? (
                 <div role="group" aria-label="Project fees by trade volume">
@@ -127,11 +127,11 @@ export const ProjectRevenue = () => {
             </section>
             <section aria-label="Model comparison" style={{ borderTop: '1px solid #80808050', paddingTop: 24, marginTop: 32 }}>
               <h3 style={{ fontWeight: 700, fontSize: 20 }}>3. Compare your project's fees</h3>
-              <p style={{ fontSize: 14, margin: '8px 0 20px' }}>Same volume and fees. Two settlement types.</p>
+              <p style={{ fontSize: 14, margin: '8px 0 20px' }}>Same volume and fees. Compare the 30% and 50% project shares.</p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                 {[
                   ['Seller settlement', 0.3],
-                  ['Oracle escrow settlement', 0.5],
+                  ['Oracle integration', 0.5],
                 ].map(([label, fraction]) => (
                   <div className="cp-fees-card" key={label}>
                     <div style={{ fontSize: 16, fontWeight: 600 }}>{label}</div>
@@ -145,11 +145,11 @@ export const ProjectRevenue = () => {
                 ))}
               </div>
               <div style={{ borderLeft: '3px solid #32cdcd', paddingLeft: 16, marginTop: 24 }}>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>Additional project fees with Oracle escrow settlement</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Additional project fees with the 50% share</div>
                 <div style={{ fontSize: 32, fontWeight: 700, marginTop: 6, overflowWrap: 'anywhere' }}>+{money(fees * 0.2)}</div>
                 {fees > 0 && <div style={{ fontSize: 14, marginTop: 4 }}>66.7% more than Seller settlement at the same volume and fees.</div>}
               </div>
-              <p style={{ display: 'block', fontSize: 13, marginTop: 16 }}>Oracle escrow settlement requires read and write access to the project’s points system and allocation delivery.</p>
+              <p style={{ display: 'block', fontSize: 13, marginTop: 16 }}>Oracle integration requires read and write access to the project’s points system and must be arranged before market opening. Delivery and claim conditions depend on the market model.</p>
             </section>
           </div>
         )}

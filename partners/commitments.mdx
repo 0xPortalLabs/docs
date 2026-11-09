@@ -3,10 +3,6 @@ title: "Project Commitments"
 description: "Fee-sharing agreement, delivery commitments and policy changes."
 ---
 
-<Info>
-Discussion draft — these terms are proposed and must be finalized before mainnet integrations.
-</Info>
-
 ## Fee-sharing agreement
 
 Receiving project fees requires signing the fee-sharing agreement with Checkpoint Exchange. The commitments below apply to projects under their signed fee-sharing agreement.
@@ -15,12 +11,12 @@ The agreement identifies the parties and their authority, the covered points pro
 
 - Maintaining the required data access and promptly notifying Checkpoint of material changes or interruptions that may affect settlement or redemption.
 - Defining and honoring allocation or redemption commitments attached to sold points, distinguishing optional rewards from committed benefits and ensuring subsequent program changes do not undermine settlement or redemption.
-- Receiving project fees only after fulfilling the applicable delivery commitments, except where the fee-sharing agreement permits early release.
-- Defining how access withdrawal, program discontinuation or termination of the agreement affects outstanding trades, sold or escrowed points and accrued fees.
+- Receiving project fees under the release conditions applicable to the market model.
+- Defining how access withdrawal, program discontinuation or market termination affects outstanding delivery commitments and accrued fees, including withholding and the transfer of unclaimed fees to treasury after the applicable claim deadline.
 
-These protections apply consistently to all participating projects. Any permitted corrections, such as verified fraud or calculation errors, must be defined in the fee-sharing agreement and apply without project-specific carve-outs.
+The same core commitments apply to all projects signing the fee-sharing agreement.
 
-If a market has already opened, a project can still sign the fee-sharing agreement to claim the default 30% share of eligible fees before the [claim deadline](/partners/fees-and-revenue#claiming-project-fees).
+For Seller settlement, if a market has already opened, a project can still sign the fee-sharing agreement to claim the default 30% share of eligible fees before the [claim deadline](/partners/fees-and-revenue#claiming-project-fees).
 
 ## Delivery commitments
 
@@ -29,7 +25,7 @@ The project’s delivery commitments depend on the market model and are defined 
 ### Seller settlement
 
 - Sold points remain in sellers’ accounts and sellers are responsible for delivering the allocation for their filled offers.
-- The agreement defines the project’s applicable program and allocation commitments.
+- The project must make the allocation attributable to sold points available to sellers so they can settle their filled offers.
 
 ### Oracle escrow settlement
 
@@ -47,10 +43,11 @@ The project provides Checkpoint with read and write access to its points system 
 - Ongoing redemption may operate without a token launch, final settlement event or scheduled market closure.
 - The absence of an allocation or settlement event is not a failure to deliver where neither is required.
 
-## Early fee release
+## Fee release
 
-- Any early fee release for Oracle escrow settlement must be permitted by the agreement and follow the applicable [release conditions](/partners/fees-and-revenue#release-conditions).
-- If the project materially breaches the agreement, Checkpoint may exercise its contractual rights to withhold unpaid project fees and require repayment of fees released early.
+- **Oracle escrow settlement:** the fee-sharing agreement may permit early release under the applicable [release conditions](/partners/fees-and-revenue#release-conditions).
+- **Ongoing redemption:** eligible fees are immediately claimable as collected, provided Checkpoint retains the read and write access needed for users to redeem points.
+- If the project fails to fulfill its commitments, Checkpoint may withhold unpaid project fees and/or seek repayment of fees already released under the fee-sharing agreement.
 
 ## Points-trading exclusivity
 
