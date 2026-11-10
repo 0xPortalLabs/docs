@@ -4,9 +4,12 @@ export const ProjectRevenue = () => {
   const [cancellationFees, setCancellationFees] = useState(0);
   const [model, setModel] = useState('read');
   const settlementExempt = model === 'redemption';
-  const valid = volume !== '' && rate !== '' && Number.isFinite(Number(volume)) && Number.isFinite(Number(rate)) && Number(volume) >= 0 && Number(rate) >= 0 && Number(rate) <= 100 && Number.isFinite(Number(cancellationFees)) && Number(cancellationFees) >= 0;
-  const tradeFees = valid ? Number(volume) * Number(rate) / 100 : 0;
-  const fees = valid ? tradeFees + Number(cancellationFees) : 0;
+  const inputsValid = volume !== '' && rate !== '' && Number.isFinite(Number(volume)) && Number.isFinite(Number(rate)) && Number(volume) >= 0 && Number(rate) >= 0 && Number(rate) <= 100 && Number.isFinite(Number(cancellationFees)) && Number(cancellationFees) >= 0;
+  const calculatedTradeFees = inputsValid ? Number(volume) * Number(rate) / 100 : 0;
+  const calculatedFees = calculatedTradeFees + Number(cancellationFees);
+  const valid = inputsValid && Number.isFinite(calculatedTradeFees) && Number.isFinite(calculatedFees);
+  const tradeFees = valid ? calculatedTradeFees : 0;
+  const fees = valid ? calculatedFees : 0;
   const share = model === 'read' ? 0.3 : 0.5;
   const earlyShare = model === 'write' ? 0.2 : 0.1;
   const chartPoints = (Number(volume) > 0 ? [0.25, 0.5, 0.75, 1] : [1]).map((fraction) => {
@@ -69,7 +72,7 @@ export const ProjectRevenue = () => {
         </fieldset>
       </div>
       <div aria-live="polite" aria-atomic="true" style={{ marginTop: 32 }}>
-        {!valid ? <p role="alert">Volume and cancellation fees must be zero or greater. The trade fee rate must be between 0% and 100%.</p> : (
+        {!valid ? <p role="alert">{inputsValid ? 'Amounts are too large to calculate. Enter smaller values.' : 'Volume and cancellation fees must be zero or greater. The trade fee rate must be between 0% and 100%.'}</p> : (
           <div>
             <section aria-label="Your project fees" style={{ borderTop: '1px solid #80808050', paddingTop: 24 }}>
               <h3 style={{ fontWeight: 700, fontSize: 20 }}>2. Your project's fees</h3>

@@ -187,7 +187,9 @@ sequenceDiagram
   Market-->>Market: Validates settlement not overdue
   Seller->>Market: Approves tokens to contract
   Market->>Settlement: Deposits seller's tokens
-  Market-->>Seller: Sends USDC (minus fee)
+  opt Non-custodied market
+    Market-->>Seller: Sends USDC (minus fee)
+  end
   Market-->>Seller: Returns collateral
   Settlement->>Filler: Tokens available to claim
 ```
@@ -250,7 +252,9 @@ sequenceDiagram
   Note over Seller,Market: Seller sends non-vested tokens<br/>to Settlement contract
   Market->>Oracle: Gets currently claimable tokens
   Market->>Settlement: Deposits non-vested tokens
-  Market-->>Seller: Sends USDC (minus fee)
+  opt Non-custodied market
+    Market-->>Seller: Sends USDC (minus fee)
+  end
   Note over Market,Settlement: Vesting period active<br/>Tokens stream to buyer
   rect rgba(148, 173, 7, 0.1)
   Note over Oracle,Buyer: Vesting period active
