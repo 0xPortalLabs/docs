@@ -1,6 +1,6 @@
 ---
 title: "Project Commitments"
-description: "Fee-sharing agreement, delivery commitments and policy changes."
+description: "Fee-sharing agreement, delivery commitments and fee release."
 ---
 
 ## Fee-sharing agreement
@@ -11,10 +11,10 @@ The agreement identifies the parties and their authority, the covered points pro
 
 - Maintaining the required data access and promptly notifying Checkpoint of material changes or interruptions that may affect settlement or redemption.
 - Defining and honoring allocation or redemption commitments attached to sold points, distinguishing optional rewards from committed benefits and ensuring subsequent program changes do not undermine settlement or redemption.
-- Receiving project fees under the release conditions applicable to the market model.
-- Defining how access withdrawal, program discontinuation or market termination affects outstanding delivery commitments and accrued fees, including withholding and the transfer of unclaimed fees to treasury after the applicable claim deadline.
+- Receiving the fee share determined by the market’s registered custody mode under the applicable release conditions.
+- Defining how access withdrawal, program discontinuation or market termination affects outstanding delivery commitments and accrued fees, including withholding and any applicable claim expiry. Fees collected under the settlement exemption do not expire.
 
-The same core commitments apply to all projects signing the fee-sharing agreement.
+The same core commitments apply to all projects signing the fee-sharing agreement. Changes to existing commitments must follow the signed fee-sharing agreement.
 
 For Seller settlement, if a market has already opened, a project can still sign the fee-sharing agreement to claim the default 30% share of eligible fees before the [claim deadline](/partners/fees-and-revenue#claiming-project-fees).
 
@@ -41,12 +41,17 @@ The project provides Checkpoint with read and write access to its points system 
 
 - The agreement defines the redemption benefits, eligibility, limits and conditions.
 - Ongoing redemption may operate without a token launch, final settlement event or scheduled market closure.
-- The absence of an allocation or settlement event is not a failure to deliver where neither is required.
 
 ## Fee release
 
-- **Oracle escrow settlement:** the fee-sharing agreement may permit early release under the applicable [release conditions](/partners/fees-and-revenue#release-conditions).
-- **Ongoing redemption:** eligible fees are immediately claimable as collected, provided Checkpoint retains the read and write access needed for users to redeem points.
+The following release conditions apply once the project’s receiving wallet is configured:
+
+- **No custody:** 10 percentage points of eligible fees are claimable before distribution finalization. The remaining 20 percentage points become claimable at finalization.
+- **Registered custody:** 20 percentage points of eligible fees are claimable before distribution finalization. The remaining 30 percentage points become claimable at finalization.
+- **Ongoing redemption:** fees collected under the settlement exemption are immediately eligible for payment once the receiving wallet is configured. The project must maintain the read and write access needed for users to redeem points.
+
+The agreement and its delivery and access commitments are offchain obligations. The distributor does not verify them or require separate approval for early release.
+
 - If the project fails to fulfill its commitments, Checkpoint may withhold unpaid project fees and/or seek repayment of fees already released under the fee-sharing agreement.
 
 ## Points-trading exclusivity
@@ -59,13 +64,3 @@ Separate trading systems can allow the same points to be sold more than once, cr
 - Independent third-party listings do not by themselves constitute a project breach.
 
 The fee-sharing agreement must define the covered programs, exclusivity period and treatment of existing trading arrangements.
-
-## Policy changes and authority
-
-The agreement identifies the policy version that applies to each covered program.
-
-- Changes for future integrations follow a documented approval process.
-- Changes affecting existing obligations must follow the applicable agreement.
-- The fee split remains fixed at market opening.
-
-The agreement references the applicable versions of the [settlement or redemption requirements](/partners/settlement) and [fee terms](/partners/fees-and-revenue).

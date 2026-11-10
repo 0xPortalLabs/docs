@@ -3,10 +3,12 @@ export const ProjectRevenue = () => {
   const [rate, setRate] = useState(1);
   const [cancellationFees, setCancellationFees] = useState(0);
   const [model, setModel] = useState('read');
+  const settlementExempt = model === 'redemption';
   const valid = volume !== '' && rate !== '' && Number.isFinite(Number(volume)) && Number.isFinite(Number(rate)) && Number(volume) >= 0 && Number(rate) >= 0 && Number(rate) <= 100 && Number.isFinite(Number(cancellationFees)) && Number(cancellationFees) >= 0;
   const tradeFees = valid ? Number(volume) * Number(rate) / 100 : 0;
   const fees = valid ? tradeFees + Number(cancellationFees) : 0;
-  const share = model === 'write' ? 0.5 : 0.3;
+  const share = model === 'read' ? 0.3 : 0.5;
+  const earlyShare = model === 'write' ? 0.2 : 0.1;
   const chartPoints = (Number(volume) > 0 ? [0.25, 0.5, 0.75, 1] : [1]).map((fraction) => {
     const tradingRevenue = tradeFees * share * fraction;
     const cancellationRevenue = Number(cancellationFees) * share;
@@ -49,10 +51,11 @@ export const ProjectRevenue = () => {
         </div>
         <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
           <legend style={{ fontWeight: 600, marginBottom: 10 }}>Market model</legend>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))', gap: 16 }}>
             {[
               ['read', 'Seller settlement', 30],
-              ['write', 'Oracle integration', 50],
+              ['write', 'Oracle escrow settlement', 50],
+              ['redemption', 'Ongoing redemption', 50],
             ].map(([value, label, percentage]) => (
               <label className="cp-settlement-option" data-selected={model === value ? 'true' : 'false'} key={value}>
                 <input type="radio" name="project-settlement-type" value={value} checked={model === value} onChange={() => setModel(value)} style={{ accentColor: '#32cdcd', width: 18, height: 18, margin: 0, flexShrink: 0 }} />
@@ -70,8 +73,31 @@ export const ProjectRevenue = () => {
           <div>
             <section aria-label="Your project fees" style={{ borderTop: '1px solid #80808050', paddingTop: 24 }}>
               <h3 style={{ fontWeight: 700, fontSize: 20 }}>2. Your project's fees</h3>
-              <div style={{ display: 'block', fontSize: 14, marginTop: 12 }}>{model === 'write' ? 'Oracle integration' : 'Seller settlement'} · {share * 100}% project fee share</div>
-              <div style={{ fontSize: 40, fontWeight: 700, margin: '12px 0 24px', overflowWrap: 'anywhere' }}>{money(fees * share)}</div>
+              <div style={{ display: 'block', fontSize: 14, marginTop: 12 }}>{model === 'read' ? 'Seller settlement' : model === 'write' ? 'Oracle escrow settlement' : 'Ongoing redemption'} · {share * 100}% project fee share</div>
+              <div style={{ fontSize: 13, marginTop: 16 }}>Estimated total project fees</div>
+              <div style={{ fontSize: 40, fontWeight: 700, margin: '6px 0 24px', overflowWrap: 'anywhere' }}>{money(fees * share)}</div>
+              <div role="group" aria-label="Estimated release timing" style={{ marginBottom: 28 }}>
+                {settlementExempt ? (
+                  <div className="cp-fees-card">
+                    <div style={{ fontSize: 14, fontWeight: 600 }}>Immediately claimable as fees are collected.</div>
+
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
+                    {[
+                      ['Claim early', earlyShare],
+                      ['Claim later', share - earlyShare],
+                    ].map(([label, fraction]) => (
+                      <div className="cp-fees-card" key={label}>
+                        <div style={{ fontSize: 14, fontWeight: 600 }}>{label}</div>
+                        <div style={{ fontSize: 24, fontWeight: 700, marginTop: 8, overflowWrap: 'anywhere' }}>{money(fees * fraction)}</div>
+                        <div style={{ fontSize: 12, marginTop: 4 }}>{Math.round(fraction * 100)}% of eligible fees collected</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!settlementExempt && <p style={{ fontSize: 12, marginTop: 8 }}>Fees become claimable in stages. See <a href="/partners/fees-and-revenue#release-conditions">release conditions</a>.</p>}
+              </div>
               {fees > 0 ? (
                 <div role="group" aria-label="Project fees by trade volume">
                   <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Project fees</div>
@@ -107,10 +133,9 @@ export const ProjectRevenue = () => {
                     ))}
                   </div>
                   <div style={{ fontSize: 13, textAlign: 'center', marginTop: 6 }}>Trading volume</div>
-                  {Number(cancellationFees) > 0 && <div style={{ fontSize: 12, marginTop: 12 }}>The entered cancellation fees stay constant across volume examples.</div>}
                 </div>
               ) : (
-                <div style={{ padding: '20px 0', fontSize: 14 }}>Project fees is $0 for these inputs.</div>
+                <div style={{ padding: '20px 0', fontSize: 14 }}>Project fees are $0 for these inputs.</div>
               )}
               {Number(cancellationFees) > 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: 20, marginTop: 24 }}>
@@ -131,7 +156,7 @@ export const ProjectRevenue = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: 16 }}>
                 {[
                   ['Seller settlement', 0.3],
-                  ['Oracle integration', 0.5],
+                  ['Oracle settlement or redemption', 0.5],
                 ].map(([label, fraction]) => (
                   <div className="cp-fees-card" key={label}>
                     <div style={{ fontSize: 16, fontWeight: 600 }}>{label}</div>
@@ -149,12 +174,11 @@ export const ProjectRevenue = () => {
                 <div style={{ fontSize: 32, fontWeight: 700, marginTop: 6, overflowWrap: 'anywhere' }}>+{money(fees * 0.2)}</div>
                 {fees > 0 && <div style={{ fontSize: 14, marginTop: 4 }}>66.7% more than Seller settlement at the same volume and fees.</div>}
               </div>
-              <p style={{ display: 'block', fontSize: 13, marginTop: 16 }}>Oracle integration requires read and write access to the project’s points system and must be arranged before market opening. Delivery and claim conditions depend on the market model.</p>
             </section>
           </div>
         )}
       </div>
-      <p style={{ fontSize: 12, marginTop: 18 }}>Calculation: (fee-bearing trade volume × assumed trade fee rate + collected cancellation fees) × project share. Estimates are illustrative and exclude per-transaction rounding.</p>
+      <p style={{ fontSize: 12, marginTop: 18 }}>Illustrative estimates; actual fees may vary.</p>
     </section>
   );
 };

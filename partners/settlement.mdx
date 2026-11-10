@@ -12,7 +12,7 @@ Markets can use Seller settlement or an oracle integration. Oracle integrations 
 | Ongoing redemption | Read and write access | Users redeem points for project-defined benefits. |
 
 <Info>
-The market model also determines the project fee share. See [Project Fees](/partners/fees-and-revenue) for the fee structure.
+The market’s registered custody mode determines the project fee share. See [Project Fees](/partners/fees-and-revenue) for the fee structure.
 </Info>
 
 ## Market models
@@ -23,7 +23,7 @@ The market model determines how sold points are handled and how buyers receive t
 
 Checkpoint verifies points balances through the adapter. Sold points remain in the seller’s account and sellers are responsible for delivering the allocation for their filled offers.
 
-Buyer payments remain locked until the seller settles. Sellers must deliver the required allocation within the settlement window to receive payment. If they miss the deadline, the held payment and any posted collateral enter the program-wide distribution pool.
+Buyer payments remain locked until the seller settles. Sellers must deliver the required allocation before the settlement deadline to receive payment. At the deadline, delivery is blocked and default handling becomes available under the settlement configuration. The held payment and any posted collateral can then be added to the program-wide distribution pool through that process.
 
 This is the standard model and does not require project participation to open a market.
 
@@ -45,6 +45,14 @@ Redemption requires read and write access to the project’s points system. Chec
 
 See [Project Commitments](/partners/commitments#ongoing-redemption) for the applicable redemption commitments.
 
+## Settlement timeline
+
+- **Trading ends:** new offers and fills stop. Existing trades move through settlement.
+- **Settlement deadline:** sellers must deliver before the deadline. Oracle escrow delivery can continue afterward.
+- **Distribution is finalized:** once outstanding trades are resolved and the waiting period has passed, distributions become available to claim.
+
+Ongoing redemption does not require a final settlement event.
+
 ## Claim
 
 Eligible projects can claim their fee share under the [release conditions and schedule](/partners/fees-and-revenue#claiming-project-fees). Receiving fees requires a signed [fee-sharing agreement](/partners/commitments).
@@ -52,7 +60,7 @@ Eligible projects can claim their fee share under the [release conditions and sc
 The fee split is fixed on market open and cannot be changed afterward.
 
 <Info>
-Once settlement is finalized, buyers can claim their share of available tokens and funds based on their escrow-token holdings. See [Program Settlement](/architecture/program-settlement) for the claim process.
+Buyers can claim available tokens and funds once the program’s distribution is finalized. See [Program Settlement](/architecture/program-settlement) for the claim process.
 </Info>
 
 <CardGroup cols={2}>

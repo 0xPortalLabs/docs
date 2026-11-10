@@ -9,13 +9,12 @@ A project's share covers trading and cancellation fees collected from its points
 
 ## Fee split
 
-The standard project share is 30%. Oracle escrow settlement and Ongoing redemption must be arranged before market opening to qualify for 50%. Compare [integration requirements](/partners/settlement).
+The market’s registered custody mode determines the project share: 30% with no custody or 50% with registered custody. Custody arrangements are established on market opening. Compare [integration requirements](/partners/settlement).
 
-| Market model | Project | Checkpoint |
+| Registered custody | Project | Checkpoint |
 | --- | --- | --- |
-| Seller settlement | 30% | 70% |
-| Oracle escrow settlement | 50% | 50% |
-| Ongoing redemption | 50% | 50% |
+| No custody | 30% | 70% |
+| Registered custody | 50% | 50% |
 
 <Warning>
 The fee split is fixed on market open and cannot be changed afterward.
@@ -25,19 +24,19 @@ The fee split is fixed on market open and cannot be changed afterward.
 
 ### Trading fee
 
-Charged on the filled trade amount in the market's USD-denominated stablecoin and deducted from seller proceeds. Called `settlementFee` in the contract, it is collected once:
+Charged on the filled trade amount in the market payment token and deducted from seller proceeds. Called `settlementFee` in the contract, it is collected once:
 
 - **Seller settlement:** when the offer successfully settles.
-- **Oracle escrow settlement and Ongoing redemption:** when each trade is filled.
+- **Oracle escrow settlement or redemption:** when each trade is filled.
 
 ### Cancellation fee
 
 Charged when cancelling an offer with no active fills:
 
 - **With collateral:** calculated on locked collateral and deducted from the seller's refund.
-- **Without collateral:** calculated on the listed stablecoin price and collected from the seller's wallet, requiring sufficient balance and approval.
+- **Without collateral:** calculated on the listed price in the market payment token and collected from the seller's wallet, requiring sufficient balance and approval.
 
-The project share applies to the combined stablecoin fees collected from both sources.
+The project share applies to fees collected from both sources in the market payment token.
 
 ## Excluded fees
 
@@ -51,34 +50,41 @@ AMM trading fees support liquidity providers and potentially Checkpoint. They ar
 
 ## Claiming project fees
 
-Receiving project fees requires a signed [fee-sharing agreement](/partners/commitments). The claim deadline is 90 days after settlement is finalized or the market is closed, whichever occurs first.
+Receiving project fees requires a signed [fee-sharing agreement](/partners/commitments). For fees subject to settlement, the claim deadline is 90 days after the program’s distribution is finalized.
 
 Projects using Seller settlement can sign after market opening and claim the standard 30% share before that deadline, including eligible fees collected before signing.
 
 ### Release conditions
 
-For Seller settlement and Oracle escrow settlement, project fees remain withheld until settlement is finalized and the project has made the required allocation available to sellers or the designated oracle address, respectively.
+For fees subject to settlement, the project’s share becomes claimable in two stages once its receiving wallet is configured:
 
-For Oracle escrow settlement, the fee-sharing agreement may permit early release of up to 20 percentage points of eligible market fees from the project’s 50% share. At least 30 percentage points remain withheld until those conditions are met.
+| Registered custody | Before distribution finalization | At distribution finalization |
+| --- | --- | --- |
+| No custody | 10% | Remaining 20% |
+| Registered custody | 20% | Remaining 30% |
 
-The agreement must specify approval and verification requirements, payment schedules and [repayment conditions](/partners/commitments#fee-release).
+Percentages apply to eligible fees collected and form part of the total 30% or 50% project share. There is no separate onchain approval for early release.
 
 ### Ongoing redemption
 
-Redemption requires read and write access to the project’s points system. Eligible project fees are immediately claimable as collected under the signed fee-sharing agreement, provided Checkpoint retains the read and write access needed for users to redeem points. The 90-day claim deadline starts when the market is closed.
+Ongoing redemption requires the project to maintain Checkpoint’s read and write access so users can redeem points. Fees collected under the settlement exemption are immediately eligible for payment once the receiving wallet is configured. Continued access remains an obligation under the fee-sharing agreement; the distributor does not check it.
 
 ### Unclaimed fees
 
-Unclaimed project fees expire 90 days after settlement is finalized or the market is closed, whichever occurs first. At that deadline, they become payable to the Checkpoint treasury. The transfer requires a transaction.
+For fees subject to settlement, unclaimed project fees expire 90 days after the program’s distribution is finalized. At that deadline, they become payable to the Checkpoint treasury.
 
 An unsigned agreement or missing receiving wallet does not extend the deadline.
 
-Market closure does not make withheld project fees claimable. The applicable delivery commitments must still be fulfilled.
+Project fees reserved until the program’s distribution is finalized must be claimed within the following 90 days.
 
 Their use follows Checkpoint’s treasury governance, including DAO governance once active. These funds may be used for governance-approved spending, including payments under ongoing DAO-approved commitments.
 
+### Fee payments
+
+Claimable project fees are paid to the project’s designated receiving wallet. Anyone can initiate the payment, but cannot change its destination.
+
 ## Project fee calculator
 
-Estimate your project’s fee share using fee-bearing trade volume and collected cancellation fees. Claim timing follows the release conditions above. Oracle integration includes Oracle escrow settlement and Ongoing redemption.
+Estimate your project’s fee share using fee-bearing trade volume and collected cancellation fees. The market’s registered custody mode determines the split. Claim timing follows the release conditions above.
 
 <ProjectRevenue />
