@@ -1,0 +1,69 @@
+---
+title: "Settlement"
+description: "Seller settlement, oracle escrow settlement and ongoing redemption for points markets."
+---
+
+Markets can use Seller settlement or an oracle integration. Oracle integrations cover Oracle escrow settlement or Ongoing redemption, depending on the points program.
+
+| Market model | Points access | Delivery |
+| --- | --- | --- |
+| Seller settlement | Read-only | Sellers deliver their allocations. |
+| Oracle escrow settlement | Read and write access | Project delivers allocation to the oracle address for distribution to buyers. |
+| Ongoing redemption | Read and write access | Users redeem points for project-defined benefits. |
+
+<Info>
+The market’s registered custody mode determines the project fee share. See [Project Fees](/partners/fees-and-revenue) for the fee structure.
+</Info>
+
+## Market models
+
+The market model determines how sold points are handled and how buyers receive token allocations or redeem points for benefits.
+
+### Seller settlement
+
+Checkpoint verifies points balances through the adapter. Sold points remain in the seller’s account and sellers are responsible for delivering the allocation for their filled offers.
+
+Buyer payments remain locked until the seller settles. Sellers must deliver the required allocation before the settlement deadline to receive payment. At the deadline, delivery is blocked and default handling becomes available under the settlement configuration. The held payment and any posted collateral can then be added to the program-wide distribution pool through that process.
+
+This is the standard model and does not require project participation to open a market.
+
+### Oracle escrow settlement
+
+The project provides Checkpoint with read and write access to its points program. Checkpoint removes sold points from sellers’ accounts and credits them to the oracle contract address within the project’s points system.
+
+Sellers receive payment when trades are filled and do not need to post collateral.
+
+The project must preserve allocation eligibility for escrowed points and deliver the resulting allocation to the oracle address for distribution to buyers, without requiring sellers to settle individually.
+
+This integration must be arranged before the market opens. See [Project Commitments](/partners/commitments) for the delivery requirements.
+
+### Ongoing redemption
+
+This model supports points programs where points can be redeemed for project-defined benefits without a planned token launch or allocation. Markets may operate without a final settlement event or scheduled closing date.
+
+Redemption requires read and write access to the project’s points system. Checkpoint works with the project to develop the redemption flow.
+
+See [Project Commitments](/partners/commitments#ongoing-redemption) for the applicable redemption commitments.
+
+## Settlement timeline
+
+- **Trading ends:** new offers and fills stop. Existing trades move through settlement.
+- **Settlement deadline:** sellers must deliver before the deadline. Oracle escrow delivery can continue afterward.
+- **Distribution is finalized:** once outstanding trades are resolved and the waiting period has passed, distributions become available to claim.
+
+Ongoing redemption does not require a final settlement event.
+
+## Claim
+
+Eligible projects can claim their fee share under the [release conditions and schedule](/partners/fees-and-revenue#claiming-project-fees). Receiving fees requires a signed [fee-sharing agreement](/partners/commitments).
+
+The fee split is fixed on market open and cannot be changed afterward.
+
+<Info>
+Buyers can claim available tokens and funds once the program’s distribution is finalized. See [Program Settlement](/architecture/program-settlement) for the claim process.
+</Info>
+
+<CardGroup cols={2}>
+  <Card horizontal title="Project Fees" icon="coins" iconType="solid" href="/partners/fees-and-revenue">View fee shares and payouts.</Card>
+  <Card horizontal title="Project Commitments" icon="file-signature" iconType="solid" href="/partners/commitments">Review project obligations.</Card>
+</CardGroup>

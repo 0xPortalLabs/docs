@@ -1,0 +1,90 @@
+---
+title: "Project Fees"
+description: "Project fee shares, eligible market fees and payment conditions."
+---
+
+import { ProjectRevenue } from "/snippets/project-revenue.jsx"
+
+A project's share covers trading and cancellation fees collected from its points markets, paid in the market's payment token.
+
+## Fee split
+
+The market’s registered custody mode determines the project share: 30% with no custody or 50% with registered custody. Custody arrangements are established on market opening. Compare [integration requirements](/partners/settlement).
+
+| Registered custody | Project | Checkpoint |
+| --- | --- | --- |
+| No custody | 30% | 70% |
+| Registered custody | 50% | 50% |
+
+<Warning>
+The fee split is fixed on market open and cannot be changed afterward.
+</Warning>
+
+## Included fees
+
+### Trading fee
+
+Charged on the filled trade amount in the market payment token and deducted from seller proceeds. Called `settlementFee` in the contract, it is collected once:
+
+- **Seller settlement:** when the offer successfully settles.
+- **Oracle escrow settlement or redemption:** when each trade is filled.
+
+### Cancellation fee
+
+Charged when cancelling an offer with no active fills:
+
+- **With collateral:** calculated on locked collateral and deducted from the seller's refund.
+- **Without collateral:** calculated on the listed price in the market payment token and collected from the seller's wallet, requiring sufficient balance and approval.
+
+The project share applies to fees collected from both sources in the market payment token.
+
+## Excluded fees
+
+The following remain with Checkpoint:
+
+- **Mint fee:** additional escrow tokens minted on each fill to fund AMM pools. Calculated on the buyer's actual escrow mint; it increases supply without deducting the payment token or escrow tokens from the buyer.
+- **Deposit fees:** excluded if enabled in future.
+- **Other fees:** API and Pro subscriptions, fees from other projects’ markets and any fees not explicitly included in the project’s fee share.
+
+AMM trading fees support liquidity providers and potentially Checkpoint. They are currently excluded from the project fee split.
+
+## Claiming project fees
+
+Receiving project fees requires a signed [fee-sharing agreement](/partners/commitments). For fees subject to settlement, the claim deadline is 90 days after the program’s distribution is finalized.
+
+Projects using Seller settlement can sign after market opening and claim the standard 30% share before that deadline, including eligible fees collected before signing.
+
+### Release conditions
+
+For fees subject to settlement, the project’s share becomes claimable in two stages once its receiving wallet is configured:
+
+| Registered custody | Before distribution finalization | At distribution finalization |
+| --- | --- | --- |
+| No custody | 10% | Remaining 20% |
+| Registered custody | 20% | Remaining 30% |
+
+Percentages apply to eligible fees collected and form part of the total 30% or 50% project share. There is no separate onchain approval for early release.
+
+### Ongoing redemption
+
+Ongoing redemption requires the project to maintain Checkpoint’s read and write access so users can redeem points. Fees collected under the settlement exemption are immediately eligible for payment once the receiving wallet is configured. Continued access remains an obligation under the fee-sharing agreement; the distributor does not check it.
+
+### Unclaimed fees
+
+For fees subject to settlement, unclaimed project fees expire 90 days after the program’s distribution is finalized. At that deadline, they become payable to the Checkpoint treasury.
+
+An unsigned agreement or missing receiving wallet does not extend the deadline.
+
+Project fees reserved until the program’s distribution is finalized must be claimed within the following 90 days.
+
+Their use follows Checkpoint’s treasury governance, including DAO governance once active. These funds may be used for governance-approved spending, including payments under ongoing DAO-approved commitments.
+
+### Fee payments
+
+Claimable project fees are paid to the project’s designated receiving wallet. Anyone can initiate the payment, but cannot change its destination.
+
+## Project fee calculator
+
+Estimate your project’s fee share using fee-bearing trade volume and collected cancellation fees. The market’s registered custody mode determines the split. Claim timing follows the release conditions above.
+
+<ProjectRevenue />

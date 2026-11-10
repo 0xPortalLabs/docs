@@ -50,6 +50,16 @@
         ]
       },
       {
+        "group": "Market Integrations",
+        "pages": [
+          "partners/integrated-protocols",
+          "partners/adapters",
+          "partners/settlement",
+          "partners/fees-and-revenue",
+          "partners/commitments"
+        ]
+      },
+      {
         "group": "Oracle API Reference",
         "openapi": "spec/oracle.json",
         "pages": ["api/oracle-api"]
